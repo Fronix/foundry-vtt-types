@@ -189,6 +189,13 @@ declare abstract class DataModel<
   static LOCALIZATION_PREFIXES: string[];
 
   /**
+   * Traverse the data model instance, obtaining the DataField definition for a field of a particular property.
+   * @param key - A property key like `["abilities", "strength"]` or `"abilities.strength"`
+   * @returns The corresponding DataField definition for that field, or undefined
+   */
+  getFieldForProperty(key: string | string[]): DataField.Unknown | undefined;
+
+  /**
    * Initialize the source data for a new DataModel instance.
    * One-time migrations and initial cleaning operations are applied to the source data.
    * @param data    - The candidate source data from which the model will be constructed

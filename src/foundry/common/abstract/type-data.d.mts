@@ -359,6 +359,12 @@ declare abstract class TypeDataModel<
     options: TextEditor.EnrichmentOptions,
   ): Promise<HTMLElement | HTMLCollection | null>;
 
+  /**
+   * Specific callback actions to take when the embedded HTML for this Document has been added to the DOM.
+   * @param element - The embedded document HTML
+   */
+  onEmbed(element: foundry.applications.elements.HTMLDocumentEmbedElement): void;
+
   /* -------------------------------------------- */
   /*  Database Operations                         */
   /* -------------------------------------------- */

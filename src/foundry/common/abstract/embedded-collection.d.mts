@@ -150,6 +150,13 @@ declare class EmbeddedCollection<
   ): EmbeddedCollection.GetInvalidReturn<ContainedDocument, Options>;
 
   /**
+   * Does this collection actively manage the Document with a specific ID?
+   * @param id - The Document ID to check
+   * @returns Is the specified Document managed by this collection?
+   */
+  manages(id: string): boolean;
+
+  /**
    * Convert the EmbeddedCollection to an array of simple objects.
    * @param source - Draw data for contained Documents from the underlying data source? (default: `true`)
    * @returns The extracted array of primitive objects

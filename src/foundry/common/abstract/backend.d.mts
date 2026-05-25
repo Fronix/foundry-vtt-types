@@ -446,6 +446,13 @@ declare namespace DatabaseBackend {
     data: CreateData[];
 
     /**
+     * Control the object of any created Documents
+     * @defaultValue `false`
+     * @remarks Behaves like the default is `false`
+     */
+    controlObject?: boolean;
+
+    /**
      * Render the sheet Application for any created Documents
      * @defaultValue `false`
      * @remarks This is guaranteed to exist by `DatabaseBackend##configureCreate`. It is not omitted from passable types as it's set via
