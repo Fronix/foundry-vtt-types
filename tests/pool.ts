@@ -100,6 +100,23 @@ async function _setupBrowser(vitest: Vitest): Promise<BrowserData> {
       hmr: false,
       watch: null,
     },
+    // `tester.ts` imports `@vitest/runner` directly to drive collection, while served test files
+    // reach the same APIs via `vitest`. If Vite pre-bundles `vitest` and inlines its own copy of
+    // `@vitest/runner`, the test files get a second runner instance whose collector state is never
+    // set, so collection throws ("failed to find the current suite" / reading 'config' of undefined).
+    // Keep `@vitest/runner` external + deduped so there is a single shared instance.
+    optimizeDeps: {
+      // `tester.ts` drives collection via `@vitest/runner`; served test files reach the same
+      // collector state via `vitest`. Pre-bundling `vitest` inlines a private `@vitest/runner`
+      // copy, so the two get separate runner instances and collection throws ("failed to find
+      // the current suite"). Excluding them keeps a single external instance. CJS deps that would
+      // otherwise be served raw (no named ESM exports) are force-included so interop still works.
+      exclude: ["vitest", "vitest/runners", "@vitest/runner"],
+      include: ["expect-type", "chai", "@vitest/expect", "@vitest/spy", "@vitest/utils"],
+    },
+    resolve: {
+      dedupe: ["@vitest/runner", "vitest"],
+    },
   });
 
   await server.listen();
