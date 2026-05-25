@@ -149,16 +149,14 @@ declare namespace PlaylistSound {
   type CreateInput = CreateData | Implementation;
 
   /**
-   * The helper type for the return of {@linkcode PlaylistSound.create}, returning (a single | an array of) (temporary | stored)
+   * The helper type for the return of {@linkcode PlaylistSound.create}, returning (a single | an array of) stored
    * `PlaylistSound`s.
    *
    * `| undefined` is included in the non-array branch because if a `.create` call with non-array data is cancelled by the `preCreate`
    * method or hook, `shift`ing the return of `.createDocuments` produces `undefined`
    */
-  type CreateReturn<Data extends MaybeArray<CreateInput>, Temporary extends boolean | undefined> =
-    Data extends Array<CreateInput>
-      ? Array<PlaylistSound.TemporaryIf<Temporary>>
-      : PlaylistSound.TemporaryIf<Temporary> | undefined;
+  type CreateReturn<Data extends MaybeArray<CreateInput>> =
+    Data extends Array<CreateInput> ? Array<PlaylistSound.Stored> : PlaylistSound.Stored | undefined;
 
   /**
    * The data after a {@linkcode Document} has been initialized, for example
@@ -306,9 +304,10 @@ declare namespace PlaylistSound {
      * @remarks This interface was previously typed for passing to {@linkcode PlaylistSound.create}. The new name for that
      * interface is {@linkcode CreateDocumentsOperation}.
      */
-    interface CreateOperation<
-      Temporary extends boolean | undefined = boolean | undefined,
-    > extends DatabaseBackend.CreateOperation<PlaylistSound.CreateInput, PlaylistSound.Parent, Temporary> {}
+    interface CreateOperation extends DatabaseBackend.CreateOperation<
+      PlaylistSound.CreateInput,
+      PlaylistSound.Parent
+    > {}
 
     /**
      * The interface for passing to {@linkcode PlaylistSound.create} or {@linkcode PlaylistSound.createDocuments}.
@@ -322,8 +321,7 @@ declare namespace PlaylistSound {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface CreateDocumentsOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.CreateDocumentsOperation<CreateOperation<Temporary>> {}
+    interface CreateDocumentsOperation extends Document.Database.CreateDocumentsOperation<CreateOperation> {}
 
     /**
      * The interface for passing to the {@linkcode Document.createEmbeddedDocuments | #createEmbeddedDocuments} method of any Documents that
@@ -352,8 +350,7 @@ declare namespace PlaylistSound {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface BackendCreateOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.BackendCreateOperation<CreateOperation<Temporary>> {}
+    interface BackendCreateOperation extends Document.Database.BackendCreateOperation<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode PlaylistSound._preCreate | PlaylistSound#_preCreate} and
@@ -368,8 +365,7 @@ declare namespace PlaylistSound {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface PreCreateOptions<Temporary extends boolean | undefined = boolean | undefined> extends Document.Database
-      .PreCreateOptions<CreateOperation<Temporary>> {}
+    interface PreCreateOptions extends Document.Database.PreCreateOptions<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode PlaylistSound._preCreateOperation}.
@@ -383,8 +379,7 @@ declare namespace PlaylistSound {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface PreCreateOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document.Database
-      .PreCreateOperation<CreateOperation<Temporary>> {}
+    interface PreCreateOperation extends Document.Database.PreCreateOperation<CreateOperation> {}
 
     /**
      * @deprecated The interface passed to {@linkcode PlaylistSound._onCreateDocuments}. It will be removed in v14 along with the
@@ -399,8 +394,7 @@ declare namespace PlaylistSound {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface OnCreateDocumentsOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.OnCreateDocumentsOperation<CreateOperation<Temporary>> {}
+    interface OnCreateDocumentsOperation extends Document.Database.OnCreateDocumentsOperation<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode PlaylistSound._onCreate | PlaylistSound#_onCreate} and
@@ -728,19 +722,19 @@ declare namespace PlaylistSound {
     interface OnDeleteOperation extends Document.Database.OnDeleteOperation<DeleteOperation> {}
 
     namespace Internal {
-      interface OperationNameMap<Temporary extends boolean | undefined = boolean | undefined> {
+      interface OperationNameMap {
         GetDocumentsOperation: PlaylistSound.Database.GetDocumentsOperation;
         BackendGetOperation: PlaylistSound.Database.BackendGetOperation;
         GetOperation: PlaylistSound.Database.GetOperation;
 
-        CreateDocumentsOperation: PlaylistSound.Database.CreateDocumentsOperation<Temporary>;
+        CreateDocumentsOperation: PlaylistSound.Database.CreateDocumentsOperation;
         CreateEmbeddedOperation: PlaylistSound.Database.CreateEmbeddedOperation;
-        BackendCreateOperation: PlaylistSound.Database.BackendCreateOperation<Temporary>;
-        CreateOperation: PlaylistSound.Database.CreateOperation<Temporary>;
-        PreCreateOptions: PlaylistSound.Database.PreCreateOptions<Temporary>;
-        PreCreateOperation: PlaylistSound.Database.PreCreateOperation<Temporary>;
+        BackendCreateOperation: PlaylistSound.Database.BackendCreateOperation;
+        CreateOperation: PlaylistSound.Database.CreateOperation;
+        PreCreateOptions: PlaylistSound.Database.PreCreateOptions;
+        PreCreateOperation: PlaylistSound.Database.PreCreateOperation;
         // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnCreateDocumentsOperation: PlaylistSound.Database.OnCreateDocumentsOperation<Temporary>;
+        OnCreateDocumentsOperation: PlaylistSound.Database.OnCreateDocumentsOperation;
         OnCreateOptions: PlaylistSound.Database.OnCreateOptions;
         OnCreateOperation: PlaylistSound.Database.OnCreateOperation;
 
@@ -781,7 +775,7 @@ declare namespace PlaylistSound {
     type GetOptions = GetDocumentsOperation;
 
     /** @deprecated Use {@linkcode CreateOperation} instead. This type will be removed in v14.  */
-    type Create<Temporary extends boolean | undefined> = CreateOperation<Temporary>;
+    type Create = CreateOperation;
 
     /** @deprecated Use {@linkcode UpdateOperation} instead. This type will be removed in v14.  */
     type Update = UpdateOperation;
@@ -851,12 +845,6 @@ declare namespace PlaylistSound {
   }
 
   /**
-   * If `Temporary` is true then {@linkcode PlaylistSound.Implementation}, otherwise {@linkcode PlaylistSound.Stored}.
-   */
-  type TemporaryIf<Temporary extends boolean | undefined> =
-    true extends Extract<Temporary, true> ? PlaylistSound.Implementation : PlaylistSound.Stored;
-
-  /**
    * The flags that are available for this document in the form `{ [scope: string]: { [key: string]: unknown } }`.
    */
   interface Flags extends Document.Internal.ConfiguredFlagsForName<Name> {}
@@ -908,8 +896,8 @@ declare namespace PlaylistSound {
    * The interface for passing to {@linkcode PlaylistSound.createDialog}'s second parameter that still includes partial Dialog
    * options, instead of being purely a {@linkcode Database.CreateDocumentsOperation | CreateDocumentsOperation}.
    */
-  interface CreateDialogDeprecatedOptions<Temporary extends boolean | undefined = boolean | undefined>
-    extends Database.CreateDocumentsOperation<Temporary>, Document._PartialDialogV1OptionsForCreateDialog {}
+  interface CreateDialogDeprecatedOptions
+    extends Database.CreateDocumentsOperation, Document._PartialDialogV1OptionsForCreateDialog {}
 
   /**
    * The interface for passing to {@linkcode PlaylistSound.createDialog}'s third parameter
@@ -1082,13 +1070,10 @@ declare class PlaylistSound extends BasePlaylistSound.Internal.CanvasDocument {
    *
    * @see {@linkcode PlaylistSound.CreateDialogDeprecatedOptions}
    */
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends PlaylistSound.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends PlaylistSound.CreateDialogOptions | undefined = undefined>(
     data: PlaylistSound.CreateDialogData | undefined,
     // eslint-disable-next-line @typescript-eslint/no-deprecated
-    createOptions: PlaylistSound.CreateDialogDeprecatedOptions<Temporary>,
+    createOptions: PlaylistSound.CreateDialogDeprecatedOptions,
     options?: Options,
     renderOptions?: Document.CreateDialogRenderOptions,
   ): Promise<PlaylistSound.CreateDialogReturn<Options>>;

@@ -85,10 +85,10 @@ declare abstract class BaseAmbientLight extends Document<"AmbientLight", BaseAmb
     data?: Document.CanUserModifyData<"AmbientLight", Action>,
   ): boolean;
 
-  static override createDocuments<Temporary extends boolean | undefined = undefined>(
+  static override createDocuments(
     data: BaseAmbientLight.CreateInput[],
-    operation?: BaseAmbientLight.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<Array<BaseAmbientLight.TemporaryIf<Temporary>>>;
+    operation?: BaseAmbientLight.Database.CreateDocumentsOperation,
+  ): Promise<Array<AmbientLightDocument.Stored>>;
 
   static override updateDocuments(
     updates: BaseAmbientLight.UpdateInput[],
@@ -100,13 +100,10 @@ declare abstract class BaseAmbientLight extends Document<"AmbientLight", BaseAmb
     operation?: BaseAmbientLight.Database.DeleteManyDocumentsOperation,
   ): Promise<Array<AmbientLightDocument.Stored>>;
 
-  static override create<
-    Data extends MaybeArray<BaseAmbientLight.CreateInput>,
-    Temporary extends boolean | undefined = undefined,
-  >(
+  static override create<Data extends MaybeArray<BaseAmbientLight.CreateInput>>(
     data: Data,
-    operation?: BaseAmbientLight.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<BaseAmbientLight.CreateReturn<Data, Temporary>>;
+    operation?: BaseAmbientLight.Database.CreateDocumentsOperation,
+  ): Promise<BaseAmbientLight.CreateReturn<Data>>;
 
   override update(
     data: BaseAmbientLight.UpdateInput,
@@ -277,7 +274,6 @@ declare namespace BaseAmbientLight {
   export import UpdateInput = AmbientLightDocument.UpdateInput;
   export import Schema = AmbientLightDocument.Schema;
   export import Database = AmbientLightDocument.Database;
-  export import TemporaryIf = AmbientLightDocument.TemporaryIf;
   export import Flags = AmbientLightDocument.Flags;
   export import CoreFlags = AmbientLightDocument.CoreFlags;
 

@@ -128,10 +128,10 @@ declare abstract class BaseActiveEffect<
     data?: Document.CanUserModifyData<"ActiveEffect", Action>,
   ): boolean;
 
-  static override createDocuments<Temporary extends boolean | undefined = undefined>(
+  static override createDocuments(
     data: BaseActiveEffect.CreateInput[],
-    operation?: BaseActiveEffect.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<Array<BaseActiveEffect.TemporaryIf<Temporary>>>;
+    operation?: BaseActiveEffect.Database.CreateDocumentsOperation,
+  ): Promise<Array<ActiveEffect.Stored>>;
 
   static override updateDocuments(
     updates: BaseActiveEffect.UpdateInput[],
@@ -143,13 +143,10 @@ declare abstract class BaseActiveEffect<
     operation?: BaseActiveEffect.Database.DeleteManyDocumentsOperation,
   ): Promise<Array<ActiveEffect.Stored>>;
 
-  static override create<
-    Data extends MaybeArray<BaseActiveEffect.CreateInput>,
-    Temporary extends boolean | undefined = undefined,
-  >(
+  static override create<Data extends MaybeArray<BaseActiveEffect.CreateInput>>(
     data: Data,
-    operation?: BaseActiveEffect.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<BaseActiveEffect.CreateReturn<Data, Temporary>>;
+    operation?: BaseActiveEffect.Database.CreateDocumentsOperation,
+  ): Promise<BaseActiveEffect.CreateReturn<Data>>;
 
   override update(
     data: BaseActiveEffect.UpdateInput,
@@ -319,7 +316,6 @@ declare namespace BaseActiveEffect {
   export import UpdateInput = ActiveEffect.UpdateInput;
   export import Schema = ActiveEffect.Schema;
   export import Database = ActiveEffect.Database;
-  export import TemporaryIf = ActiveEffect.TemporaryIf;
   export import Flags = ActiveEffect.Flags;
   export import CoreFlags = ActiveEffect.CoreFlags;
   export import DurationData = ActiveEffect.DurationData;

@@ -5,9 +5,9 @@ expectTypeOf(foundry.documents.BaseChatMessage.createDocuments([])).toEqualTypeO
 expectTypeOf(foundry.documents.BaseChatMessage.updateDocuments([])).toEqualTypeOf<Promise<ChatMessage.Stored[]>>();
 expectTypeOf(foundry.documents.BaseChatMessage.deleteDocuments([])).toEqualTypeOf<Promise<ChatMessage.Stored[]>>();
 
-const chat = await foundry.documents.BaseChatMessage.create({}, { temporary: true });
+const chat = await foundry.documents.BaseChatMessage.create({});
 if (chat) {
-  expectTypeOf(chat).toEqualTypeOf<ChatMessage.Implementation>();
+  expectTypeOf(chat).toEqualTypeOf<ChatMessage.Stored>();
 }
 
 class TestBaseChatMessage extends foundry.documents.BaseChatMessage {

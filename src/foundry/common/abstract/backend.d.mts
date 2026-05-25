@@ -427,7 +427,6 @@ declare namespace DatabaseBackend {
   interface CreateOperation<
     CreateData extends object = object,
     Parent extends Document.Any | null = Document.Any | null,
-    Temporary extends boolean | undefined = boolean | undefined,
   > extends _CommonOperationKeys<Parent> {
     /**
      * The action of this database operation
@@ -468,13 +467,6 @@ declare namespace DatabaseBackend {
      * @remarks Behaves like the default is `false`
      */
     keepEmbeddedIds?: boolean;
-
-    /**
-     * @deprecated "It is no longer supported to create temporary documents using the {@linkcode Document.createDocuments}
-     * API. Use the `new Document()` constructor instead." (since v12, until v14)
-     * @remarks Behaves like the default is `false`
-     */
-    temporary?: Temporary;
   }
 
   /**

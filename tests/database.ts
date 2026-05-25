@@ -71,13 +71,8 @@ const postBackendCreateOpProperties = {
   modifiedTime: Date.now(),
 } as const; // as const required because `"create"` is a literal
 
-const createOpPropsBeforeSocket = {
-  temporary: undefined,
-};
-
 // creation via `#createEmbeddedDocuments` doesn't allow specifying pack or parent
 export const createEmbeddedOperationBase = {
-  ...createOpPropsBeforeSocket,
   ...createOpPropsNeverOmitted,
   noHook: false,
 };
@@ -95,7 +90,6 @@ export const minimalPreCreateOptionsBase = {
 };
 
 export const preCreateOptionsBase = {
-  ...createOpPropsBeforeSocket,
   ...createOpPropsNeverOmitted,
   ...minimalPreCreateOptionsBase,
   parentUuid: null,
@@ -107,7 +101,6 @@ export const minimalPreCreateOperationBase = {
 };
 
 export const preCreateOperationBase = {
-  ...createOpPropsBeforeSocket,
   ...createOpPropsNeverOmitted,
   ...minimalPreCreateOperationBase,
   noHook: false,
@@ -118,7 +111,6 @@ export const preCreateOperationBase = {
 
 export const onCreateDocumentsOperationBase = {
   ...createOpPropsNeverOmitted,
-  ...createOpPropsBeforeSocket,
   ...postBackendCreateOpProperties,
   // `parent` and `data` are always document-specific
 };

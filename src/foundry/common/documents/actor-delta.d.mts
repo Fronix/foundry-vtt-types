@@ -159,10 +159,10 @@ declare abstract class BaseActorDelta<
     data?: Document.CanUserModifyData<"ActorDelta", Action>,
   ): boolean;
 
-  static override createDocuments<Temporary extends boolean | undefined = undefined>(
+  static override createDocuments(
     data: BaseActorDelta.CreateInput[],
-    operation?: BaseActorDelta.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<Array<BaseActorDelta.TemporaryIf<Temporary>>>;
+    operation?: BaseActorDelta.Database.CreateDocumentsOperation,
+  ): Promise<Array<ActorDelta.Stored>>;
 
   static override updateDocuments(
     updates: BaseActorDelta.UpdateInput[],
@@ -174,13 +174,10 @@ declare abstract class BaseActorDelta<
     operation?: BaseActorDelta.Database.DeleteManyDocumentsOperation,
   ): Promise<Array<ActorDelta.Stored>>;
 
-  static override create<
-    Data extends MaybeArray<BaseActorDelta.CreateInput>,
-    Temporary extends boolean | undefined = undefined,
-  >(
+  static override create<Data extends MaybeArray<BaseActorDelta.CreateInput>>(
     data: Data,
-    operation?: BaseActorDelta.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<BaseActorDelta.CreateReturn<Data, Temporary>>;
+    operation?: BaseActorDelta.Database.CreateDocumentsOperation,
+  ): Promise<BaseActorDelta.CreateReturn<Data>>;
 
   override update(
     data: BaseActorDelta.UpdateInput,
@@ -394,7 +391,6 @@ declare namespace BaseActorDelta {
   export import UpdateInput = ActorDelta.UpdateInput;
   export import Schema = ActorDelta.Schema;
   export import Database = ActorDelta.Database;
-  export import TemporaryIf = ActorDelta.TemporaryIf;
   export import Flags = ActorDelta.Flags;
 
   /**

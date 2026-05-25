@@ -241,10 +241,10 @@ declare abstract class BaseToken extends Document<"Token", BaseToken.Schema, any
     data?: Document.CanUserModifyData<"Token", Action>,
   ): boolean;
 
-  static override createDocuments<Temporary extends boolean | undefined = undefined>(
+  static override createDocuments(
     data: BaseToken.CreateInput[],
-    operation?: BaseToken.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<Array<BaseToken.TemporaryIf<Temporary>>>;
+    operation?: BaseToken.Database.CreateDocumentsOperation,
+  ): Promise<Array<TokenDocument.Stored>>;
 
   static override updateDocuments(
     updates: BaseToken.UpdateInput[],
@@ -256,13 +256,10 @@ declare abstract class BaseToken extends Document<"Token", BaseToken.Schema, any
     operation?: BaseToken.Database.DeleteManyDocumentsOperation,
   ): Promise<Array<TokenDocument.Stored>>;
 
-  static override create<
-    Data extends MaybeArray<BaseToken.CreateInput>,
-    Temporary extends boolean | undefined = undefined,
-  >(
+  static override create<Data extends MaybeArray<BaseToken.CreateInput>>(
     data: Data,
-    operation?: BaseToken.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<BaseToken.CreateReturn<Data, Temporary>>;
+    operation?: BaseToken.Database.CreateDocumentsOperation,
+  ): Promise<BaseToken.CreateReturn<Data>>;
 
   override update(
     data: BaseToken.UpdateInput,
@@ -484,7 +481,7 @@ declare namespace BaseToken {
   export import UpdateInput = TokenDocument.UpdateInput;
   export import Schema = TokenDocument.Schema;
   export import Database = TokenDocument.Database;
-  export import TemporaryIf = TokenDocument.TemporaryIf;
+
   export import Flags = TokenDocument.Flags;
   export import CoreFlags = TokenDocument.CoreFlags;
 

@@ -127,10 +127,10 @@ declare abstract class BaseCards<out SubType extends BaseCards.SubType = BaseCar
     data?: Document.CanUserModifyData<"Cards", Action>,
   ): boolean;
 
-  static override createDocuments<Temporary extends boolean | undefined = undefined>(
+  static override createDocuments(
     data: BaseCards.CreateInput[],
-    operation?: BaseCards.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<Array<BaseCards.TemporaryIf<Temporary>>>;
+    operation?: BaseCards.Database.CreateDocumentsOperation,
+  ): Promise<Array<Cards.Stored>>;
 
   static override updateDocuments(
     updates: BaseCards.UpdateInput[],
@@ -142,13 +142,10 @@ declare abstract class BaseCards<out SubType extends BaseCards.SubType = BaseCar
     operation?: BaseCards.Database.DeleteManyDocumentsOperation,
   ): Promise<Array<Cards.Stored>>;
 
-  static override create<
-    Data extends MaybeArray<BaseCards.CreateInput>,
-    Temporary extends boolean | undefined = undefined,
-  >(
+  static override create<Data extends MaybeArray<BaseCards.CreateInput>>(
     data: Data,
-    operation?: BaseCards.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<BaseCards.CreateReturn<Data, Temporary>>;
+    operation?: BaseCards.Database.CreateDocumentsOperation,
+  ): Promise<BaseCards.CreateReturn<Data>>;
 
   override update(
     data: BaseCards.UpdateInput,
@@ -351,7 +348,6 @@ declare namespace BaseCards {
   export import UpdateInput = Cards.UpdateInput;
   export import Schema = Cards.Schema;
   export import Database = Cards.Database;
-  export import TemporaryIf = Cards.TemporaryIf;
   export import Flags = Cards.Flags;
 
   namespace Internal {

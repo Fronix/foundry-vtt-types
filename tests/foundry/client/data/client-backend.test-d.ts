@@ -16,7 +16,7 @@ declare const GearItem: typeof MyItem<"weapon" | "armor">;
 describe("ClientDatabaseBackend Tests", () => {
   const cdb = new ClientDatabaseBackend();
 
-  // NOTE: Support for `temporary` in the backend types has been preemptively removed due to type complications and it going away in v14
+  // NOTE: Support for `temporary` in the backend types was removed in v14, which dropped the `temporary` create option entirely
   test("Creation", async () => {
     expectTypeOf(await cdb.create(Item.implementation, { data: [itemCreateData] })).toEqualTypeOf<
       Item.Implementation[]

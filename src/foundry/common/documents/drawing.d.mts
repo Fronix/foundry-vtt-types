@@ -126,10 +126,10 @@ declare abstract class BaseDrawing extends Document<"Drawing", BaseDrawing.Schem
     data?: Document.CanUserModifyData<"Drawing", Action>,
   ): boolean;
 
-  static override createDocuments<Temporary extends boolean | undefined = undefined>(
+  static override createDocuments(
     data: BaseDrawing.CreateInput[],
-    operation?: BaseDrawing.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<Array<BaseDrawing.TemporaryIf<Temporary>>>;
+    operation?: BaseDrawing.Database.CreateDocumentsOperation,
+  ): Promise<Array<DrawingDocument.Stored>>;
 
   static override updateDocuments(
     updates: BaseDrawing.UpdateInput[],
@@ -141,13 +141,10 @@ declare abstract class BaseDrawing extends Document<"Drawing", BaseDrawing.Schem
     operation?: BaseDrawing.Database.DeleteManyDocumentsOperation,
   ): Promise<Array<DrawingDocument.Stored>>;
 
-  static override create<
-    Data extends MaybeArray<BaseDrawing.CreateInput>,
-    Temporary extends boolean | undefined = undefined,
-  >(
+  static override create<Data extends MaybeArray<BaseDrawing.CreateInput>>(
     data: Data,
-    operation?: BaseDrawing.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<BaseDrawing.CreateReturn<Data, Temporary>>;
+    operation?: BaseDrawing.Database.CreateDocumentsOperation,
+  ): Promise<BaseDrawing.CreateReturn<Data>>;
 
   override update(
     data: BaseDrawing.UpdateInput,
@@ -318,7 +315,6 @@ declare namespace BaseDrawing {
   export import UpdateInput = DrawingDocument.UpdateInput;
   export import Schema = DrawingDocument.Schema;
   export import Database = DrawingDocument.Database;
-  export import TemporaryIf = DrawingDocument.TemporaryIf;
   export import Flags = DrawingDocument.Flags;
 
   namespace Internal {

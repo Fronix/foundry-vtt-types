@@ -215,16 +215,14 @@ declare namespace Combatant {
   type CreateInput = CreateData | Implementation;
 
   /**
-   * The helper type for the return of {@linkcode Combatant.create}, returning (a single | an array of) (temporary | stored)
+   * The helper type for the return of {@linkcode Combatant.create}, returning (a single | an array of) stored
    * `Combatant`s.
    *
    * `| undefined` is included in the non-array branch because if a `.create` call with non-array data is cancelled by the `preCreate`
    * method or hook, `shift`ing the return of `.createDocuments` produces `undefined`
    */
-  type CreateReturn<Data extends MaybeArray<CreateInput>, Temporary extends boolean | undefined> =
-    Data extends Array<CreateInput>
-      ? Array<Combatant.TemporaryIf<Temporary>>
-      : Combatant.TemporaryIf<Temporary> | undefined;
+  type CreateReturn<Data extends MaybeArray<CreateInput>> =
+    Data extends Array<CreateInput> ? Array<Combatant.Stored> : Combatant.Stored | undefined;
 
   /**
    * The data after a {@linkcode Document} has been initialized, for example
@@ -373,9 +371,7 @@ declare namespace Combatant {
      * @remarks This interface was previously typed for passing to {@linkcode Combatant.create}. The new name for that
      * interface is {@linkcode CreateDocumentsOperation}.
      */
-    interface CreateOperation<
-      Temporary extends boolean | undefined = boolean | undefined,
-    > extends DatabaseBackend.CreateOperation<Combatant.CreateInput, Combatant.Parent, Temporary> {
+    interface CreateOperation extends DatabaseBackend.CreateOperation<Combatant.CreateInput, Combatant.Parent> {
       /**
        * @remarks If passed, sets the parent {@linkcode Combat}'s current {@linkcode Combat.turn | turn} to this value as part of
        * this operation.
@@ -401,8 +397,7 @@ declare namespace Combatant {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface CreateDocumentsOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.CreateDocumentsOperation<CreateOperation<Temporary>> {}
+    interface CreateDocumentsOperation extends Document.Database.CreateDocumentsOperation<CreateOperation> {}
 
     /**
      * The interface for passing to the {@linkcode Document.createEmbeddedDocuments | #createEmbeddedDocuments} method of any Documents that
@@ -431,8 +426,7 @@ declare namespace Combatant {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface BackendCreateOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.BackendCreateOperation<CreateOperation<Temporary>> {}
+    interface BackendCreateOperation extends Document.Database.BackendCreateOperation<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode Combatant._preCreate | Combatant#_preCreate} and
@@ -447,8 +441,7 @@ declare namespace Combatant {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface PreCreateOptions<Temporary extends boolean | undefined = boolean | undefined> extends Document.Database
-      .PreCreateOptions<CreateOperation<Temporary>> {}
+    interface PreCreateOptions extends Document.Database.PreCreateOptions<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode Combatant._preCreateOperation}.
@@ -462,8 +455,7 @@ declare namespace Combatant {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface PreCreateOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document.Database
-      .PreCreateOperation<CreateOperation<Temporary>> {}
+    interface PreCreateOperation extends Document.Database.PreCreateOperation<CreateOperation> {}
 
     /**
      * @deprecated The interface passed to {@linkcode Combatant._onCreateDocuments}. It will be removed in v14 along with the
@@ -478,8 +470,7 @@ declare namespace Combatant {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface OnCreateDocumentsOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.OnCreateDocumentsOperation<CreateOperation<Temporary>> {}
+    interface OnCreateDocumentsOperation extends Document.Database.OnCreateDocumentsOperation<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode Combatant._onCreate | Combatant#_onCreate} and
@@ -829,19 +820,19 @@ declare namespace Combatant {
     interface OnDeleteOperation extends Document.Database.OnDeleteOperation<DeleteOperation> {}
 
     namespace Internal {
-      interface OperationNameMap<Temporary extends boolean | undefined = boolean | undefined> {
+      interface OperationNameMap {
         GetDocumentsOperation: Combatant.Database.GetDocumentsOperation;
         BackendGetOperation: Combatant.Database.BackendGetOperation;
         GetOperation: Combatant.Database.GetOperation;
 
-        CreateDocumentsOperation: Combatant.Database.CreateDocumentsOperation<Temporary>;
+        CreateDocumentsOperation: Combatant.Database.CreateDocumentsOperation;
         CreateEmbeddedOperation: Combatant.Database.CreateEmbeddedOperation;
-        BackendCreateOperation: Combatant.Database.BackendCreateOperation<Temporary>;
-        CreateOperation: Combatant.Database.CreateOperation<Temporary>;
-        PreCreateOptions: Combatant.Database.PreCreateOptions<Temporary>;
-        PreCreateOperation: Combatant.Database.PreCreateOperation<Temporary>;
+        BackendCreateOperation: Combatant.Database.BackendCreateOperation;
+        CreateOperation: Combatant.Database.CreateOperation;
+        PreCreateOptions: Combatant.Database.PreCreateOptions;
+        PreCreateOperation: Combatant.Database.PreCreateOperation;
         // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnCreateDocumentsOperation: Combatant.Database.OnCreateDocumentsOperation<Temporary>;
+        OnCreateDocumentsOperation: Combatant.Database.OnCreateDocumentsOperation;
         OnCreateOptions: Combatant.Database.OnCreateOptions;
         OnCreateOperation: Combatant.Database.OnCreateOperation;
 
@@ -882,7 +873,7 @@ declare namespace Combatant {
     type GetOptions = GetDocumentsOperation;
 
     /** @deprecated Use {@linkcode CreateOperation} instead. This type will be removed in v14.  */
-    type Create<Temporary extends boolean | undefined> = CreateOperation<Temporary>;
+    type Create = CreateOperation;
 
     /** @deprecated Use {@linkcode UpdateOperation} instead. This type will be removed in v14.  */
     type Update = UpdateOperation;
@@ -952,12 +943,6 @@ declare namespace Combatant {
   }
 
   /**
-   * If `Temporary` is true then {@linkcode Combatant.Implementation}, otherwise {@linkcode Combatant.Stored}.
-   */
-  type TemporaryIf<Temporary extends boolean | undefined> =
-    true extends Extract<Temporary, true> ? Combatant.Implementation : Combatant.Stored;
-
-  /**
    * The flags that are available for this document in the form `{ [scope: string]: { [key: string]: unknown } }`.
    */
   interface Flags extends Document.Internal.ConfiguredFlagsForName<Name> {}
@@ -1009,8 +994,8 @@ declare namespace Combatant {
    * The interface for passing to {@linkcode Combatant.createDialog}'s second parameter that still includes partial Dialog
    * options, instead of being purely a {@linkcode Database.CreateDocumentsOperation | CreateDocumentsOperation}.
    */
-  interface CreateDialogDeprecatedOptions<Temporary extends boolean | undefined = boolean | undefined>
-    extends Database.CreateDocumentsOperation<Temporary>, Document._PartialDialogV1OptionsForCreateDialog {}
+  interface CreateDialogDeprecatedOptions
+    extends Database.CreateDocumentsOperation, Document._PartialDialogV1OptionsForCreateDialog {}
 
   /**
    * The interface for passing to {@linkcode Combatant.createDialog}'s third parameter
@@ -1201,13 +1186,10 @@ declare class Combatant<out SubType extends Combatant.SubType = Combatant.SubTyp
    *
    * @see {@linkcode Combatant.CreateDialogDeprecatedOptions}
    */
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends Combatant.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends Combatant.CreateDialogOptions | undefined = undefined>(
     data: Combatant.CreateDialogData | undefined,
     // eslint-disable-next-line @typescript-eslint/no-deprecated
-    createOptions: Combatant.CreateDialogDeprecatedOptions<Temporary>,
+    createOptions: Combatant.CreateDialogDeprecatedOptions,
     options?: Options,
     renderOptions?: Document.CreateDialogRenderOptions,
   ): Promise<Combatant.CreateDialogReturn<Options>>;

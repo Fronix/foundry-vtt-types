@@ -117,10 +117,10 @@ declare abstract class BaseMeasuredTemplate extends Document<"MeasuredTemplate",
     data?: Document.CanUserModifyData<"MeasuredTemplate", Action>,
   ): boolean;
 
-  static override createDocuments<Temporary extends boolean | undefined = undefined>(
+  static override createDocuments(
     data: BaseMeasuredTemplate.CreateInput[],
-    operation?: BaseMeasuredTemplate.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<Array<BaseMeasuredTemplate.TemporaryIf<Temporary>>>;
+    operation?: BaseMeasuredTemplate.Database.CreateDocumentsOperation,
+  ): Promise<Array<MeasuredTemplateDocument.Stored>>;
 
   static override updateDocuments(
     updates: BaseMeasuredTemplate.UpdateInput[],
@@ -132,13 +132,10 @@ declare abstract class BaseMeasuredTemplate extends Document<"MeasuredTemplate",
     operation?: BaseMeasuredTemplate.Database.DeleteManyDocumentsOperation,
   ): Promise<Array<MeasuredTemplateDocument.Stored>>;
 
-  static override create<
-    Data extends MaybeArray<BaseMeasuredTemplate.CreateInput>,
-    Temporary extends boolean | undefined = undefined,
-  >(
+  static override create<Data extends MaybeArray<BaseMeasuredTemplate.CreateInput>>(
     data: Data,
-    operation?: BaseMeasuredTemplate.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<BaseMeasuredTemplate.CreateReturn<Data, Temporary>>;
+    operation?: BaseMeasuredTemplate.Database.CreateDocumentsOperation,
+  ): Promise<BaseMeasuredTemplate.CreateReturn<Data>>;
 
   override update(
     data: BaseMeasuredTemplate.UpdateInput,
@@ -311,7 +308,6 @@ declare namespace BaseMeasuredTemplate {
   export import UpdateInput = MeasuredTemplateDocument.UpdateInput;
   export import Schema = MeasuredTemplateDocument.Schema;
   export import Database = MeasuredTemplateDocument.Database;
-  export import TemporaryIf = MeasuredTemplateDocument.TemporaryIf;
   export import Flags = MeasuredTemplateDocument.Flags;
 
   namespace Internal {

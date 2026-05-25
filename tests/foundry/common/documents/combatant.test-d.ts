@@ -7,10 +7,7 @@ expectTypeOf(foundry.documents.BaseCombatant.createDocuments([])).toEqualTypeOf<
 expectTypeOf(foundry.documents.BaseCombatant.updateDocuments([])).toEqualTypeOf<Promise<Combatant.Stored[]>>();
 expectTypeOf(foundry.documents.BaseCombatant.deleteDocuments([])).toEqualTypeOf<Promise<Combatant.Stored[]>>();
 
-const combatant = await foundry.documents.BaseCombatant.create(
-  { name: "Another Combatant", type: "base" },
-  { temporary: true },
-);
+const combatant = await foundry.documents.BaseCombatant.create({ name: "Another Combatant", type: "base" });
 if (combatant) {
-  expectTypeOf(combatant).toEqualTypeOf<Combatant.Implementation>();
+  expectTypeOf(combatant).toEqualTypeOf<Combatant.Stored>();
 }

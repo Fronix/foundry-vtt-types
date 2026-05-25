@@ -88,10 +88,10 @@ declare abstract class BaseRegion extends Document<"Region", BaseRegion.Schema, 
     data?: Document.CanUserModifyData<"Region", Action>,
   ): boolean;
 
-  static override createDocuments<Temporary extends boolean | undefined = undefined>(
+  static override createDocuments(
     data: BaseRegion.CreateInput[],
-    operation?: BaseRegion.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<Array<BaseRegion.TemporaryIf<Temporary>>>;
+    operation?: BaseRegion.Database.CreateDocumentsOperation,
+  ): Promise<Array<RegionDocument.Stored>>;
 
   static override updateDocuments(
     updates: BaseRegion.UpdateInput[],
@@ -103,13 +103,10 @@ declare abstract class BaseRegion extends Document<"Region", BaseRegion.Schema, 
     operation?: BaseRegion.Database.DeleteManyDocumentsOperation,
   ): Promise<Array<RegionDocument.Stored>>;
 
-  static override create<
-    Data extends MaybeArray<BaseRegion.CreateInput>,
-    Temporary extends boolean | undefined = undefined,
-  >(
+  static override create<Data extends MaybeArray<BaseRegion.CreateInput>>(
     data: Data,
-    operation?: BaseRegion.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<BaseRegion.CreateReturn<Data, Temporary>>;
+    operation?: BaseRegion.Database.CreateDocumentsOperation,
+  ): Promise<BaseRegion.CreateReturn<Data>>;
 
   override update(
     data: BaseRegion.UpdateInput,
@@ -308,7 +305,6 @@ declare namespace BaseRegion {
   export import UpdateInput = RegionDocument.UpdateInput;
   export import Schema = RegionDocument.Schema;
   export import Database = RegionDocument.Database;
-  export import TemporaryIf = RegionDocument.TemporaryIf;
   export import Flags = RegionDocument.Flags;
 
   namespace Internal {

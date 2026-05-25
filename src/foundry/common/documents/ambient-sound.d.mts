@@ -86,10 +86,10 @@ declare abstract class BaseAmbientSound extends Document<"AmbientSound", BaseAmb
     data?: Document.CanUserModifyData<"AmbientSound", Action>,
   ): boolean;
 
-  static override createDocuments<Temporary extends boolean | undefined = undefined>(
+  static override createDocuments(
     data: BaseAmbientSound.CreateInput[],
-    operation?: BaseAmbientSound.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<Array<BaseAmbientSound.TemporaryIf<Temporary>>>;
+    operation?: BaseAmbientSound.Database.CreateDocumentsOperation,
+  ): Promise<Array<AmbientSoundDocument.Stored>>;
 
   static override updateDocuments(
     updates: BaseAmbientSound.UpdateInput[],
@@ -101,13 +101,10 @@ declare abstract class BaseAmbientSound extends Document<"AmbientSound", BaseAmb
     operation?: BaseAmbientSound.Database.DeleteManyDocumentsOperation,
   ): Promise<Array<AmbientSoundDocument.Stored>>;
 
-  static override create<
-    Data extends MaybeArray<BaseAmbientSound.CreateInput>,
-    Temporary extends boolean | undefined = undefined,
-  >(
+  static override create<Data extends MaybeArray<BaseAmbientSound.CreateInput>>(
     data: Data,
-    operation?: BaseAmbientSound.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<BaseAmbientSound.CreateReturn<Data, Temporary>>;
+    operation?: BaseAmbientSound.Database.CreateDocumentsOperation,
+  ): Promise<BaseAmbientSound.CreateReturn<Data>>;
 
   override update(
     data: BaseAmbientSound.UpdateInput,
@@ -278,7 +275,6 @@ declare namespace BaseAmbientSound {
   export import UpdateInput = AmbientSoundDocument.UpdateInput;
   export import Schema = AmbientSoundDocument.Schema;
   export import Database = AmbientSoundDocument.Database;
-  export import TemporaryIf = AmbientSoundDocument.TemporaryIf;
   export import Flags = AmbientSoundDocument.Flags;
 
   namespace Internal {

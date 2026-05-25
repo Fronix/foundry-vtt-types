@@ -129,10 +129,10 @@ declare abstract class BaseCombat<out SubType extends BaseCombat.SubType = BaseC
     data?: Document.CanUserModifyData<"Combat", Action>,
   ): boolean;
 
-  static override createDocuments<Temporary extends boolean | undefined = undefined>(
+  static override createDocuments(
     data: BaseCombat.CreateInput[],
-    operation?: BaseCombat.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<Array<BaseCombat.TemporaryIf<Temporary>>>;
+    operation?: BaseCombat.Database.CreateDocumentsOperation,
+  ): Promise<Array<Combat.Stored>>;
 
   static override updateDocuments(
     updates: BaseCombat.UpdateInput[],
@@ -144,13 +144,10 @@ declare abstract class BaseCombat<out SubType extends BaseCombat.SubType = BaseC
     operation?: BaseCombat.Database.DeleteManyDocumentsOperation,
   ): Promise<Array<Combat.Stored>>;
 
-  static override create<
-    Data extends MaybeArray<BaseCombat.CreateInput>,
-    Temporary extends boolean | undefined = undefined,
-  >(
+  static override create<Data extends MaybeArray<BaseCombat.CreateInput>>(
     data: Data,
-    operation?: BaseCombat.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<BaseCombat.CreateReturn<Data, Temporary>>;
+    operation?: BaseCombat.Database.CreateDocumentsOperation,
+  ): Promise<BaseCombat.CreateReturn<Data>>;
 
   override update(
     data: BaseCombat.UpdateInput,
@@ -350,7 +347,6 @@ declare namespace BaseCombat {
   export import UpdateInput = Combat.UpdateInput;
   export import Schema = Combat.Schema;
   export import Database = Combat.Database;
-  export import TemporaryIf = Combat.TemporaryIf;
   export import Flags = Combat.Flags;
 
   namespace Internal {

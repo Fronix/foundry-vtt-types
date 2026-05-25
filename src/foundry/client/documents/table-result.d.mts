@@ -197,16 +197,14 @@ declare namespace TableResult {
   type CreateInput = CreateData | Implementation;
 
   /**
-   * The helper type for the return of {@linkcode TableResult.create}, returning (a single | an array of) (temporary | stored)
+   * The helper type for the return of {@linkcode TableResult.create}, returning (a single | an array of) stored
    * `TableResult`s.
    *
    * `| undefined` is included in the non-array branch because if a `.create` call with non-array data is cancelled by the `preCreate`
    * method or hook, `shift`ing the return of `.createDocuments` produces `undefined`
    */
-  type CreateReturn<Data extends MaybeArray<CreateInput>, Temporary extends boolean | undefined> =
-    Data extends Array<CreateInput>
-      ? Array<TableResult.TemporaryIf<Temporary>>
-      : TableResult.TemporaryIf<Temporary> | undefined;
+  type CreateReturn<Data extends MaybeArray<CreateInput>> =
+    Data extends Array<CreateInput> ? Array<TableResult.Stored> : TableResult.Stored | undefined;
 
   /**
    * The data after a {@linkcode Document} has been initialized, for example
@@ -361,9 +359,7 @@ declare namespace TableResult {
      * @remarks This interface was previously typed for passing to {@linkcode TableResult.create}. The new name for that
      * interface is {@linkcode CreateDocumentsOperation}.
      */
-    interface CreateOperation<
-      Temporary extends boolean | undefined = boolean | undefined,
-    > extends DatabaseBackend.CreateOperation<TableResult.CreateInput, TableResult.Parent, Temporary> {}
+    interface CreateOperation extends DatabaseBackend.CreateOperation<TableResult.CreateInput, TableResult.Parent> {}
 
     /**
      * The interface for passing to {@linkcode TableResult.create} or {@linkcode TableResult.createDocuments}.
@@ -377,8 +373,7 @@ declare namespace TableResult {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface CreateDocumentsOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.CreateDocumentsOperation<CreateOperation<Temporary>> {}
+    interface CreateDocumentsOperation extends Document.Database.CreateDocumentsOperation<CreateOperation> {}
 
     /**
      * The interface for passing to the {@linkcode Document.createEmbeddedDocuments | #createEmbeddedDocuments} method of any Documents that
@@ -407,8 +402,7 @@ declare namespace TableResult {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface BackendCreateOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.BackendCreateOperation<CreateOperation<Temporary>> {}
+    interface BackendCreateOperation extends Document.Database.BackendCreateOperation<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode TableResult._preCreate | TableResult#_preCreate} and
@@ -423,8 +417,7 @@ declare namespace TableResult {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface PreCreateOptions<Temporary extends boolean | undefined = boolean | undefined> extends Document.Database
-      .PreCreateOptions<CreateOperation<Temporary>> {}
+    interface PreCreateOptions extends Document.Database.PreCreateOptions<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode TableResult._preCreateOperation}.
@@ -438,8 +431,7 @@ declare namespace TableResult {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface PreCreateOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document.Database
-      .PreCreateOperation<CreateOperation<Temporary>> {}
+    interface PreCreateOperation extends Document.Database.PreCreateOperation<CreateOperation> {}
 
     /**
      * @deprecated The interface passed to {@linkcode TableResult._onCreateDocuments}. It will be removed in v14 along with the
@@ -454,8 +446,7 @@ declare namespace TableResult {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface OnCreateDocumentsOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.OnCreateDocumentsOperation<CreateOperation<Temporary>> {}
+    interface OnCreateDocumentsOperation extends Document.Database.OnCreateDocumentsOperation<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode TableResult._onCreate | TableResult#_onCreate} and
@@ -780,19 +771,19 @@ declare namespace TableResult {
     interface OnDeleteOperation extends Document.Database.OnDeleteOperation<DeleteOperation> {}
 
     namespace Internal {
-      interface OperationNameMap<Temporary extends boolean | undefined = boolean | undefined> {
+      interface OperationNameMap {
         GetDocumentsOperation: TableResult.Database.GetDocumentsOperation;
         BackendGetOperation: TableResult.Database.BackendGetOperation;
         GetOperation: TableResult.Database.GetOperation;
 
-        CreateDocumentsOperation: TableResult.Database.CreateDocumentsOperation<Temporary>;
+        CreateDocumentsOperation: TableResult.Database.CreateDocumentsOperation;
         CreateEmbeddedOperation: TableResult.Database.CreateEmbeddedOperation;
-        BackendCreateOperation: TableResult.Database.BackendCreateOperation<Temporary>;
-        CreateOperation: TableResult.Database.CreateOperation<Temporary>;
-        PreCreateOptions: TableResult.Database.PreCreateOptions<Temporary>;
-        PreCreateOperation: TableResult.Database.PreCreateOperation<Temporary>;
+        BackendCreateOperation: TableResult.Database.BackendCreateOperation;
+        CreateOperation: TableResult.Database.CreateOperation;
+        PreCreateOptions: TableResult.Database.PreCreateOptions;
+        PreCreateOperation: TableResult.Database.PreCreateOperation;
         // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnCreateDocumentsOperation: TableResult.Database.OnCreateDocumentsOperation<Temporary>;
+        OnCreateDocumentsOperation: TableResult.Database.OnCreateDocumentsOperation;
         OnCreateOptions: TableResult.Database.OnCreateOptions;
         OnCreateOperation: TableResult.Database.OnCreateOperation;
 
@@ -833,7 +824,7 @@ declare namespace TableResult {
     type GetOptions = GetDocumentsOperation;
 
     /** @deprecated Use {@linkcode CreateOperation} instead. This type will be removed in v14.  */
-    type Create<Temporary extends boolean | undefined> = CreateOperation<Temporary>;
+    type Create = CreateOperation;
 
     /** @deprecated Use {@linkcode UpdateOperation} instead. This type will be removed in v14.  */
     type Update = UpdateOperation;
@@ -903,12 +894,6 @@ declare namespace TableResult {
   }
 
   /**
-   * If `Temporary` is true then {@linkcode TableResult.Implementation}, otherwise {@linkcode TableResult.Stored}.
-   */
-  type TemporaryIf<Temporary extends boolean | undefined> =
-    true extends Extract<Temporary, true> ? TableResult.Implementation : TableResult.Stored;
-
-  /**
    * The flags that are available for this document in the form `{ [scope: string]: { [key: string]: unknown } }`.
    */
   interface Flags extends Document.Internal.ConfiguredFlagsForName<Name> {}
@@ -960,8 +945,8 @@ declare namespace TableResult {
    * The interface for passing to {@linkcode TableResult.createDialog}'s second parameter that still includes partial Dialog
    * options, instead of being purely a {@linkcode Database.CreateDocumentsOperation | CreateDocumentsOperation}.
    */
-  interface CreateDialogDeprecatedOptions<Temporary extends boolean | undefined = boolean | undefined>
-    extends Database.CreateDocumentsOperation<Temporary>, Document._PartialDialogV1OptionsForCreateDialog {}
+  interface CreateDialogDeprecatedOptions
+    extends Database.CreateDocumentsOperation, Document._PartialDialogV1OptionsForCreateDialog {}
 
   /**
    * The interface for passing to {@linkcode TableResult.createDialog}'s third parameter
@@ -1073,13 +1058,10 @@ declare class TableResult<out SubType extends TableResult.SubType = TableResult.
    *
    * @see {@linkcode TableResult.CreateDialogDeprecatedOptions}
    */
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends TableResult.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends TableResult.CreateDialogOptions | undefined = undefined>(
     data: TableResult.CreateDialogData | undefined,
     // eslint-disable-next-line @typescript-eslint/no-deprecated
-    createOptions: TableResult.CreateDialogDeprecatedOptions<Temporary>,
+    createOptions: TableResult.CreateDialogDeprecatedOptions,
     options?: Options,
     renderOptions?: Document.CreateDialogRenderOptions,
   ): Promise<TableResult.CreateDialogReturn<Options>>;

@@ -94,10 +94,10 @@ declare abstract class BaseSetting extends Document<"Setting", BaseSetting.Schem
     data?: Document.CanUserModifyData<"Setting", Action>,
   ): boolean;
 
-  static override createDocuments<Temporary extends boolean | undefined = undefined>(
+  static override createDocuments(
     data: BaseSetting.CreateInput[],
-    operation?: BaseSetting.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<Array<BaseSetting.TemporaryIf<Temporary>>>;
+    operation?: BaseSetting.Database.CreateDocumentsOperation,
+  ): Promise<Array<Setting.Stored>>;
 
   static override updateDocuments(
     updates: BaseSetting.UpdateInput[],
@@ -109,13 +109,10 @@ declare abstract class BaseSetting extends Document<"Setting", BaseSetting.Schem
     operation?: BaseSetting.Database.DeleteManyDocumentsOperation,
   ): Promise<Array<Setting.Stored>>;
 
-  static override create<
-    Data extends MaybeArray<BaseSetting.CreateInput>,
-    Temporary extends boolean | undefined = undefined,
-  >(
+  static override create<Data extends MaybeArray<BaseSetting.CreateInput>>(
     data: Data,
-    operation?: BaseSetting.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<BaseSetting.CreateReturn<Data, Temporary>>;
+    operation?: BaseSetting.Database.CreateDocumentsOperation,
+  ): Promise<BaseSetting.CreateReturn<Data>>;
 
   override update(
     data: BaseSetting.UpdateInput,
@@ -277,7 +274,6 @@ declare namespace BaseSetting {
   export import UpdateInput = Setting.UpdateInput;
   export import Schema = Setting.Schema;
   export import Database = Setting.Database;
-  export import TemporaryIf = Setting.TemporaryIf;
   // eslint-disable-next-line @typescript-eslint/no-deprecated
   export import Flags = Setting.Flags;
 

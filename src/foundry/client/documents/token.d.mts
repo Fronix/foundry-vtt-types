@@ -260,16 +260,14 @@ declare namespace TokenDocument {
   type CreateInput = CreateData | Implementation;
 
   /**
-   * The helper type for the return of {@linkcode TokenDocument.create}, returning (a single | an array of) (temporary | stored)
+   * The helper type for the return of {@linkcode TokenDocument.create}, returning (a single | an array of) stored
    * `TokenDocument`s.
    *
    * `| undefined` is included in the non-array branch because if a `.create` call with non-array data is cancelled by the `preCreate`
    * method or hook, `shift`ing the return of `.createDocuments` produces `undefined`
    */
-  type CreateReturn<Data extends MaybeArray<CreateInput>, Temporary extends boolean | undefined> =
-    Data extends Array<CreateInput>
-      ? Array<TokenDocument.TemporaryIf<Temporary>>
-      : TokenDocument.TemporaryIf<Temporary> | undefined;
+  type CreateReturn<Data extends MaybeArray<CreateInput>> =
+    Data extends Array<CreateInput> ? Array<TokenDocument.Stored> : TokenDocument.Stored | undefined;
 
   /**
    * The data after a {@linkcode Document} has been initialized, for example
@@ -908,9 +906,9 @@ declare namespace TokenDocument {
      * @remarks This interface was previously typed for passing to {@linkcode TokenDocument.create}. The new name for that
      * interface is {@linkcode CreateDocumentsOperation}.
      */
-    interface CreateOperation<Temporary extends boolean | undefined = boolean | undefined>
+    interface CreateOperation
       extends
-        DatabaseBackend.CreateOperation<TokenDocument.CreateInput, TokenDocument.Parent, Temporary>,
+        DatabaseBackend.CreateOperation<TokenDocument.CreateInput, TokenDocument.Parent>,
         DatabaseBackend._CommonCanvasDocumentCreateProperties {}
 
     /**
@@ -925,8 +923,7 @@ declare namespace TokenDocument {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface CreateDocumentsOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.CreateDocumentsOperation<CreateOperation<Temporary>> {}
+    interface CreateDocumentsOperation extends Document.Database.CreateDocumentsOperation<CreateOperation> {}
 
     /**
      * The interface for passing to the {@linkcode Document.createEmbeddedDocuments | #createEmbeddedDocuments} method of any Documents that
@@ -955,8 +952,7 @@ declare namespace TokenDocument {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface BackendCreateOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.BackendCreateOperation<CreateOperation<Temporary>> {}
+    interface BackendCreateOperation extends Document.Database.BackendCreateOperation<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode TokenDocument._preCreate | TokenDocument#_preCreate} and
@@ -971,8 +967,7 @@ declare namespace TokenDocument {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface PreCreateOptions<Temporary extends boolean | undefined = boolean | undefined> extends Document.Database
-      .PreCreateOptions<CreateOperation<Temporary>> {}
+    interface PreCreateOptions extends Document.Database.PreCreateOptions<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode TokenDocument._preCreateOperation}.
@@ -986,8 +981,7 @@ declare namespace TokenDocument {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface PreCreateOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document.Database
-      .PreCreateOperation<CreateOperation<Temporary>> {}
+    interface PreCreateOperation extends Document.Database.PreCreateOperation<CreateOperation> {}
 
     /**
      * @deprecated The interface passed to {@linkcode TokenDocument._onCreateDocuments}. It will be removed in v14 along with the
@@ -1002,8 +996,7 @@ declare namespace TokenDocument {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface OnCreateDocumentsOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.OnCreateDocumentsOperation<CreateOperation<Temporary>> {}
+    interface OnCreateDocumentsOperation extends Document.Database.OnCreateDocumentsOperation<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode TokenDocument._onCreate | TokenDocument#_onCreate} and
@@ -1523,19 +1516,19 @@ declare namespace TokenDocument {
     interface OnDeleteOperation extends Document.Database.OnDeleteOperation<DeleteOperation> {}
 
     namespace Internal {
-      interface OperationNameMap<Temporary extends boolean | undefined = boolean | undefined> {
+      interface OperationNameMap {
         GetDocumentsOperation: TokenDocument.Database.GetDocumentsOperation;
         BackendGetOperation: TokenDocument.Database.BackendGetOperation;
         GetOperation: TokenDocument.Database.GetOperation;
 
-        CreateDocumentsOperation: TokenDocument.Database.CreateDocumentsOperation<Temporary>;
+        CreateDocumentsOperation: TokenDocument.Database.CreateDocumentsOperation;
         CreateEmbeddedOperation: TokenDocument.Database.CreateEmbeddedOperation;
-        BackendCreateOperation: TokenDocument.Database.BackendCreateOperation<Temporary>;
-        CreateOperation: TokenDocument.Database.CreateOperation<Temporary>;
-        PreCreateOptions: TokenDocument.Database.PreCreateOptions<Temporary>;
-        PreCreateOperation: TokenDocument.Database.PreCreateOperation<Temporary>;
+        BackendCreateOperation: TokenDocument.Database.BackendCreateOperation;
+        CreateOperation: TokenDocument.Database.CreateOperation;
+        PreCreateOptions: TokenDocument.Database.PreCreateOptions;
+        PreCreateOperation: TokenDocument.Database.PreCreateOperation;
         // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnCreateDocumentsOperation: TokenDocument.Database.OnCreateDocumentsOperation<Temporary>;
+        OnCreateDocumentsOperation: TokenDocument.Database.OnCreateDocumentsOperation;
         OnCreateOptions: TokenDocument.Database.OnCreateOptions;
         OnCreateOperation: TokenDocument.Database.OnCreateOperation;
 
@@ -1576,7 +1569,7 @@ declare namespace TokenDocument {
     type GetOptions = GetDocumentsOperation;
 
     /** @deprecated Use {@linkcode CreateOperation} instead. This type will be removed in v14.  */
-    type Create<Temporary extends boolean | undefined> = CreateOperation<Temporary>;
+    type Create = CreateOperation;
 
     /** @deprecated Use {@linkcode UpdateOperation} instead. This type will be removed in v14.  */
     type Update = UpdateOperation;
@@ -1646,12 +1639,6 @@ declare namespace TokenDocument {
   }
 
   /**
-   * If `Temporary` is true then {@linkcode TokenDocument.Implementation}, otherwise {@linkcode TokenDocument.Stored}.
-   */
-  type TemporaryIf<Temporary extends boolean | undefined> =
-    true extends Extract<Temporary, true> ? TokenDocument.Implementation : TokenDocument.Stored;
-
-  /**
    * The flags that are available for this document in the form `{ [scope: string]: { [key: string]: unknown } }`.
    */
   interface Flags extends Document.Internal.ConfiguredFlagsForName<Name>, CoreFlags {}
@@ -1713,8 +1700,8 @@ declare namespace TokenDocument {
    * The interface for passing to {@linkcode TokenDocument.createDialog}'s second parameter that still includes partial Dialog
    * options, instead of being purely a {@linkcode Database.CreateDocumentsOperation | CreateDocumentsOperation}.
    */
-  interface CreateDialogDeprecatedOptions<Temporary extends boolean | undefined = boolean | undefined>
-    extends Database.CreateDocumentsOperation<Temporary>, Document._PartialDialogV1OptionsForCreateDialog {}
+  interface CreateDialogDeprecatedOptions
+    extends Database.CreateDocumentsOperation, Document._PartialDialogV1OptionsForCreateDialog {}
 
   /**
    * The interface for passing to {@linkcode TokenDocument.createDialog}'s third parameter
@@ -2865,13 +2852,10 @@ declare class TokenDocument extends BaseToken.Internal.CanvasDocument {
    *
    * @see {@linkcode TokenDocument.CreateDialogDeprecatedOptions}
    */
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends TokenDocument.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends TokenDocument.CreateDialogOptions | undefined = undefined>(
     data: TokenDocument.CreateDialogData | undefined,
     // eslint-disable-next-line @typescript-eslint/no-deprecated
-    createOptions: TokenDocument.CreateDialogDeprecatedOptions<Temporary>,
+    createOptions: TokenDocument.CreateDialogDeprecatedOptions,
     options?: Options,
     renderOptions?: Document.CreateDialogRenderOptions,
   ): Promise<TokenDocument.CreateDialogReturn<Options>>;

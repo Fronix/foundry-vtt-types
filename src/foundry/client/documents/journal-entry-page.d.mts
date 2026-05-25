@@ -216,16 +216,14 @@ declare namespace JournalEntryPage {
   type CreateInput = CreateData | Implementation;
 
   /**
-   * The helper type for the return of {@linkcode JournalEntryPage.create}, returning (a single | an array of) (temporary | stored)
+   * The helper type for the return of {@linkcode JournalEntryPage.create}, returning (a single | an array of) stored
    * `JournalEntryPage`s.
    *
    * `| undefined` is included in the non-array branch because if a `.create` call with non-array data is cancelled by the `preCreate`
    * method or hook, `shift`ing the return of `.createDocuments` produces `undefined`
    */
-  type CreateReturn<Data extends MaybeArray<CreateInput>, Temporary extends boolean | undefined> =
-    Data extends Array<CreateInput>
-      ? Array<JournalEntryPage.TemporaryIf<Temporary>>
-      : JournalEntryPage.TemporaryIf<Temporary> | undefined;
+  type CreateReturn<Data extends MaybeArray<CreateInput>> =
+    Data extends Array<CreateInput> ? Array<JournalEntryPage.Stored> : JournalEntryPage.Stored | undefined;
 
   /**
    * The data after a {@linkcode Document} has been initialized, for example
@@ -474,9 +472,10 @@ declare namespace JournalEntryPage {
      * @remarks This interface was previously typed for passing to {@linkcode JournalEntryPage.create}. The new name for that
      * interface is {@linkcode CreateDocumentsOperation}.
      */
-    interface CreateOperation<
-      Temporary extends boolean | undefined = boolean | undefined,
-    > extends DatabaseBackend.CreateOperation<JournalEntryPage.CreateInput, JournalEntryPage.Parent, Temporary> {}
+    interface CreateOperation extends DatabaseBackend.CreateOperation<
+      JournalEntryPage.CreateInput,
+      JournalEntryPage.Parent
+    > {}
 
     /**
      * The interface for passing to {@linkcode JournalEntryPage.create} or {@linkcode JournalEntryPage.createDocuments}.
@@ -490,8 +489,7 @@ declare namespace JournalEntryPage {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface CreateDocumentsOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.CreateDocumentsOperation<CreateOperation<Temporary>> {}
+    interface CreateDocumentsOperation extends Document.Database.CreateDocumentsOperation<CreateOperation> {}
 
     /**
      * The interface for passing to the {@linkcode Document.createEmbeddedDocuments | #createEmbeddedDocuments} method of any Documents that
@@ -520,8 +518,7 @@ declare namespace JournalEntryPage {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface BackendCreateOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.BackendCreateOperation<CreateOperation<Temporary>> {}
+    interface BackendCreateOperation extends Document.Database.BackendCreateOperation<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode JournalEntryPage._preCreate | JournalEntryPage#_preCreate} and
@@ -536,8 +533,7 @@ declare namespace JournalEntryPage {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface PreCreateOptions<Temporary extends boolean | undefined = boolean | undefined> extends Document.Database
-      .PreCreateOptions<CreateOperation<Temporary>> {}
+    interface PreCreateOptions extends Document.Database.PreCreateOptions<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode JournalEntryPage._preCreateOperation}.
@@ -551,8 +547,7 @@ declare namespace JournalEntryPage {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface PreCreateOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document.Database
-      .PreCreateOperation<CreateOperation<Temporary>> {}
+    interface PreCreateOperation extends Document.Database.PreCreateOperation<CreateOperation> {}
 
     /**
      * @deprecated The interface passed to {@linkcode JournalEntryPage._onCreateDocuments}. It will be removed in v14 along with the
@@ -567,8 +562,7 @@ declare namespace JournalEntryPage {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface OnCreateDocumentsOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.OnCreateDocumentsOperation<CreateOperation<Temporary>> {}
+    interface OnCreateDocumentsOperation extends Document.Database.OnCreateDocumentsOperation<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode JournalEntryPage._onCreate | JournalEntryPage#_onCreate} and
@@ -896,19 +890,19 @@ declare namespace JournalEntryPage {
     interface OnDeleteOperation extends Document.Database.OnDeleteOperation<DeleteOperation> {}
 
     namespace Internal {
-      interface OperationNameMap<Temporary extends boolean | undefined = boolean | undefined> {
+      interface OperationNameMap {
         GetDocumentsOperation: JournalEntryPage.Database.GetDocumentsOperation;
         BackendGetOperation: JournalEntryPage.Database.BackendGetOperation;
         GetOperation: JournalEntryPage.Database.GetOperation;
 
-        CreateDocumentsOperation: JournalEntryPage.Database.CreateDocumentsOperation<Temporary>;
+        CreateDocumentsOperation: JournalEntryPage.Database.CreateDocumentsOperation;
         CreateEmbeddedOperation: JournalEntryPage.Database.CreateEmbeddedOperation;
-        BackendCreateOperation: JournalEntryPage.Database.BackendCreateOperation<Temporary>;
-        CreateOperation: JournalEntryPage.Database.CreateOperation<Temporary>;
-        PreCreateOptions: JournalEntryPage.Database.PreCreateOptions<Temporary>;
-        PreCreateOperation: JournalEntryPage.Database.PreCreateOperation<Temporary>;
+        BackendCreateOperation: JournalEntryPage.Database.BackendCreateOperation;
+        CreateOperation: JournalEntryPage.Database.CreateOperation;
+        PreCreateOptions: JournalEntryPage.Database.PreCreateOptions;
+        PreCreateOperation: JournalEntryPage.Database.PreCreateOperation;
         // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnCreateDocumentsOperation: JournalEntryPage.Database.OnCreateDocumentsOperation<Temporary>;
+        OnCreateDocumentsOperation: JournalEntryPage.Database.OnCreateDocumentsOperation;
         OnCreateOptions: JournalEntryPage.Database.OnCreateOptions;
         OnCreateOperation: JournalEntryPage.Database.OnCreateOperation;
 
@@ -949,7 +943,7 @@ declare namespace JournalEntryPage {
     type GetOptions = GetDocumentsOperation;
 
     /** @deprecated Use {@linkcode CreateOperation} instead. This type will be removed in v14.  */
-    type Create<Temporary extends boolean | undefined> = CreateOperation<Temporary>;
+    type Create = CreateOperation;
 
     /** @deprecated Use {@linkcode UpdateOperation} instead. This type will be removed in v14.  */
     type Update = UpdateOperation;
@@ -1019,12 +1013,6 @@ declare namespace JournalEntryPage {
   }
 
   /**
-   * If `Temporary` is true then {@linkcode JournalEntryPage.Implementation}, otherwise {@linkcode JournalEntryPage.Stored}.
-   */
-  type TemporaryIf<Temporary extends boolean | undefined> =
-    true extends Extract<Temporary, true> ? JournalEntryPage.Implementation : JournalEntryPage.Stored;
-
-  /**
    * The flags that are available for this document in the form `{ [scope: string]: { [key: string]: unknown } }`.
    */
   interface Flags extends Document.Internal.ConfiguredFlagsForName<Name> {}
@@ -1076,8 +1064,8 @@ declare namespace JournalEntryPage {
    * The interface for passing to {@linkcode JournalEntryPage.createDialog}'s second parameter that still includes partial Dialog
    * options, instead of being purely a {@linkcode Database.CreateDocumentsOperation | CreateDocumentsOperation}.
    */
-  interface CreateDialogDeprecatedOptions<Temporary extends boolean | undefined = boolean | undefined>
-    extends Database.CreateDocumentsOperation<Temporary>, Document._PartialDialogV1OptionsForCreateDialog {}
+  interface CreateDialogDeprecatedOptions
+    extends Database.CreateDocumentsOperation, Document._PartialDialogV1OptionsForCreateDialog {}
 
   /**
    * The interface for passing to {@linkcode JournalEntryPage.createDialog}'s third parameter
@@ -1382,13 +1370,10 @@ declare class JournalEntryPage<
    *
    * @see {@linkcode JournalEntryPage.CreateDialogDeprecatedOptions}
    */
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends JournalEntryPage.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends JournalEntryPage.CreateDialogOptions | undefined = undefined>(
     data: JournalEntryPage.CreateDialogData | undefined,
     // eslint-disable-next-line @typescript-eslint/no-deprecated
-    createOptions: JournalEntryPage.CreateDialogDeprecatedOptions<Temporary>,
+    createOptions: JournalEntryPage.CreateDialogDeprecatedOptions,
     options?: Options,
     renderOptions?: Document.CreateDialogRenderOptions,
   ): Promise<JournalEntryPage.CreateDialogReturn<Options>>;

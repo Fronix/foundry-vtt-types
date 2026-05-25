@@ -193,14 +193,14 @@ declare namespace Folder {
   type CreateInput = CreateData | Implementation;
 
   /**
-   * The helper type for the return of {@linkcode Folder.create}, returning (a single | an array of) (temporary | stored)
+   * The helper type for the return of {@linkcode Folder.create}, returning (a single | an array of) stored
    * `Folder`s.
    *
    * `| undefined` is included in the non-array branch because if a `.create` call with non-array data is cancelled by the `preCreate`
    * method or hook, `shift`ing the return of `.createDocuments` produces `undefined`
    */
-  type CreateReturn<Data extends MaybeArray<CreateInput>, Temporary extends boolean | undefined> =
-    Data extends Array<CreateInput> ? Array<Folder.TemporaryIf<Temporary>> : Folder.TemporaryIf<Temporary> | undefined;
+  type CreateReturn<Data extends MaybeArray<CreateInput>> =
+    Data extends Array<CreateInput> ? Array<Folder.Stored> : Folder.Stored | undefined;
 
   /**
    * The data after a {@linkcode Document} has been initialized, for example
@@ -332,9 +332,7 @@ declare namespace Folder {
      * @remarks This interface was previously typed for passing to {@linkcode Folder.create}. The new name for that
      * interface is {@linkcode CreateDocumentsOperation}.
      */
-    interface CreateOperation<
-      Temporary extends boolean | undefined = boolean | undefined,
-    > extends DatabaseBackend.CreateOperation<Folder.CreateInput, Folder.Parent, Temporary> {}
+    interface CreateOperation extends DatabaseBackend.CreateOperation<Folder.CreateInput, Folder.Parent> {}
 
     /**
      * The interface for passing to {@linkcode Folder.create} or {@linkcode Folder.createDocuments}.
@@ -348,8 +346,7 @@ declare namespace Folder {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface CreateDocumentsOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.CreateDocumentsOperation<CreateOperation<Temporary>> {}
+    interface CreateDocumentsOperation extends Document.Database.CreateDocumentsOperation<CreateOperation> {}
 
     /**
      * @deprecated `Folder` documents are never embedded. This interface exists for consistency with other documents.
@@ -380,8 +377,7 @@ declare namespace Folder {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface BackendCreateOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.BackendCreateOperation<CreateOperation<Temporary>> {}
+    interface BackendCreateOperation extends Document.Database.BackendCreateOperation<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode Folder._preCreate | Folder#_preCreate} and
@@ -396,8 +392,7 @@ declare namespace Folder {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface PreCreateOptions<Temporary extends boolean | undefined = boolean | undefined> extends Document.Database
-      .PreCreateOptions<CreateOperation<Temporary>> {}
+    interface PreCreateOptions extends Document.Database.PreCreateOptions<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode Folder._preCreateOperation}.
@@ -411,8 +406,7 @@ declare namespace Folder {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface PreCreateOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document.Database
-      .PreCreateOperation<CreateOperation<Temporary>> {}
+    interface PreCreateOperation extends Document.Database.PreCreateOperation<CreateOperation> {}
 
     /**
      * @deprecated The interface passed to {@linkcode Folder._onCreateDocuments}. It will be removed in v14 along with the
@@ -427,8 +421,7 @@ declare namespace Folder {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface OnCreateDocumentsOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.OnCreateDocumentsOperation<CreateOperation<Temporary>> {}
+    interface OnCreateDocumentsOperation extends Document.Database.OnCreateDocumentsOperation<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode Folder._onCreate | Folder#_onCreate} and
@@ -775,20 +768,20 @@ declare namespace Folder {
     interface OnDeleteOperation extends Document.Database.OnDeleteOperation<DeleteOperation> {}
 
     namespace Internal {
-      interface OperationNameMap<Temporary extends boolean | undefined = boolean | undefined> {
+      interface OperationNameMap {
         GetDocumentsOperation: Folder.Database.GetDocumentsOperation;
         BackendGetOperation: Folder.Database.BackendGetOperation;
         GetOperation: Folder.Database.GetOperation;
 
-        CreateDocumentsOperation: Folder.Database.CreateDocumentsOperation<Temporary>;
+        CreateDocumentsOperation: Folder.Database.CreateDocumentsOperation;
         // eslint-disable-next-line @typescript-eslint/no-deprecated
         CreateEmbeddedOperation: Folder.Database.CreateEmbeddedOperation;
-        BackendCreateOperation: Folder.Database.BackendCreateOperation<Temporary>;
-        CreateOperation: Folder.Database.CreateOperation<Temporary>;
-        PreCreateOptions: Folder.Database.PreCreateOptions<Temporary>;
-        PreCreateOperation: Folder.Database.PreCreateOperation<Temporary>;
+        BackendCreateOperation: Folder.Database.BackendCreateOperation;
+        CreateOperation: Folder.Database.CreateOperation;
+        PreCreateOptions: Folder.Database.PreCreateOptions;
+        PreCreateOperation: Folder.Database.PreCreateOperation;
         // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnCreateDocumentsOperation: Folder.Database.OnCreateDocumentsOperation<Temporary>;
+        OnCreateDocumentsOperation: Folder.Database.OnCreateDocumentsOperation;
         OnCreateOptions: Folder.Database.OnCreateOptions;
         OnCreateOperation: Folder.Database.OnCreateOperation;
 
@@ -831,7 +824,7 @@ declare namespace Folder {
     type GetOptions = GetDocumentsOperation;
 
     /** @deprecated Use {@linkcode CreateOperation} instead. This type will be removed in v14.  */
-    type Create<Temporary extends boolean | undefined> = CreateOperation<Temporary>;
+    type Create = CreateOperation;
 
     /** @deprecated Use {@linkcode UpdateOperation} instead. This type will be removed in v14.  */
     type Update = UpdateOperation;
@@ -901,12 +894,6 @@ declare namespace Folder {
   }
 
   /**
-   * If `Temporary` is true then {@linkcode Folder.Implementation}, otherwise {@linkcode Folder.Stored}.
-   */
-  type TemporaryIf<Temporary extends boolean | undefined> =
-    true extends Extract<Temporary, true> ? Folder.Implementation : Folder.Stored;
-
-  /**
    * The flags that are available for this document in the form `{ [scope: string]: { [key: string]: unknown } }`.
    */
   interface Flags extends Document.Internal.ConfiguredFlagsForName<Name> {}
@@ -962,8 +949,8 @@ declare namespace Folder {
    * The interface for passing to {@linkcode Folder.createDialog}'s second parameter that still includes partial Dialog
    * options, instead of being purely a {@linkcode Database.CreateDocumentsOperation | CreateDocumentsOperation}.
    */
-  interface CreateDialogDeprecatedOptions<Temporary extends boolean | undefined = boolean | undefined>
-    extends Database.CreateDocumentsOperation<Temporary>, Document._PartialDialogV1OptionsForCreateDialog {}
+  interface CreateDialogDeprecatedOptions
+    extends Database.CreateDocumentsOperation, Document._PartialDialogV1OptionsForCreateDialog {}
 
   /**
    * The interface for passing to {@linkcode Folder.createDialog}'s third parameter
@@ -1189,13 +1176,10 @@ declare class Folder<out SubType extends Folder.SubType = Folder.SubType> extend
    *
    * As of 13.350, that class does nothing with the passed promise resolver, and so this actually returns a promise that never returns.
    */
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends Folder.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends Folder.CreateDialogOptions | undefined = undefined>(
     data: Folder.CreateDialogData,
     // eslint-disable-next-line @typescript-eslint/no-deprecated
-    createOptions: Folder.CreateDialogDeprecatedOptions<Temporary>,
+    createOptions: Folder.CreateDialogDeprecatedOptions,
     options?: Options,
   ): Promise<void>;
 

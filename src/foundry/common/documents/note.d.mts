@@ -105,10 +105,10 @@ declare abstract class BaseNote extends Document<"Note", BaseNote.Schema, any> {
     data?: Document.CanUserModifyData<"Note", Action>,
   ): boolean;
 
-  static override createDocuments<Temporary extends boolean | undefined = undefined>(
+  static override createDocuments(
     data: BaseNote.CreateInput[],
-    operation?: BaseNote.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<Array<BaseNote.TemporaryIf<Temporary>>>;
+    operation?: BaseNote.Database.CreateDocumentsOperation,
+  ): Promise<Array<NoteDocument.Stored>>;
 
   static override updateDocuments(
     updates: BaseNote.UpdateInput[],
@@ -120,13 +120,10 @@ declare abstract class BaseNote extends Document<"Note", BaseNote.Schema, any> {
     operation?: BaseNote.Database.DeleteManyDocumentsOperation,
   ): Promise<Array<NoteDocument.Stored>>;
 
-  static override create<
-    Data extends MaybeArray<BaseNote.CreateInput>,
-    Temporary extends boolean | undefined = undefined,
-  >(
+  static override create<Data extends MaybeArray<BaseNote.CreateInput>>(
     data: Data,
-    operation?: BaseNote.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<BaseNote.CreateReturn<Data, Temporary>>;
+    operation?: BaseNote.Database.CreateDocumentsOperation,
+  ): Promise<BaseNote.CreateReturn<Data>>;
 
   override update(
     data: BaseNote.UpdateInput,
@@ -297,7 +294,6 @@ declare namespace BaseNote {
   export import UpdateInput = NoteDocument.UpdateInput;
   export import Schema = NoteDocument.Schema;
   export import Database = NoteDocument.Database;
-  export import TemporaryIf = NoteDocument.TemporaryIf;
   export import Flags = NoteDocument.Flags;
 
   namespace Internal {

@@ -98,10 +98,10 @@ declare abstract class BasePlaylistSound extends Document<"PlaylistSound", BaseP
     data?: Document.CanUserModifyData<"PlaylistSound", Action>,
   ): boolean;
 
-  static override createDocuments<Temporary extends boolean | undefined = undefined>(
+  static override createDocuments(
     data: BasePlaylistSound.CreateInput[],
-    operation?: BasePlaylistSound.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<Array<BasePlaylistSound.TemporaryIf<Temporary>>>;
+    operation?: BasePlaylistSound.Database.CreateDocumentsOperation,
+  ): Promise<Array<PlaylistSound.Stored>>;
 
   static override updateDocuments(
     updates: BasePlaylistSound.UpdateInput[],
@@ -113,13 +113,10 @@ declare abstract class BasePlaylistSound extends Document<"PlaylistSound", BaseP
     operation?: BasePlaylistSound.Database.DeleteManyDocumentsOperation,
   ): Promise<Array<PlaylistSound.Stored>>;
 
-  static override create<
-    Data extends MaybeArray<BasePlaylistSound.CreateInput>,
-    Temporary extends boolean | undefined = undefined,
-  >(
+  static override create<Data extends MaybeArray<BasePlaylistSound.CreateInput>>(
     data: Data,
-    operation?: BasePlaylistSound.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<BasePlaylistSound.CreateReturn<Data, Temporary>>;
+    operation?: BasePlaylistSound.Database.CreateDocumentsOperation,
+  ): Promise<BasePlaylistSound.CreateReturn<Data>>;
 
   override update(
     data: BasePlaylistSound.UpdateInput,
@@ -290,7 +287,6 @@ declare namespace BasePlaylistSound {
   export import UpdateInput = PlaylistSound.UpdateInput;
   export import Schema = PlaylistSound.Schema;
   export import Database = PlaylistSound.Database;
-  export import TemporaryIf = PlaylistSound.TemporaryIf;
   export import Flags = PlaylistSound.Flags;
 
   namespace Internal {

@@ -104,10 +104,10 @@ declare abstract class BaseAdventure extends Document<"Adventure", BaseAdventure
     data?: Document.CanUserModifyData<"Adventure", Action>,
   ): boolean;
 
-  static override createDocuments<Temporary extends boolean | undefined = undefined>(
+  static override createDocuments(
     data: BaseAdventure.CreateInput[],
-    operation?: BaseAdventure.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<Array<BaseAdventure.TemporaryIf<Temporary>>>;
+    operation?: BaseAdventure.Database.CreateDocumentsOperation,
+  ): Promise<Array<Adventure.Stored>>;
 
   static override updateDocuments(
     updates: BaseAdventure.UpdateInput[],
@@ -119,13 +119,10 @@ declare abstract class BaseAdventure extends Document<"Adventure", BaseAdventure
     operation?: BaseAdventure.Database.DeleteManyDocumentsOperation,
   ): Promise<Array<Adventure.Stored>>;
 
-  static override create<
-    Data extends MaybeArray<BaseAdventure.CreateInput>,
-    Temporary extends boolean | undefined = undefined,
-  >(
+  static override create<Data extends MaybeArray<BaseAdventure.CreateInput>>(
     data: Data,
-    operation?: BaseAdventure.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<BaseAdventure.CreateReturn<Data, Temporary>>;
+    operation?: BaseAdventure.Database.CreateDocumentsOperation,
+  ): Promise<BaseAdventure.CreateReturn<Data>>;
 
   override update(
     data: BaseAdventure.UpdateInput,
@@ -299,7 +296,6 @@ declare namespace BaseAdventure {
   export import UpdateInput = Adventure.UpdateInput;
   export import Schema = Adventure.Schema;
   export import Database = Adventure.Database;
-  export import TemporaryIf = Adventure.TemporaryIf;
   export import Flags = Adventure.Flags;
 
   namespace Internal {

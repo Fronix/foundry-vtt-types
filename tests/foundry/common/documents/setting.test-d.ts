@@ -7,7 +7,7 @@ expectTypeOf(foundry.documents.BaseSetting.createDocuments([])).toEqualTypeOf<Pr
 expectTypeOf(foundry.documents.BaseSetting.updateDocuments([])).toEqualTypeOf<Promise<Setting.Stored[]>>();
 expectTypeOf(foundry.documents.BaseSetting.deleteDocuments([])).toEqualTypeOf<Promise<Setting.Stored[]>>();
 
-const mySetting = await foundry.documents.BaseSetting.create({ key: "fizz.buzz", value: "buzz" }, { temporary: true });
+const mySetting = await foundry.documents.BaseSetting.create({ key: "fizz.buzz", value: "buzz" });
 if (mySetting) {
-  expectTypeOf(mySetting).toEqualTypeOf<Setting.Implementation>();
+  expectTypeOf(mySetting).toEqualTypeOf<Setting.Stored>();
 }

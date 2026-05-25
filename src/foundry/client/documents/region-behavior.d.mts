@@ -225,16 +225,14 @@ declare namespace RegionBehavior {
   type CreateInput = CreateData | Implementation;
 
   /**
-   * The helper type for the return of {@linkcode RegionBehavior.create}, returning (a single | an array of) (temporary | stored)
+   * The helper type for the return of {@linkcode RegionBehavior.create}, returning (a single | an array of) stored
    * `RegionBehavior`s.
    *
    * `| undefined` is included in the non-array branch because if a `.create` call with non-array data is cancelled by the `preCreate`
    * method or hook, `shift`ing the return of `.createDocuments` produces `undefined`
    */
-  type CreateReturn<Data extends MaybeArray<CreateInput>, Temporary extends boolean | undefined> =
-    Data extends Array<CreateInput>
-      ? Array<RegionBehavior.TemporaryIf<Temporary>>
-      : RegionBehavior.TemporaryIf<Temporary> | undefined;
+  type CreateReturn<Data extends MaybeArray<CreateInput>> =
+    Data extends Array<CreateInput> ? Array<RegionBehavior.Stored> : RegionBehavior.Stored | undefined;
 
   /**
    * The data after a {@linkcode Document} has been initialized, for example
@@ -350,9 +348,10 @@ declare namespace RegionBehavior {
      * @remarks This interface was previously typed for passing to {@linkcode RegionBehavior.create}. The new name for that
      * interface is {@linkcode CreateDocumentsOperation}.
      */
-    interface CreateOperation<
-      Temporary extends boolean | undefined = boolean | undefined,
-    > extends DatabaseBackend.CreateOperation<RegionBehavior.CreateInput, RegionBehavior.Parent, Temporary> {}
+    interface CreateOperation extends DatabaseBackend.CreateOperation<
+      RegionBehavior.CreateInput,
+      RegionBehavior.Parent
+    > {}
 
     /**
      * The interface for passing to {@linkcode RegionBehavior.create} or {@linkcode RegionBehavior.createDocuments}.
@@ -366,8 +365,7 @@ declare namespace RegionBehavior {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface CreateDocumentsOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.CreateDocumentsOperation<CreateOperation<Temporary>> {}
+    interface CreateDocumentsOperation extends Document.Database.CreateDocumentsOperation<CreateOperation> {}
 
     /**
      * The interface for passing to the {@linkcode Document.createEmbeddedDocuments | #createEmbeddedDocuments} method of any Documents that
@@ -396,8 +394,7 @@ declare namespace RegionBehavior {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface BackendCreateOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.BackendCreateOperation<CreateOperation<Temporary>> {}
+    interface BackendCreateOperation extends Document.Database.BackendCreateOperation<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode RegionBehavior._preCreate | RegionBehavior#_preCreate} and
@@ -412,8 +409,7 @@ declare namespace RegionBehavior {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface PreCreateOptions<Temporary extends boolean | undefined = boolean | undefined> extends Document.Database
-      .PreCreateOptions<CreateOperation<Temporary>> {}
+    interface PreCreateOptions extends Document.Database.PreCreateOptions<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode RegionBehavior._preCreateOperation}.
@@ -427,8 +423,7 @@ declare namespace RegionBehavior {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface PreCreateOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document.Database
-      .PreCreateOperation<CreateOperation<Temporary>> {}
+    interface PreCreateOperation extends Document.Database.PreCreateOperation<CreateOperation> {}
 
     /**
      * @deprecated The interface passed to {@linkcode RegionBehavior._onCreateDocuments}. It will be removed in v14 along with the
@@ -443,8 +438,7 @@ declare namespace RegionBehavior {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface OnCreateDocumentsOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.OnCreateDocumentsOperation<CreateOperation<Temporary>> {}
+    interface OnCreateDocumentsOperation extends Document.Database.OnCreateDocumentsOperation<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode RegionBehavior._onCreate | RegionBehavior#_onCreate} and
@@ -772,19 +766,19 @@ declare namespace RegionBehavior {
     interface OnDeleteOperation extends Document.Database.OnDeleteOperation<DeleteOperation> {}
 
     namespace Internal {
-      interface OperationNameMap<Temporary extends boolean | undefined = boolean | undefined> {
+      interface OperationNameMap {
         GetDocumentsOperation: RegionBehavior.Database.GetDocumentsOperation;
         BackendGetOperation: RegionBehavior.Database.BackendGetOperation;
         GetOperation: RegionBehavior.Database.GetOperation;
 
-        CreateDocumentsOperation: RegionBehavior.Database.CreateDocumentsOperation<Temporary>;
+        CreateDocumentsOperation: RegionBehavior.Database.CreateDocumentsOperation;
         CreateEmbeddedOperation: RegionBehavior.Database.CreateEmbeddedOperation;
-        BackendCreateOperation: RegionBehavior.Database.BackendCreateOperation<Temporary>;
-        CreateOperation: RegionBehavior.Database.CreateOperation<Temporary>;
-        PreCreateOptions: RegionBehavior.Database.PreCreateOptions<Temporary>;
-        PreCreateOperation: RegionBehavior.Database.PreCreateOperation<Temporary>;
+        BackendCreateOperation: RegionBehavior.Database.BackendCreateOperation;
+        CreateOperation: RegionBehavior.Database.CreateOperation;
+        PreCreateOptions: RegionBehavior.Database.PreCreateOptions;
+        PreCreateOperation: RegionBehavior.Database.PreCreateOperation;
         // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnCreateDocumentsOperation: RegionBehavior.Database.OnCreateDocumentsOperation<Temporary>;
+        OnCreateDocumentsOperation: RegionBehavior.Database.OnCreateDocumentsOperation;
         OnCreateOptions: RegionBehavior.Database.OnCreateOptions;
         OnCreateOperation: RegionBehavior.Database.OnCreateOperation;
 
@@ -825,7 +819,7 @@ declare namespace RegionBehavior {
     type GetOptions = GetDocumentsOperation;
 
     /** @deprecated Use {@linkcode CreateOperation} instead. This type will be removed in v14.  */
-    type Create<Temporary extends boolean | undefined> = CreateOperation<Temporary>;
+    type Create = CreateOperation;
 
     /** @deprecated Use {@linkcode UpdateOperation} instead. This type will be removed in v14.  */
     type Update = UpdateOperation;
@@ -895,12 +889,6 @@ declare namespace RegionBehavior {
   }
 
   /**
-   * If `Temporary` is true then {@linkcode RegionBehavior.Implementation}, otherwise {@linkcode RegionBehavior.Stored}.
-   */
-  type TemporaryIf<Temporary extends boolean | undefined> =
-    true extends Extract<Temporary, true> ? RegionBehavior.Implementation : RegionBehavior.Stored;
-
-  /**
    * The flags that are available for this document in the form `{ [scope: string]: { [key: string]: unknown } }`.
    */
   interface Flags extends Document.Internal.ConfiguredFlagsForName<Name> {}
@@ -952,8 +940,8 @@ declare namespace RegionBehavior {
    * The interface for passing to {@linkcode RegionBehavior.createDialog}'s second parameter that still includes partial Dialog
    * options, instead of being purely a {@linkcode Database.CreateDocumentsOperation | CreateDocumentsOperation}.
    */
-  interface CreateDialogDeprecatedOptions<Temporary extends boolean | undefined = boolean | undefined>
-    extends Database.CreateDocumentsOperation<Temporary>, Document._PartialDialogV1OptionsForCreateDialog {}
+  interface CreateDialogDeprecatedOptions
+    extends Database.CreateDocumentsOperation, Document._PartialDialogV1OptionsForCreateDialog {}
 
   /**
    * The interface for passing to {@linkcode RegionBehavior.createDialog}'s third parameter
@@ -1047,13 +1035,10 @@ declare class RegionBehavior<
    *
    * @see {@linkcode RegionBehavior.CreateDialogDeprecatedOptions}
    */
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends RegionBehavior.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends RegionBehavior.CreateDialogOptions | undefined = undefined>(
     data: RegionBehavior.CreateDialogData | undefined,
     // eslint-disable-next-line @typescript-eslint/no-deprecated
-    createOptions: RegionBehavior.CreateDialogDeprecatedOptions<Temporary>,
+    createOptions: RegionBehavior.CreateDialogDeprecatedOptions,
     options?: Options,
     renderOptions?: Document.CreateDialogRenderOptions,
   ): Promise<RegionBehavior.CreateDialogReturn<Options>>;

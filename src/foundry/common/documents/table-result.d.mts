@@ -125,10 +125,10 @@ declare abstract class BaseTableResult<
     data?: Document.CanUserModifyData<"TableResult", Action>,
   ): boolean;
 
-  static override createDocuments<Temporary extends boolean | undefined = undefined>(
+  static override createDocuments(
     data: BaseTableResult.CreateInput[],
-    operation?: BaseTableResult.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<Array<BaseTableResult.TemporaryIf<Temporary>>>;
+    operation?: BaseTableResult.Database.CreateDocumentsOperation,
+  ): Promise<Array<TableResult.Stored>>;
 
   static override updateDocuments(
     updates: BaseTableResult.UpdateInput[],
@@ -140,13 +140,10 @@ declare abstract class BaseTableResult<
     operation?: BaseTableResult.Database.DeleteManyDocumentsOperation,
   ): Promise<Array<TableResult.Stored>>;
 
-  static override create<
-    Data extends MaybeArray<BaseTableResult.CreateInput>,
-    Temporary extends boolean | undefined = undefined,
-  >(
+  static override create<Data extends MaybeArray<BaseTableResult.CreateInput>>(
     data: Data,
-    operation?: BaseTableResult.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<BaseTableResult.CreateReturn<Data, Temporary>>;
+    operation?: BaseTableResult.Database.CreateDocumentsOperation,
+  ): Promise<BaseTableResult.CreateReturn<Data>>;
 
   override update(
     data: BaseTableResult.UpdateInput,
@@ -325,7 +322,6 @@ declare namespace BaseTableResult {
   export import UpdateInput = TableResult.UpdateInput;
   export import Schema = TableResult.Schema;
   export import Database = TableResult.Database;
-  export import TemporaryIf = TableResult.TemporaryIf;
   export import Flags = TableResult.Flags;
 
   namespace Internal {

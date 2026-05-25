@@ -112,10 +112,10 @@ declare abstract class BaseFolder<out SubType extends BaseFolder.SubType = BaseF
     data?: Document.CanUserModifyData<"Folder", Action>,
   ): boolean;
 
-  static override createDocuments<Temporary extends boolean | undefined = undefined>(
+  static override createDocuments(
     data: BaseFolder.CreateInput[],
-    operation?: BaseFolder.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<Array<BaseFolder.TemporaryIf<Temporary>>>;
+    operation?: BaseFolder.Database.CreateDocumentsOperation,
+  ): Promise<Array<Folder.Stored>>;
 
   static override updateDocuments(
     updates: BaseFolder.UpdateInput[],
@@ -127,13 +127,10 @@ declare abstract class BaseFolder<out SubType extends BaseFolder.SubType = BaseF
     operation?: BaseFolder.Database.DeleteManyDocumentsOperation,
   ): Promise<Array<Folder.Stored>>;
 
-  static override create<
-    Data extends MaybeArray<BaseFolder.CreateInput>,
-    Temporary extends boolean | undefined = undefined,
-  >(
+  static override create<Data extends MaybeArray<BaseFolder.CreateInput>>(
     data: Data,
-    operation?: BaseFolder.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<BaseFolder.CreateReturn<Data, Temporary>>;
+    operation?: BaseFolder.Database.CreateDocumentsOperation,
+  ): Promise<BaseFolder.CreateReturn<Data>>;
 
   override update(
     data: BaseFolder.UpdateInput,
@@ -305,7 +302,6 @@ declare namespace BaseFolder {
   export import UpdateInput = Folder.UpdateInput;
   export import Schema = Folder.Schema;
   export import Database = Folder.Database;
-  export import TemporaryIf = Folder.TemporaryIf;
   export import Flags = Folder.Flags;
 
   namespace Internal {

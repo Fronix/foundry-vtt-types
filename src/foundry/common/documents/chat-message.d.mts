@@ -123,10 +123,10 @@ declare abstract class BaseChatMessage<
     data?: Document.CanUserModifyData<"ChatMessage", Action>,
   ): boolean;
 
-  static override createDocuments<Temporary extends boolean | undefined = undefined>(
+  static override createDocuments(
     data: BaseChatMessage.CreateInput[],
-    operation?: BaseChatMessage.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<Array<BaseChatMessage.TemporaryIf<Temporary>>>;
+    operation?: BaseChatMessage.Database.CreateDocumentsOperation,
+  ): Promise<Array<ChatMessage.Stored>>;
 
   static override updateDocuments(
     updates: BaseChatMessage.UpdateInput[],
@@ -138,13 +138,10 @@ declare abstract class BaseChatMessage<
     operation?: BaseChatMessage.Database.DeleteManyDocumentsOperation,
   ): Promise<Array<ChatMessage.Stored>>;
 
-  static override create<
-    Data extends MaybeArray<BaseChatMessage.CreateInput>,
-    Temporary extends boolean | undefined = undefined,
-  >(
+  static override create<Data extends MaybeArray<BaseChatMessage.CreateInput>>(
     data: Data,
-    operation?: BaseChatMessage.Database.CreateDocumentsOperation<Temporary>,
-  ): Promise<BaseChatMessage.CreateReturn<Data, Temporary>>;
+    operation?: BaseChatMessage.Database.CreateDocumentsOperation,
+  ): Promise<BaseChatMessage.CreateReturn<Data>>;
 
   override update(
     data: BaseChatMessage.UpdateInput,
@@ -325,7 +322,6 @@ declare namespace BaseChatMessage {
   export import UpdateInput = ChatMessage.UpdateInput;
   export import Schema = ChatMessage.Schema;
   export import Database = ChatMessage.Database;
-  export import TemporaryIf = ChatMessage.TemporaryIf;
   export import Flags = ChatMessage.Flags;
   export import CoreFlags = ChatMessage.CoreFlags;
   export import GetSpeakerOptions = ChatMessage.GetSpeakerOptions;

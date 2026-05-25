@@ -137,16 +137,14 @@ declare namespace Adventure {
   type CreateInput = CreateData | Implementation;
 
   /**
-   * The helper type for the return of {@linkcode Adventure.create}, returning (a single | an array of) (temporary | stored)
+   * The helper type for the return of {@linkcode Adventure.create}, returning (a single | an array of) stored
    * `Adventure`s.
    *
    * `| undefined` is included in the non-array branch because if a `.create` call with non-array data is cancelled by the `preCreate`
    * method or hook, `shift`ing the return of `.createDocuments` produces `undefined`
    */
-  type CreateReturn<Data extends MaybeArray<CreateInput>, Temporary extends boolean | undefined> =
-    Data extends Array<CreateInput>
-      ? Array<Adventure.TemporaryIf<Temporary>>
-      : Adventure.TemporaryIf<Temporary> | undefined;
+  type CreateReturn<Data extends MaybeArray<CreateInput>> =
+    Data extends Array<CreateInput> ? Array<Adventure.Stored> : Adventure.Stored | undefined;
 
   /**
    * The data after a {@linkcode Document} has been initialized, for example
@@ -338,9 +336,7 @@ declare namespace Adventure {
      * @remarks This interface was previously typed for passing to {@linkcode Adventure.create}. The new name for that
      * interface is {@linkcode CreateDocumentsOperation}.
      */
-    interface CreateOperation<
-      Temporary extends boolean | undefined = boolean | undefined,
-    > extends DatabaseBackend.CreateOperation<Adventure.CreateInput, Adventure.Parent, Temporary> {}
+    interface CreateOperation extends DatabaseBackend.CreateOperation<Adventure.CreateInput, Adventure.Parent> {}
 
     /**
      * The interface for passing to {@linkcode Adventure.create} or {@linkcode Adventure.createDocuments}.
@@ -354,8 +350,7 @@ declare namespace Adventure {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface CreateDocumentsOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.CreateDocumentsOperation<CreateOperation<Temporary>> {}
+    interface CreateDocumentsOperation extends Document.Database.CreateDocumentsOperation<CreateOperation> {}
 
     /**
      * @deprecated `Adventure` documents are never embedded. This interface exists for consistency with other documents.
@@ -386,8 +381,7 @@ declare namespace Adventure {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface BackendCreateOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.BackendCreateOperation<CreateOperation<Temporary>> {}
+    interface BackendCreateOperation extends Document.Database.BackendCreateOperation<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode Adventure._preCreate | Adventure#_preCreate} and
@@ -402,8 +396,7 @@ declare namespace Adventure {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface PreCreateOptions<Temporary extends boolean | undefined = boolean | undefined> extends Document.Database
-      .PreCreateOptions<CreateOperation<Temporary>> {}
+    interface PreCreateOptions extends Document.Database.PreCreateOptions<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode Adventure._preCreateOperation}.
@@ -417,8 +410,7 @@ declare namespace Adventure {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface PreCreateOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document.Database
-      .PreCreateOperation<CreateOperation<Temporary>> {}
+    interface PreCreateOperation extends Document.Database.PreCreateOperation<CreateOperation> {}
 
     /**
      * @deprecated The interface passed to {@linkcode Adventure._onCreateDocuments}. It will be removed in v14 along with the
@@ -433,8 +425,7 @@ declare namespace Adventure {
      * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
      * use case for doing so, please let us know.
      */
-    interface OnCreateDocumentsOperation<Temporary extends boolean | undefined = boolean | undefined> extends Document
-      .Database.OnCreateDocumentsOperation<CreateOperation<Temporary>> {}
+    interface OnCreateDocumentsOperation extends Document.Database.OnCreateDocumentsOperation<CreateOperation> {}
 
     /**
      * The interface passed to {@linkcode Adventure._onCreate | Adventure#_onCreate} and
@@ -763,20 +754,20 @@ declare namespace Adventure {
     interface OnDeleteOperation extends Document.Database.OnDeleteOperation<DeleteOperation> {}
 
     namespace Internal {
-      interface OperationNameMap<Temporary extends boolean | undefined = boolean | undefined> {
+      interface OperationNameMap {
         GetDocumentsOperation: Adventure.Database.GetDocumentsOperation;
         BackendGetOperation: Adventure.Database.BackendGetOperation;
         GetOperation: Adventure.Database.GetOperation;
 
-        CreateDocumentsOperation: Adventure.Database.CreateDocumentsOperation<Temporary>;
+        CreateDocumentsOperation: Adventure.Database.CreateDocumentsOperation;
         // eslint-disable-next-line @typescript-eslint/no-deprecated
         CreateEmbeddedOperation: Adventure.Database.CreateEmbeddedOperation;
-        BackendCreateOperation: Adventure.Database.BackendCreateOperation<Temporary>;
-        CreateOperation: Adventure.Database.CreateOperation<Temporary>;
-        PreCreateOptions: Adventure.Database.PreCreateOptions<Temporary>;
-        PreCreateOperation: Adventure.Database.PreCreateOperation<Temporary>;
+        BackendCreateOperation: Adventure.Database.BackendCreateOperation;
+        CreateOperation: Adventure.Database.CreateOperation;
+        PreCreateOptions: Adventure.Database.PreCreateOptions;
+        PreCreateOperation: Adventure.Database.PreCreateOperation;
         // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnCreateDocumentsOperation: Adventure.Database.OnCreateDocumentsOperation<Temporary>;
+        OnCreateDocumentsOperation: Adventure.Database.OnCreateDocumentsOperation;
         OnCreateOptions: Adventure.Database.OnCreateOptions;
         OnCreateOperation: Adventure.Database.OnCreateOperation;
 
@@ -819,7 +810,7 @@ declare namespace Adventure {
     type GetOptions = GetDocumentsOperation;
 
     /** @deprecated Use {@linkcode CreateOperation} instead. This type will be removed in v14.  */
-    type Create<Temporary extends boolean | undefined> = CreateOperation<Temporary>;
+    type Create = CreateOperation;
 
     /** @deprecated Use {@linkcode UpdateOperation} instead. This type will be removed in v14.  */
     type Update = UpdateOperation;
@@ -889,12 +880,6 @@ declare namespace Adventure {
   }
 
   /**
-   * If `Temporary` is true then {@linkcode Adventure.Implementation}, otherwise {@linkcode Adventure.Stored}.
-   */
-  type TemporaryIf<Temporary extends boolean | undefined> =
-    true extends Extract<Temporary, true> ? Adventure.Implementation : Adventure.Stored;
-
-  /**
    * The flags that are available for this document in the form `{ [scope: string]: { [key: string]: unknown } }`.
    */
   interface Flags extends Document.Internal.ConfiguredFlagsForName<Name> {}
@@ -946,8 +931,8 @@ declare namespace Adventure {
    * The interface for passing to {@linkcode Adventure.createDialog}'s second parameter that still includes partial Dialog
    * options, instead of being purely a {@linkcode Database.CreateDocumentsOperation | CreateDocumentsOperation}.
    */
-  interface CreateDialogDeprecatedOptions<Temporary extends boolean | undefined = boolean | undefined>
-    extends Database.CreateDocumentsOperation<Temporary>, Document._PartialDialogV1OptionsForCreateDialog {}
+  interface CreateDialogDeprecatedOptions
+    extends Database.CreateDocumentsOperation, Document._PartialDialogV1OptionsForCreateDialog {}
 
   /**
    * The interface for passing to {@linkcode Adventure.createDialog}'s third parameter
@@ -1113,13 +1098,10 @@ declare class Adventure extends BaseAdventure.Internal.ClientDocument {
    *
    * @see {@linkcode Adventure.CreateDialogDeprecatedOptions}
    */
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends Adventure.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends Adventure.CreateDialogOptions | undefined = undefined>(
     data: Adventure.CreateDialogData | undefined,
     // eslint-disable-next-line @typescript-eslint/no-deprecated
-    createOptions: Adventure.CreateDialogDeprecatedOptions<Temporary>,
+    createOptions: Adventure.CreateDialogDeprecatedOptions,
     options?: Options,
     renderOptions?: Document.CreateDialogRenderOptions,
   ): Promise<Adventure.CreateDialogReturn<Options>>;
