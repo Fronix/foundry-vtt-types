@@ -47,7 +47,7 @@ const myTile = new TestBaseTile({
     weather: false,
   },
   occlusion: {
-    mode: CONST.OCCLUSION_MODES.FADE,
+    modes: [CONST.OCCLUSION_MODES.FADE],
     alpha: 0.78,
   },
   video: {
@@ -92,7 +92,7 @@ new TestBaseTile({
     weather: null,
   },
   occlusion: {
-    mode: null,
+    modes: null,
     alpha: null,
   },
   video: {
@@ -141,7 +141,7 @@ new TestBaseTile({
     weather: undefined,
   },
   occlusion: {
-    mode: undefined,
+    modes: undefined,
     alpha: undefined,
   },
   video: {
@@ -181,7 +181,7 @@ expectTypeOf(myTile.hidden).toBeBoolean();
 expectTypeOf(myTile.locked).toBeBoolean();
 expectTypeOf(myTile.restrictions.light).toBeBoolean();
 expectTypeOf(myTile.restrictions.weather).toBeBoolean();
-expectTypeOf(myTile.occlusion.mode).toEqualTypeOf<CONST.OCCLUSION_MODES | null>();
+expectTypeOf(myTile.occlusion.modes).toEqualTypeOf<Set<CONST.OCCLUSION_MODES | null>>();
 expectTypeOf(myTile.occlusion.alpha).toBeNumber();
 expectTypeOf(myTile.video.loop).toBeBoolean();
 expectTypeOf(myTile.video.autoplay).toBeBoolean();

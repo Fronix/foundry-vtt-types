@@ -325,6 +325,12 @@ declare namespace Combatant {
     group: fields.DocumentIdField<{ readonly: false }>;
 
     /**
+     * The round of combat in which this Combatant joined the encounter
+     * @defaultValue `1`
+     */
+    roundJoined: fields.NumberField<{ required: true; nullable: false; integer: true; positive: true; initial: 1 }>;
+
+    /**
      * An object of optional key/value flags
      * @defaultValue `{}`
      */

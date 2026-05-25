@@ -264,7 +264,7 @@ declare namespace RegionDocument {
       labelPlural: "DOCUMENT.Regions";
       isEmbedded: true;
       embedded: Metadata.Embedded;
-      schemaVersion: "13.341";
+      schemaVersion: "14.361";
     }>
   > {}
 
@@ -531,12 +531,69 @@ declare namespace RegionDocument {
         top: fields.NumberField<{
           required: true;
         }>;
+
+        /**
+         * Is the top elevation level inclusive?
+         * @defaultValue `false`
+         */
+        topInclusive: fields.BooleanField;
       },
       {
         validate: (d: unknown) => boolean;
         validationError: "elevation.top may not be less than elevation.bottom";
       }
     >;
+
+    // TODO(v14-levels): levels: SceneLevelsSetField (Phase 7)
+
+    /**
+     * The movement and perception restrictions applied by this Region
+     * @defaultValue see properties
+     */
+    restriction: fields.SchemaField<{
+      /**
+       * Is this restriction enabled?
+       * @defaultValue `false`
+       */
+      enabled: fields.BooleanField;
+
+      /**
+       * The type of restriction applied by this Region
+       * @defaultValue `"move"`
+       */
+      type: fields.StringField<{
+        required: true;
+        choices: CONST.EDGE_RESTRICTION_TYPES[];
+        initial: "move";
+      }>;
+
+      /**
+       * The priority of this restriction relative to other Regions
+       * @defaultValue `0`
+       */
+      priority: fields.NumberField<{
+        required: true;
+        nullable: false;
+        integer: true;
+        initial: 0;
+        min: 0;
+      }>;
+    }>;
+
+    /**
+     * The attachment configuration for this Region
+     * @defaultValue see properties
+     */
+    attachment: fields.SchemaField<{
+      /**
+       * The Token to which this Region is attached
+       * @defaultValue `null`
+       */
+      token: fields.ForeignDocumentField<
+        typeof foundry.documents.BaseToken,
+        { idOnly: true; nullable: true; initial: null }
+      >;
+    }>;
 
     /**
      * A collection of embedded RegionBehavior objects
@@ -546,11 +603,11 @@ declare namespace RegionDocument {
       RegionDocument.Implementation
     >;
 
-    /** @defaultValue `CONST.REGION_VISIBILITY.LAYER` */
+    /** @defaultValue `CONST.REGION_VISIBILITY.LAYER_UNLOCKED` */
     visibility: fields.NumberField<
       {
         required: true;
-        initial: typeof CONST.REGION_VISIBILITY.LAYER;
+        initial: typeof CONST.REGION_VISIBILITY.LAYER_UNLOCKED;
         choices: CONST.REGION_VISIBILITY[];
       },
       CONST.REGION_VISIBILITY | null | undefined,
@@ -558,13 +615,50 @@ declare namespace RegionDocument {
       CONST.REGION_VISIBILITY | null
     >;
 
+    /**
+     * The highlight mode used to display this Region on the canvas
+     * @defaultValue `"shapes"`
+     */
+    highlightMode: fields.StringField<{
+      required: true;
+      initial: "shapes";
+      choices: {
+        shapes: "REGION.HIGHLIGHT_MODES.shapes.label";
+        coverage: "REGION.HIGHLIGHT_MODES.coverage.label";
+      };
+    }>;
+
+    /**
+     * Should measurements be displayed for this Region?
+     * @defaultValue `false`
+     */
+    displayMeasurements: fields.BooleanField;
+
+    /**
+     * Is the Region hidden?
+     * @defaultValue `false`
+     */
+    hidden: fields.BooleanField;
+
     /** @defaultValue `false` */
     locked: fields.BooleanField;
+
+    /**
+     * An object which configures ownership of this Region
+     * @defaultValue see {@linkcode fields.DocumentOwnershipField}
+     */
+    ownership: fields.DocumentOwnershipField;
 
     /**
      * An object of optional key/value flags
      */
     flags: fields.DocumentFlagsField<Name>;
+
+    /** @internal */
+    _shapeConstraints: fields.ArrayField<
+      fields.ArrayField<fields.NumberField<{ required: true; nullable: false; initial: undefined }>>,
+      { nullable: true; initial: null }
+    >;
   }
 
   namespace Database {

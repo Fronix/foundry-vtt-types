@@ -306,7 +306,12 @@ declare namespace Playlist {
      * A channel in CONST.AUDIO_CHANNELS where all sounds in this playlist are played
      * @defaultValue `"music"`
      */
-    channel: fields.StringField<{ choices: typeof CONST.AUDIO_CHANNELS; initial: string; blank: false }>;
+    channel: fields.StringField<{
+      required: true;
+      choices: typeof CONST.AUDIO_CHANNELS;
+      initial: string;
+      blank: false;
+    }>;
 
     /**
      * The playback mode for sounds in this playlist

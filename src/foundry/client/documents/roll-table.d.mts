@@ -296,7 +296,7 @@ declare namespace RollTable {
      * The HTML text description for this RollTable document
      * @defaultValue `""`
      */
-    description: fields.StringField<{ textSearch: true }>;
+    description: fields.HTMLField<{ textSearch: true }>;
 
     /**
      * A Collection of TableResult embedded documents which belong to this RollTable

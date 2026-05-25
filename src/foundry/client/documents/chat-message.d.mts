@@ -56,7 +56,7 @@ declare namespace ChatMessage {
       baseTypeAllowed: true;
       isPrimary: true;
       permissions: Metadata.Permissions;
-      schemaVersion: "13.341";
+      schemaVersion: "14.352";
     }>
   > {}
 
@@ -297,15 +297,21 @@ declare namespace ChatMessage {
 
     /**
      * The timestamp at which point this message was generated
-     * @defaultValue `Date.now()`
+     * @defaultValue `null`
      */
-    timestamp: fields.NumberField<{ required: true; nullable: false; initial: typeof Date.now }>;
+    timestamp: fields.NumberField<{ required: true; nullable: true; initial: null }>;
 
     /**
      * An optional flavor text message which summarizes this message
      * @defaultValue `""`
      */
     flavor: fields.HTMLField;
+
+    /**
+     * An optional title for the message
+     * @defaultValue `""`
+     */
+    title: fields.StringField;
 
     /**
      * The HTML content of this chat message

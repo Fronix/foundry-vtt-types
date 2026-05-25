@@ -10,7 +10,7 @@ import type {
 } from "#utils";
 import type { fields } from "#common/data/_module.d.mts";
 import type { DataModel, DatabaseBackend, Document } from "#common/abstract/_module.d.mts";
-import type { BaseActiveEffect, BaseCombat } from "#common/documents/_module.d.mts";
+import type { BaseActiveEffect, BaseCombat, BaseCombatant, BaseFolder } from "#common/documents/_module.d.mts";
 import type { DialogV2 } from "#client/applications/api/_module.d.mts";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Only used for links.
@@ -59,16 +59,21 @@ declare namespace ActiveEffect {
       collection: "effects";
       hasTypeData: true;
       baseTypeAllowed: true;
+      indexed: true;
+      compendiumIndexFields: ["_id", "name", "img", "type", "sort", "folder"];
       label: "DOCUMENT.ActiveEffect";
       labelPlural: "DOCUMENT.ActiveEffects";
-      schemaVersion: "13.341";
+      schemaVersion: "14.353";
       permissions: Metadata.Permissions;
     }>
   > {}
 
   namespace Metadata {
+    /**
+     * The permissions for whether a certain user can create, update, or delete this document.
+     */
     interface Permissions {
-      create: "OWNER";
+      create(user: User.Internal.Implementation, doc: Implementation): boolean;
       delete: "OWNER";
     }
   }
@@ -284,16 +289,16 @@ declare namespace ActiveEffect {
     system: fields.TypeDataField<typeof BaseActiveEffect>;
 
     /**
-     * The array of EffectChangeData objects which the ActiveEffect applies
-     * @defaultValue `[]`
-     */
-    changes: fields.ArrayField<fields.SchemaField<ChangeSchema>>;
-
-    /**
      * Is this ActiveEffect currently disabled?
      * @defaultValue `false`
      */
     disabled: fields.BooleanField;
+
+    /**
+     * Data which describes when the ActiveEffect first started
+     * @defaultValue `null`
+     */
+    start: fields.SchemaField<StartSchema, { nullable: true }>;
 
     /**
      * An ActiveEffect.DurationData object which describes the duration of the ActiveEffect
@@ -310,7 +315,9 @@ declare namespace ActiveEffect {
      * A UUID reference to the document from which this ActiveEffect originated
      * @defaultValue `null`
      */
-    origin: fields.StringField<{ nullable: true; blank: false; initial: null }>;
+    // `DocumentUUIDField<Options>` derives its type via `StringField.InitializedType<Options>`, which does not
+    // re-apply `DocumentUUIDField`'s own defaults, so the effective defaults are spelled out (cf. table-result).
+    origin: fields.DocumentUUIDField<{ required: true; blank: false; nullable: true; initial: null; relative: true }>;
 
     /**
      * A color string which applies a tint to the ActiveEffect icon
@@ -331,6 +338,28 @@ declare namespace ActiveEffect {
     statuses: fields.SetField<fields.StringField<{ required: true; blank: false }>>;
 
     /**
+     * Configure whether the icon of this ActiveEffect is shown on the Token
+     * @defaultValue `CONST.ACTIVE_EFFECT_SHOW_ICON.CONDITIONAL`
+     */
+    showIcon: fields.NumberField<
+      {
+        required: true;
+        nullable: false;
+        choices: CONST.ACTIVE_EFFECT_SHOW_ICON[];
+        initial: typeof CONST.ACTIVE_EFFECT_SHOW_ICON.CONDITIONAL;
+      },
+      CONST.ACTIVE_EFFECT_SHOW_ICON | null | undefined,
+      CONST.ACTIVE_EFFECT_SHOW_ICON,
+      CONST.ACTIVE_EFFECT_SHOW_ICON
+    >;
+
+    /**
+     * The _id of a Folder which contains this ActiveEffect
+     * @defaultValue `null`
+     */
+    folder: fields.ForeignDocumentField<typeof BaseFolder>;
+
+    /**
      * The sort value
      * @defaultValue `0`
      */
@@ -345,56 +374,7 @@ declare namespace ActiveEffect {
     _stats: fields.DocumentStatsField;
   }
 
-  interface ChangeSchema extends fields.DataSchema {
-    /**
-     * The attribute path in the Actor or Item data which the change modifies
-     * @defaultValue `""`
-     */
-    key: fields.StringField<{ required: true }>;
-
-    /**
-     * The value of the change effect
-     * @defaultValue `""`
-     */
-    value: fields.StringField<{ required: true }>;
-
-    /**
-     * The modification mode with which the change is applied
-     * @defaultValue `CONST.ACTIVE_EFFECT_MODES.ADD`
-     */
-    mode: fields.NumberField<
-      {
-        required: true;
-        nullable: false;
-        integer: true;
-        initial: typeof CONST.ACTIVE_EFFECT_MODES.ADD;
-      },
-      // Note(LukeAbby): This will always need an override since there's no validation.
-      CONST.ACTIVE_EFFECT_MODES | null | undefined,
-      CONST.ACTIVE_EFFECT_MODES,
-      CONST.ACTIVE_EFFECT_MODES
-    >;
-
-    /**
-     * The priority level with which this change is applied
-     * @defaultValue `undefined`
-     */
-    priority: fields.NumberField;
-  }
-
-  interface DurationSchema extends fields.DataSchema {
-    /**
-     * The world time when the active effect first started
-     * @defaultValue `null`
-     */
-    startTime: fields.NumberField<{ initial: null }>;
-
-    /**
-     * The maximum duration of the effect, in seconds
-     * @defaultValue `undefined`
-     */
-    seconds: fields.NumberField<{ integer: true; min: 0 }>;
-
+  interface StartSchema extends fields.DataSchema {
     /**
      * The `_id` of the {@linkcode Combat} in which the effect first started
      * @defaultValue `null`
@@ -402,28 +382,64 @@ declare namespace ActiveEffect {
     combat: fields.ForeignDocumentField<typeof BaseCombat>;
 
     /**
-     * The maximum duration of the effect, in combat rounds
-     * @defaultValue `undefined`
+     * The `_id` of the {@linkcode Combatant} which started the effect
+     * @defaultValue `null`
      */
-    rounds: fields.NumberField<{ integer: true; min: 0 }>;
+    combatant: fields.ForeignDocumentField<typeof BaseCombatant, { idOnly: true }>;
 
     /**
-     * The maximum duration of the effect, in combat turns
-     * @defaultValue `undefined`
+     * The initiative value of the Combatant at the time the effect first started
+     * @defaultValue `null`
      */
-    turns: fields.NumberField<{ integer: true; min: 0 }>;
+    initiative: fields.NumberField<{ required: true }>;
 
     /**
      * The round of the CombatEncounter in which the effect first started
-     * @defaultValue `undefined`
+     * @defaultValue `null`
      */
-    startRound: fields.NumberField<{ integer: true; min: 0 }>;
+    round: fields.NumberField<{ required: true; integer: true; min: 0 }>;
 
     /**
      * The turn of the CombatEncounter in which the effect first started
-     * @defaultValue `undefined`
+     * @defaultValue `null`
      */
-    startTurn: fields.NumberField<{ integer: true; min: 0 }>;
+    turn: fields.NumberField<{ required: true; integer: true; min: 0 }>;
+
+    /**
+     * The world time when the active effect first started
+     * @defaultValue `null`
+     */
+    time: fields.NumberField<{ required: true; nullable: false; integer: true }>;
+  }
+
+  interface DurationSchema extends fields.DataSchema {
+    /**
+     * The maximum duration of the effect, in the units defined by {@linkcode DurationSchema.units | units}
+     * @defaultValue `null`
+     */
+    value: fields.NumberField<{ required: true; nullable: true; integer: true; min: 0 }>;
+
+    /**
+     * The units in which the duration value is expressed
+     * @defaultValue `"seconds"`
+     */
+    units: fields.StringField<{
+      required: true;
+      choices: typeof CONST.ACTIVE_EFFECT_DURATION_UNITS;
+      initial: "seconds";
+    }>;
+
+    /**
+     * The expiry event which causes the effect to be removed
+     * @defaultValue `d => typeof d?.duration?.value === "number" ? "turnStart" : null`
+     */
+    expiry: fields.StringField<{ required: true; blank: false; nullable: true; initial: () => string | null }>;
+
+    /**
+     * Has the effect expired?
+     * @defaultValue `false`
+     */
+    expired: fields.BooleanField;
   }
 
   interface DurationData extends fields.SchemaField.InitializedData<DurationSchema> {}

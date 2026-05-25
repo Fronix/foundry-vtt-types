@@ -47,10 +47,19 @@ declare namespace Adventure {
     Readonly<{
       name: "Adventure";
       collection: "adventures";
-      compendiumIndexFields: ["_id", "name", "img", "sort", "folder"];
+      compendiumIndexFields: [
+        "_id",
+        "name",
+        "caption",
+        "description",
+        "img",
+        "sort",
+        "folder",
+        "flags.core.sheetClass",
+      ];
       label: "DOCUMENT.Adventure";
       labelPlural: "DOCUMENT.Adventures";
-      schemaVersion: "13.341";
+      schemaVersion: "14.353";
     }>
   > {}
 

@@ -61,7 +61,7 @@ declare namespace Actor {
       label: "DOCUMENT.Actor";
       labelPlural: "DOCUMENT.Actors";
       permissions: Metadata.Permissions;
-      schemaVersion: "13.341";
+      schemaVersion: "14.353";
     }>
   > {}
 
@@ -370,14 +370,14 @@ declare namespace Actor {
     /** The name of this Actor */
     name: fields.StringField<{ required: true; blank: false; textSearch: true }>;
 
-    /** An Actor subtype which configures the system data model applied */
-    type: fields.DocumentTypeField<typeof BaseActor>;
-
     /**
      * An image file path which provides the artwork for this Actor
      * @defaultValue `Actor.DEFAULT_ICON`
      */
     img: fields.FilePathField<{ categories: ["IMAGE"]; initial: (data: unknown) => string }>;
+
+    /** An Actor subtype which configures the system data model applied */
+    type: fields.DocumentTypeField<typeof BaseActor>;
 
     /**
      * Data for an Actor subtype, defined by a System or Module

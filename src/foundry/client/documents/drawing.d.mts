@@ -51,7 +51,7 @@ declare namespace DrawingDocument {
       labelPlural: "DOCUMENT.Drawings";
       isEmbedded: true;
       permissions: Metadata.Permissions;
-      schemaVersion: "13.341";
+      schemaVersion: "14.355";
     }>
   > {}
 
@@ -197,6 +197,12 @@ declare namespace DrawingDocument {
     _id: fields.DocumentIdField;
 
     /**
+     * The name of this drawing
+     * @defaultValue `undefined`
+     */
+    name: fields.StringField<{ textSearch: true }>;
+
+    /**
      * The _id of the user who created the drawing
      * @defaultValue `game.user?.id`
      */
@@ -320,7 +326,7 @@ declare namespace DrawingDocument {
      * The font family used to display text within this drawing, defaults to CONFIG.defaultFontFamily
      * @defaultValue `globalThis.CONFIG?.defaultFontFamily || "Signika"`
      */
-    fontFamily: fields.StringField<{ blank: false; label: "DRAWING.FontFamily"; initial: () => string }>;
+    fontFamily: fields.StringField<{ required: true; blank: true; label: "DRAWING.FontFamily" }>;
 
     /**
      * The font size used to display text within this drawing
@@ -340,7 +346,7 @@ declare namespace DrawingDocument {
      * The color of text displayed within this drawing
      * @defaultValue `#FFFFFF`
      */
-    textColor: fields.ColorField<{ nullable: false; initial: "#FFFFFF"; label: "DRAWING.TextColor" }>;
+    textColor: fields.ColorField<{ nullable: false; initial: "#ffffff"; label: "DRAWING.TextColor" }>;
 
     /**
      * The opacity of text displayed within this drawing
@@ -359,6 +365,14 @@ declare namespace DrawingDocument {
      * @defaultValue `false`
      */
     locked: fields.BooleanField;
+
+    /**
+     * Does this drawing belong to the interface canvas group?
+     * @defaultValue `false`
+     */
+    interface: fields.BooleanField;
+
+    // TODO(v14-levels): levels: SceneLevelsSetField (Phase 7)
 
     /**
      * An object of optional key/value flags

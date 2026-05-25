@@ -59,7 +59,7 @@ declare namespace Combat {
       hasTypeData: true;
       baseTypeAllowed: true;
       permissions: Metadata.Permissions;
-      schemaVersion: "13.341";
+      schemaVersion: "14.361";
     }>
   > {}
 
@@ -358,6 +358,12 @@ declare namespace Combat {
      * @defaultValue `null`
      */
     _id: fields.DocumentIdField;
+
+    /**
+     * The name of this combat encounter
+     * @defaultValue `""`
+     */
+    name: fields.StringField<{ required: true; blank: true; textSearch: true }>;
 
     type: fields.DocumentTypeField<typeof BaseCombat, { initial: typeof CONST.BASE_DOCUMENT_TYPE }>;
 

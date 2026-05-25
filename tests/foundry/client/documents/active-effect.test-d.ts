@@ -46,29 +46,21 @@ export const source = {
   img: "icons/magic/symbols/star-yellow.webp",
   type: "base",
   system: {},
-  changes: [
-    {
-      key: "name",
-      mode: CONST.ACTIVE_EFFECT_MODES.ADD,
-      priority: 60,
-      value: " the Suffix",
-    },
-  ],
   disabled: true,
+  start: null,
   duration: {
-    startTime: 1700000,
-    seconds: 300,
-    combat: null, // TODO: make this the canonical test Combat ID eventually
-    rounds: 20,
-    turns: 3,
-    startRound: 1,
-    startTurn: 3,
+    value: 300,
+    units: "seconds",
+    expiry: "turnStart",
+    expired: false,
   },
   description: "Add a suffix to your name",
-  origin: null, // TODO: possibly give this a real UUID in future
+  origin: "Item.cOdcNWy4hII029DT",
   tint: "#C8888C",
   transfer: true,
   statuses: ["invisible", "flying"],
+  showIcon: 1,
+  folder: null,
   sort: 7,
   flags: {
     core: {
@@ -98,23 +90,12 @@ export const nullishCreateData = {
   img: null,
   type: null,
   system: null,
-  changes: [
-    {
-      key: null,
-      mode: null,
-      priority: null,
-      value: null,
-    },
-  ],
   disabled: null,
   duration: {
-    startTime: null,
-    seconds: null,
-    combat: null,
-    rounds: null,
-    turns: null,
-    startRound: null,
-    startTurn: null,
+    value: null,
+    units: null,
+    expiry: null,
+    expired: null,
   },
   description: null,
   origin: null,
@@ -462,25 +443,17 @@ export const operations = {
 
 export const realSource = {
   _id: "R5ro4AuNjcdWD56O",
-  changes: [
-    {
-      key: "system.attributes.ac.calc",
-      mode: CONST.ACTIVE_EFFECT_MODES.OVERRIDE,
-      value: "unarmoredMonk",
-      priority: null,
-    },
-  ],
   disabled: false,
+  start: null,
   duration: {
-    startTime: 0,
-    seconds: null,
-    combat: null,
-    rounds: null,
-    turns: null,
-    startRound: null,
-    startTurn: null,
+    value: null,
+    units: "seconds",
+    expiry: null,
+    expired: false,
   },
   origin: "Item.cOdcNWy4hII029DT",
+  showIcon: 0,
+  folder: null,
   transfer: true,
   flags: {},
   tint: "#ffffff",
@@ -506,24 +479,23 @@ export const realSource = {
 
 export const maximumSource = {
   _id: "R5ro4AuNjcdWD56O",
-  changes: [
-    {
-      key: "system.attributes.ac.calc",
-      mode: CONST.ACTIVE_EFFECT_MODES.OVERRIDE,
-      value: "unarmoredMonk",
-      priority: 70,
-    },
-  ],
   disabled: false,
-  duration: {
-    startTime: 0,
-    seconds: 12,
-    combat: "XXXXCOMBATIDXXXX",
-    rounds: 2,
-    turns: 7,
-    startRound: 1,
-    startTurn: 3,
+  start: {
+    combat: "CCCCCSomeIDCCCCC",
+    combatant: "BBBBBSomeIDBBBBB",
+    initiative: 17,
+    round: 1,
+    turn: 3,
+    time: 1700000,
   },
+  duration: {
+    value: 12,
+    units: "seconds",
+    expiry: "turnStart",
+    expired: false,
+  },
+  showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS,
+  folder: null,
   origin: "Item.cOdcNWy4hII029DT",
   transfer: true,
   flags: {
@@ -570,7 +542,7 @@ expectTypeOf(ActiveEffect.fromStatusEffect("flying", aeContext)).toEqualTypeOf<P
 
 const createData = {
   name: "foo",
-  changes: [{ key: "system.foo.bar", mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE, value: "7", priority: 42 }],
+  disabled: true,
 };
 
 expectTypeOf(ActiveEffect["_fromStatusEffect"]("flying", createData)).toEqualTypeOf<

@@ -34,7 +34,6 @@ describe("DetectionModeLightPerception tests", () => {
 
   const dmData = {
     enabled: true,
-    id: "baz",
     range: 600,
   } satisfies TokenDocument.DetectionModeData;
 

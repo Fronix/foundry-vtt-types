@@ -49,7 +49,7 @@ declare namespace AmbientLightDocument {
       collection: "lights";
       label: "DOCUMENT.AmbientLight";
       labelPlural: "DOCUMENT.AmbientLights";
-      schemaVersion: "13.341";
+      schemaVersion: "14.354";
     }>
   > {}
 
@@ -187,6 +187,12 @@ declare namespace AmbientLightDocument {
     _id: fields.DocumentIdField;
 
     /**
+     * The name of this AmbientLight
+     * @defaultValue `""`
+     */
+    name: fields.StringField<{ textSearch: true }>;
+
+    /**
      * The x-coordinate position of the origin of the light
      * @defaultValue `0`
      */
@@ -203,6 +209,8 @@ declare namespace AmbientLightDocument {
      * @defaultValue `0`
      */
     elevation: fields.NumberField<{ required: true; nullable: false; initial: 0 }>;
+
+    // TODO(v14-levels): levels: SceneLevelsSetField (Phase 7)
 
     /**
      * The angle of rotation for the tile between 0 and 360
@@ -233,6 +241,12 @@ declare namespace AmbientLightDocument {
      * @defaultValue `false`
      */
     hidden: fields.BooleanField;
+
+    /**
+     * Is the light source currently locked?
+     * @defaultValue `false`
+     */
+    locked: fields.BooleanField;
 
     /**
      * An object of optional key/value flags

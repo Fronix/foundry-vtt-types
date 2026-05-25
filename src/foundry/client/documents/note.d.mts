@@ -1,7 +1,7 @@
 import type { MaybeArray, Merge } from "#utils";
 import type { fields, TextureData } from "#common/data/_module.d.mts";
 import type { DatabaseBackend, Document } from "#common/abstract/_module.d.mts";
-import type { BaseJournalEntryPage, BaseJournalEntry, BaseNote } from "#client/documents/_module.d.mts";
+import type { BaseJournalEntryPage, BaseJournalEntry, BaseNote, BaseUser } from "#client/documents/_module.d.mts";
 import type { DialogV2 } from "#client/applications/api/_module.d.mts";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Only used for links.
@@ -50,7 +50,7 @@ declare namespace NoteDocument {
       label: "DOCUMENT.Note";
       labelPlural: "DOCUMENT.Notes";
       permissions: Metadata.Permissions;
-      schemaVersion: "13.341";
+      schemaVersion: "14.358";
     }>
   > {}
 
@@ -196,6 +196,12 @@ declare namespace NoteDocument {
     _id: fields.DocumentIdField;
 
     /**
+     * The _id of the User who created this Note
+     * @defaultValue `null`
+     */
+    author: fields.DocumentAuthorField<typeof BaseUser, { nullable: true }>;
+
+    /**
      * The _id of a JournalEntry document which this Note represents
      * @defaultValue `null`
      */
@@ -225,11 +231,19 @@ declare namespace NoteDocument {
      */
     elevation: fields.NumberField<{ required: true; nullable: false; initial: 0 }>;
 
+    // TODO(v14-levels): levels: SceneLevelsSetField (Phase 7)
+
     /**
      * The z-index of this note relative to other siblings
      * @defaultValue `0`
      */
     sort: fields.NumberField<{ required: true; integer: true; nullable: false; initial: 0 }>;
+
+    /**
+     * Is the note currently locked?
+     * @defaultValue `false`
+     */
+    locked: fields.BooleanField;
 
     /**
      * An image icon used to represent this note
@@ -266,9 +280,9 @@ declare namespace NoteDocument {
 
     /**
      * The font family used to display the text label on this note, defaults to CONFIG.defaultFontFamily
-     * @defaultValue `globalThis.CONFIG?.defaultFontFamily || "Signika"`
+     * @defaultValue `""`
      */
-    fontFamily: fields.StringField<{ required: true; initial: () => string }>;
+    fontFamily: fields.StringField<{ required: true; blank: true }>;
 
     /**
      * The font size used to display the text label on this note

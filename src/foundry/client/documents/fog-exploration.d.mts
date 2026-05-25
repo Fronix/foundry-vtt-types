@@ -51,7 +51,7 @@ declare namespace FogExploration {
       labelPlural: "DOCUMENT.FogExplorations";
       isPrimary: true;
       permissions: Metadata.Permissions;
-      schemaVersion: "13.341";
+      schemaVersion: "14.357";
     }>
   > {}
 
@@ -198,16 +198,22 @@ declare namespace FogExploration {
     _id: fields.DocumentIdField;
 
     /**
-     * The _id of the Scene document to which this fog applies
-     * @defaultValue `canvas?.scene?.id`
-     */
-    scene: fields.ForeignDocumentField<typeof BaseScene, { initial: () => string | undefined }>;
-
-    /**
      * The _id of the User document to which this fog applies
      * @defaultValue `null`
      */
     user: fields.ForeignDocumentField<typeof BaseUser, { initial: () => string }>;
+
+    /**
+     * The _id of the Scene document to which this fog applies
+     * @defaultValue `null`
+     */
+    scene: fields.ForeignDocumentField<typeof BaseScene, { initial: null }>;
+
+    /**
+     * The _id of a scene level to which this fog applies
+     * @defaultValue `null`
+     */
+    level: fields.DocumentIdField<{ readonly: false; initial: null }>;
 
     /**
      * The base64 image/jpeg of the explored fog polygon

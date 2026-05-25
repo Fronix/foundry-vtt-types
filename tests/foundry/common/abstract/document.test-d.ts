@@ -5,14 +5,13 @@ import Document = foundry.abstract.Document;
 
 declare const baseActiveEffect: foundry.documents.BaseActiveEffect;
 
-expectTypeOf(baseActiveEffect.toJSON().changes).toEqualTypeOf<ActiveEffect.ChangeData[]>();
-expectTypeOf(baseActiveEffect.toObject().changes).toEqualTypeOf<ActiveEffect.ChangeData[]>();
-expectTypeOf(baseActiveEffect.toObject(true).changes).toEqualTypeOf<ActiveEffect.ChangeData[]>();
-expectTypeOf(baseActiveEffect.toObject(false).changes).toEqualTypeOf<ActiveEffect.ChangeData[]>();
+// v14: the top-level `changes` field was removed from the ActiveEffect schema (it now lives under
+// `system`), so `toJSON()`/`toObject()` no longer surface a top-level `changes` array to assert on.
+// `toObject()` round-trips through the schema, which is exercised below.
+expectTypeOf(baseActiveEffect.toObject().name).toBeString();
 
 const item = await Item.create({ name: "Some Item", type: "base" });
 if (item) {
-  expectTypeOf(item.toObject(false).effects[0]!.changes).toEqualTypeOf<ActiveEffect.ChangeData[]>();
   expectTypeOf(item.toObject().effects).toEqualTypeOf<
     foundry.data.fields.SchemaField.SourceData<BaseActiveEffect["schema"]["fields"]>[]
   >();

@@ -73,7 +73,7 @@ declare namespace TokenDocument {
       isEmbedded: true;
       embedded: TokenDocument.Metadata.Embedded;
       permissions: TokenDocument.Metadata.Permissions;
-      schemaVersion: "13.341";
+      schemaVersion: "14.357";
     }>
   > {}
 
@@ -332,16 +332,22 @@ declare namespace TokenDocument {
     prependAdjective: fields.BooleanField;
 
     /**
-     * The width of the Token in grid units
+     * The width of the Token in grid spaces (positive)
      * @defaultValue `1`
      */
-    width: fields.NumberField<{ nullable: false; positive: true; initial: 1; step: 0.5 }>;
+    width: fields.NumberField<{ required: true; nullable: false; positive: true; initial: 1 }>;
 
     /**
-     * The height of the Token in grid units
+     * The height of the Token in grid spaces (positive)
      * @defaultValue `1`
      */
-    height: fields.NumberField<{ nullable: false; positive: true; initial: 1; step: 0.5 }>;
+    height: fields.NumberField<{ required: true; nullable: false; positive: true; initial: 1 }>;
+
+    /**
+     * The depth of the Token in grid spaces (nonnegative)
+     * @defaultValue `1`
+     */
+    depth: fields.NumberField<{ required: true; nullable: false; min: 0; initial: 1 }>;
 
     /**
      * The token's texture on the canvas.
@@ -536,15 +542,15 @@ declare namespace TokenDocument {
     }>;
 
     /**
-     * An array of detection modes which are available to this Token
-     * @defaultValue `[]`
-     * @remarks The validation function is a `BaseToken.#validateDetectionModes` reference, which throws if there's a duplicate mode ID
+     * The detection modes which are available to this Token, keyed by detection mode ID
+     * (a key from `CONFIG.Canvas.detectionModes`)
+     * @defaultValue `{}`
      */
-    detectionModes: fields.ArrayField<
+    // `initial: {}` models the effective initial value: `ObjectField#getInitialValue` returns `{}` for a
+    // required field, so a bare `TypedObjectField` is omittable on creation despite source declaring no `initial`.
+    detectionModes: fields.TypedObjectField<
       fields.SchemaField<DetectionModeSchema>,
-      {
-        validate: () => void;
-      }
+      { initial: Record<string, never> }
     >;
 
     /**
@@ -640,12 +646,6 @@ declare namespace TokenDocument {
 
   interface DetectionModeSchema extends fields.DataSchema {
     /**
-     * The id of the detection mode, a key from CONFIG.Canvas.detectionModes
-     * @defaultValue `""`
-     */
-    id: fields.StringField;
-
-    /**
      * Whether or not this detection mode is presently enabled
      * @defaultValue `true`
      */
@@ -692,6 +692,12 @@ declare namespace TokenDocument {
     height: fields.NumberField<{ required: true; nullable: false; positive: true; initial: undefined }>;
 
     /**
+     * The depth in grid spaces (nonnegative).
+     * @defaultValue `undefined`
+     */
+    depth: fields.NumberField<{ required: true; nullable: false; min: 0; initial: undefined }>;
+
+    /**
      * The shape type (see {@linkcode CONST.TOKEN_SHAPES}).
      * @defaultValue `undefined`
      */
@@ -706,6 +712,8 @@ declare namespace TokenDocument {
       CONST.TOKEN_SHAPES,
       CONST.TOKEN_SHAPES
     >;
+
+    // TODO(v14-levels): level field (Phase 7)
 
     /**
      * The movement action from the previous to this waypoint.
@@ -764,19 +772,33 @@ declare namespace TokenDocument {
     }>;
 
     /**
+     * The ID of the subpath from the previous to this waypoint.
+     * @defaultValue `undefined`
+     */
+    subpathId: fields.StringField<{
+      required: true;
+      blank: false;
+      initial: undefined;
+      validate: (value: string) => void;
+    }>;
+
+    /**
      * The movement cost from the previous to this waypoint (nonnegative).
      * @defaultValue `undefined`
      */
-    cost: fields.NumberField<{ required: true; nullable: false; min: 0; initial: undefined }>;
+    cost: fields.NumberField<{ required: true; nullable: true; min: 0; initial: undefined }>;
   }
 
   interface MeasuredMovementWaypoint extends fields.SchemaField.InitializedData<MeasuredMovementWaypointSchema> {}
 
   interface GetCompleteMovementPathWaypoint extends InexactPartial<
-    Omit<MeasuredMovementWaypoint, "userId" | "movementId" | "cost">
+    Omit<MeasuredMovementWaypoint, "userId" | "movementId" | "subpathId" | "cost">
   > {}
 
-  interface CompleteMovementWaypoint extends Omit<MeasuredMovementWaypoint, "userId" | "movementId" | "cost"> {}
+  interface CompleteMovementWaypoint extends Omit<
+    MeasuredMovementWaypoint,
+    "userId" | "movementId" | "subpathId" | "cost"
+  > {}
 
   /**
    * The schema for {@linkcode TokenDocument}. This is the source of truth for how an TokenDocument document
@@ -813,11 +835,8 @@ declare namespace TokenDocument {
      */
     delta: ActorDeltaField<typeof BaseActorDelta>;
 
-    /**
-     * The shape of the Token
-     * @defaultValue `CONST.TOKEN_SHAPES.RECTANGLE_1`
-     */
-    shape: fields.NumberField<{ initial: typeof CONST.TOKEN_SHAPES.RECTANGLE_1; choices: CONST.TOKEN_SHAPES[] }>;
+    // The following fields are produced by `BaseToken.#defineMovementFields()`, spread into the schema after `delta`.
+    // `width`, `height`, and `depth` are shared with `PrototypeToken` and live in `SharedProtoSchema`.
 
     /**
      * The x-coordinate of the top-left corner of the Token
@@ -836,6 +855,14 @@ declare namespace TokenDocument {
      * @defaultValue `0`
      */
     elevation: fields.NumberField<{ required: true; nullable: false; initial: 0 }>;
+
+    /**
+     * The shape of the Token
+     * @defaultValue `CONST.TOKEN_SHAPES.RECTANGLE_1`
+     */
+    shape: fields.NumberField<{ initial: typeof CONST.TOKEN_SHAPES.RECTANGLE_1; choices: CONST.TOKEN_SHAPES[] }>;
+
+    // TODO(v14-levels): level field (Phase 7)
 
     /**
      * The z-index of this token relative to other siblings
@@ -1921,7 +1948,7 @@ declare namespace TokenDocument {
 
   interface MovementWaypoint extends Omit<
     MeasuredMovementWaypoint,
-    "terrain" | "intermediate" | "userId" | "movementId" | "cost"
+    "terrain" | "intermediate" | "userId" | "movementId" | "subpathId" | "cost"
   > {}
 
   interface MovementSegmentData extends Pick<

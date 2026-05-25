@@ -49,7 +49,7 @@ declare namespace TileDocument {
       collection: "tiles";
       label: "DOCUMENT.Tile";
       labelPlural: "DOCUMENT.Tiles";
-      schemaVersion: "13.341";
+      schemaVersion: "14.355";
     }>
   > {}
 
@@ -188,6 +188,12 @@ declare namespace TileDocument {
     _id: fields.DocumentIdField;
 
     /**
+     * The name of this Tile
+     * @defaultValue `""`
+     */
+    name: fields.StringField<{ textSearch: true }>;
+
+    /**
      * An image or video texture which this tile displays.
      */
     texture: TextureData<{ initial: { anchorX: 0.5; anchorY: 0.5; alphaThreshold: 0.75 } }>;
@@ -221,6 +227,8 @@ declare namespace TileDocument {
      * @defaultValue `0`
      */
     elevation: fields.NumberField<{ required: true; nullable: false; initial: 0 }>;
+
+    // TODO(v14-levels): levels: SceneLevelsSetField (Phase 7)
 
     /**
      * The z-index of this tile relative to other siblings
@@ -261,19 +269,20 @@ declare namespace TileDocument {
      */
     occlusion: fields.SchemaField<{
       /**
-       * The occlusion mode from CONST.TILE_OCCLUSION_MODES
-       * @defaultValue `1`
+       * The set of occlusion modes from CONST.OCCLUSION_MODES
+       * @defaultValue `new Set()`
        */
-      mode: fields.NumberField<
-        {
-          choices: Record<CONST.OCCLUSION_MODES, string>;
-          initial: typeof CONST.OCCLUSION_MODES.NONE;
-          validationError: "must be a value in CONST.TILE_OCCLUSION_MODES";
-        },
-        // FIXME: Without these overrides, the branded type from `choices` is not respected, and the field types as `number`
-        CONST.OCCLUSION_MODES | null | undefined,
-        CONST.OCCLUSION_MODES | null,
-        CONST.OCCLUSION_MODES | null
+      modes: fields.SetField<
+        fields.NumberField<
+          {
+            choices: Record<CONST.OCCLUSION_MODES, string>;
+            validationError: "must be a value in CONST.OCCLUSION_MODES";
+          },
+          // FIXME: Without these overrides, the branded type from `choices` is not respected, and the field types as `number`
+          CONST.OCCLUSION_MODES | null | undefined,
+          CONST.OCCLUSION_MODES | null,
+          CONST.OCCLUSION_MODES | null
+        >
       >;
 
       /**

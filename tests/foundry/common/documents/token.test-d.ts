@@ -90,13 +90,12 @@ const myToken = new TestBaseToken({
     saturation: 0.6,
     contrast: -0.21,
   },
-  detectionModes: [
-    {
+  detectionModes: {
+    lightPerception: {
       enabled: true,
-      id: "lightPerception",
       range: 500,
     },
-  ],
+  },
   occludable: {
     radius: 10,
   },
@@ -168,10 +167,11 @@ expectTypeOf(myToken.sight.attenuation).toBeNumber();
 expectTypeOf(myToken.sight.brightness).toBeNumber();
 expectTypeOf(myToken.sight.saturation).toBeNumber();
 expectTypeOf(myToken.sight.contrast).toBeNumber();
-if (myToken.detectionModes[0]) {
-  expectTypeOf(myToken.detectionModes[0].id).toEqualTypeOf<string | undefined>();
-  expectTypeOf(myToken.detectionModes[0].enabled).toBeBoolean();
-  expectTypeOf(myToken.detectionModes[0].range).toEqualTypeOf<number | null>();
+expectTypeOf(myToken.detectionModes).toEqualTypeOf<Record<string, { enabled: boolean; range: number | null }>>();
+const someMode = myToken.detectionModes["lightPerception"];
+if (someMode) {
+  expectTypeOf(someMode.enabled).toBeBoolean();
+  expectTypeOf(someMode.range).toEqualTypeOf<number | null>();
 }
 expectTypeOf(myToken.ring.enabled).toBeBoolean();
 expectTypeOf(myToken.ring.subject.texture).toEqualTypeOf<string | null>();

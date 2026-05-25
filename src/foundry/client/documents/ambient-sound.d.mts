@@ -50,7 +50,7 @@ declare namespace AmbientSoundDocument {
       label: "DOCUMENT.AmbientSound";
       labelPlural: "DOCUMENT.AmbientSounds";
       isEmbedded: true;
-      schemaVersion: "13.341";
+      schemaVersion: "14.354";
     }>
   > {}
 
@@ -188,6 +188,12 @@ declare namespace AmbientSoundDocument {
     _id: fields.DocumentIdField;
 
     /**
+     * The name of this AmbientSound
+     * @defaultValue `""`
+     */
+    name: fields.StringField<{ textSearch: true }>;
+
+    /**
      * The x-coordinate position of the origin of the sound.
      * @defaultValue `0`
      */
@@ -204,6 +210,8 @@ declare namespace AmbientSoundDocument {
      * @defaultValue `0`
      */
     elevation: fields.NumberField<{ required: true; nullable: false; initial: 0 }>;
+
+    // TODO(v14-levels): levels: SceneLevelsSetField (Phase 7)
 
     /**
      * The radius of the emitted sound.
@@ -255,6 +263,12 @@ declare namespace AmbientSoundDocument {
     hidden: fields.BooleanField;
 
     /**
+     * Is the sound source currently locked?
+     * @defaultValue `false`
+     */
+    locked: fields.BooleanField;
+
+    /**
      * A darkness range (min and max) for which the source should be active
      * @defaultValue see properties
      */
@@ -299,7 +313,15 @@ declare namespace AmbientSoundDocument {
     type: fields.StringField;
 
     /** @defaultValue `5` */
-    intensity: fields.NumberField<{ required: true; integer: true; initial: 5; min: 1; max: 10 }>;
+    intensity: fields.NumberField<{
+      required: true;
+      nullable: false;
+      integer: true;
+      initial: 5;
+      min: 1;
+      max: 10;
+      step: 1;
+    }>;
   }
 
   namespace Database {

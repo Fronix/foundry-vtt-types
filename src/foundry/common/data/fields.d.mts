@@ -3613,6 +3613,9 @@ declare namespace DocumentUUIDField {
 
     /** Does this field require (or prohibit) embedded documents? */
     embedded?: boolean | undefined;
+
+    /** Does this field allow relative document UUIDs? */
+    relative?: boolean | undefined;
   };
 
   type DefaultOptions = SimpleMerge<
@@ -3624,6 +3627,7 @@ declare namespace DocumentUUIDField {
       initial: null;
       type: undefined;
       embedded: undefined;
+      relative: false;
     }
   >;
 

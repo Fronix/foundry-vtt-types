@@ -32,6 +32,64 @@ export const ASCII = `__________________________________________________________
 ===============================================================`;
 
 /**
+ * Time-based units in which an ActiveEffect's duration can be expressed
+ */
+export declare const ACTIVE_EFFECT_TIME_DURATION_UNITS: readonly [
+  "years",
+  "months",
+  "days",
+  "hours",
+  "minutes",
+  "seconds",
+];
+export type ACTIVE_EFFECT_TIME_DURATION_UNITS = ValueOf<typeof ACTIVE_EFFECT_TIME_DURATION_UNITS>;
+
+/**
+ * All units in which an ActiveEffect's duration can be expressed
+ */
+export declare const ACTIVE_EFFECT_DURATION_UNITS: readonly [
+  ...typeof ACTIVE_EFFECT_TIME_DURATION_UNITS,
+  "rounds",
+  "turns",
+];
+export type ACTIVE_EFFECT_DURATION_UNITS = ValueOf<typeof ACTIVE_EFFECT_DURATION_UNITS>;
+
+/**
+ * The core ActiveEffect expiry events.
+ * Other events can be defined by systems and modules, with their handling also left to them.
+ */
+export declare const ACTIVE_EFFECT_EXPIRY_EVENTS: readonly [
+  "combatStart",
+  "roundStart",
+  "turnStart",
+  "combatEnd",
+  "roundEnd",
+  "turnEnd",
+];
+export type ACTIVE_EFFECT_EXPIRY_EVENTS = ValueOf<typeof ACTIVE_EFFECT_EXPIRY_EVENTS>;
+
+/**
+ * Configure whether the icon of an ActiveEffect is shown on a Token.
+ */
+export declare const ACTIVE_EFFECT_SHOW_ICON: Readonly<{
+  /**
+   * The icon is never shown.
+   */
+  NEVER: 0;
+
+  /**
+   * The icon is showed if the ActiveEffect has a temporary duration.
+   */
+  CONDITIONAL: 1;
+
+  /**
+   * The icon is always shown.
+   */
+  ALWAYS: 2;
+}>;
+export type ACTIVE_EFFECT_SHOW_ICON = ValueOf<typeof ACTIVE_EFFECT_SHOW_ICON>;
+
+/**
  * Define the allowed ActiveEffect application modes.
  * Other arbitrary mode numbers can be used by systems and modules to identify special behaviors and are ignored
  */
@@ -1679,6 +1737,12 @@ export declare const WALL_DOOR_INTERACTIONS: readonly ["open", "close", "lock", 
 export type WALL_DOOR_INTERACTIONS = ValueOf<typeof WALL_DOOR_INTERACTIONS>;
 
 /**
+ * The properties which restrict the way interaction occurs with a specific edge.
+ */
+export declare const EDGE_RESTRICTION_TYPES: readonly ["light", "darkness", "sight", "sound", "move"];
+export type EDGE_RESTRICTION_TYPES = ValueOf<typeof EDGE_RESTRICTION_TYPES>;
+
+/**
  * The wall properties which restrict the way interaction occurs with a specific wall
  */
 export declare const WALL_RESTRICTION_TYPES: readonly ["light", "sight", "sound", "move"];
@@ -2435,17 +2499,27 @@ export type REGION_EVENTS = ValueOf<typeof REGION_EVENTS>;
  */
 export declare const REGION_VISIBILITY: Readonly<{
   /**
-   * Only visible on the RegionLayer.
+   * Only visible on the RegionLayer to Users with Observer permissions when unlocked.
+   */
+  LAYER_UNLOCKED: 4 & REGION_VISIBILITY;
+
+  /**
+   * Only visible on the RegionLayer to Users with Observer permissions.
    */
   LAYER: 0 & REGION_VISIBILITY;
 
   /**
-   * Only visible to Gamemasters.
+   * Always visible to Gamemasters.
    */
   GAMEMASTER: 1 & REGION_VISIBILITY;
 
   /**
-   * Visible to anyone.
+   * Always visible to Observers.
+   */
+  OBSERVER: 3 & REGION_VISIBILITY;
+
+  /**
+   * Always visible to anyone.
    */
   ALWAYS: 2 & REGION_VISIBILITY;
 }>;
