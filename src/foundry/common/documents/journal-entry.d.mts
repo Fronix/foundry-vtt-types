@@ -50,6 +50,9 @@ declare abstract class BaseJournalEntry extends Document<"JournalEntry", BaseJou
 
   static override defineSchema(): BaseJournalEntry.Schema;
 
+  /** @defaultValue `["DOCUMENT", "JOURNAL"]` */
+  static override LOCALIZATION_PREFIXES: string[];
+
   protected override _initialize(options?: Document.InitializeOptions): void;
 
   /**

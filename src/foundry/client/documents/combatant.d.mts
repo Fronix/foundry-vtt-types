@@ -53,6 +53,7 @@ declare namespace Combatant {
       labelPlural: "DOCUMENT.Combatants";
       isEmbedded: true;
       hasTypeData: true;
+      baseTypeAllowed: true;
       schemaVersion: "13.341";
       permissions: Metadata.Permissions;
     }>

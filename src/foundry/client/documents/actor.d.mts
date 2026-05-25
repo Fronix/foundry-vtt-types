@@ -57,6 +57,7 @@ declare namespace Actor {
       compendiumIndexFields: ["_id", "name", "img", "type", "sort", "folder"];
       embedded: Metadata.Embedded;
       hasTypeData: true;
+      baseTypeAllowed: false;
       label: "DOCUMENT.Actor";
       labelPlural: "DOCUMENT.Actors";
       permissions: Metadata.Permissions;

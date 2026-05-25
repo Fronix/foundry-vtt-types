@@ -65,7 +65,7 @@ declare namespace RegionBehavior {
       hasTypeData: true;
       isEmbedded: true;
       permissions: Metadata.Permissions;
-      schemaVersion: "13.341";
+      schemaVersion: "14.352";
     }>
   > {}
 

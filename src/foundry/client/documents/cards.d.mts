@@ -70,7 +70,7 @@ declare namespace Cards {
     }
 
     interface Permissions {
-      create: "OWNER";
+      create: "CARDS_CREATE";
       delete: "OWNER";
     }
   }

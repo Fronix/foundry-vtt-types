@@ -2194,6 +2194,11 @@ declare namespace Document {
       delete: string | ToMethod<(user: User.Internal.Implementation, doc: ThisType, data: EmptyObject) => boolean>;
     };
     readonly hasTypeData?: boolean;
+
+    /**
+     * If the Document class has type data, can users normally create instances of the "base" type?
+     */
+    readonly baseTypeAllowed?: boolean;
     readonly indexed: boolean;
     readonly compendiumIndexFields: readonly string[];
     readonly preserveOnImport: readonly string[];

@@ -50,6 +50,7 @@ declare namespace Item {
       name: "Item";
       collection: "items";
       hasTypeData: true;
+      baseTypeAllowed: false;
       indexed: true;
       compendiumIndexFields: ["_id", "name", "img", "type", "sort", "folder"];
       embedded: Metadata.Embedded;

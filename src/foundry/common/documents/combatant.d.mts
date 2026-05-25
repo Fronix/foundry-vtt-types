@@ -50,6 +50,9 @@ declare abstract class BaseCombatant<
 
   static override defineSchema(): BaseCombatant.Schema;
 
+  /** @defaultValue `["DOCUMENT", "COMBATANT"]` */
+  static override LOCALIZATION_PREFIXES: string[];
+
   override getUserLevel(user?: User.Implementation): DOCUMENT_OWNERSHIP_LEVELS;
 
   /*

@@ -57,6 +57,7 @@ declare namespace Combat {
       labelPlural: "DOCUMENT.Combats";
       embedded: Metadata.Embedded;
       hasTypeData: true;
+      baseTypeAllowed: true;
       permissions: Metadata.Permissions;
       schemaVersion: "13.341";
     }>

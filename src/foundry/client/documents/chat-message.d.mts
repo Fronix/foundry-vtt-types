@@ -53,6 +53,7 @@ declare namespace ChatMessage {
       label: "DOCUMENT.ChatMessage";
       labelPlural: "DOCUMENT.ChatMessages";
       hasTypeData: true;
+      baseTypeAllowed: true;
       isPrimary: true;
       permissions: Metadata.Permissions;
       schemaVersion: "13.341";
