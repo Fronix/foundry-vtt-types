@@ -648,6 +648,10 @@ expectTypeOf(
     pack: null,
   }),
 ).toEqualTypeOf<Promise<ActiveEffect.Stored | null>>();
+// v14: `createDialog` accepts a fourth `renderOptions` argument forwarded to the created document's sheet render.
+expectTypeOf(ActiveEffect.createDialog(createData, { parent: someActor }, {}, { force: true })).toEqualTypeOf<
+  Promise<ActiveEffect.Stored | null>
+>();
 
 declare const aeSource: ActiveEffect.Source;
 expectTypeOf(

@@ -985,11 +985,10 @@ declare namespace Folder {
    * The return type for {@linkcode Folder.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends Folder.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<Folder.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends Folder.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    Folder.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode Folder.deleteDialog | Folder#deleteDialog}.
@@ -1175,12 +1174,9 @@ declare class Folder<out SubType extends Folder.SubType = Folder.SubType> extend
   // For type simplicity it is left off. These methods historically have been the source of a large amount of computation from tsc.
 
   /** @remarks Creates and renders a {@link FolderConfig | `FolderConfig`} instead of a simple Dialog */
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends Folder.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends Folder.CreateDialogOptions | undefined = undefined>(
     data?: Folder.CreateDialogData,
-    createOptions?: Folder.Database.CreateDocumentsOperation<Temporary>,
+    createOptions?: Folder.Database.CreateDocumentsOperation,
     options?: Options,
   ): Promise<void>;
 

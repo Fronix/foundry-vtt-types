@@ -862,11 +862,8 @@ declare namespace JournalEntryCategory {
    * The return type for {@linkcode JournalEntryCategory.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends JournalEntryCategory.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<JournalEntryCategory.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends JournalEntryCategory.CreateDialogOptions | undefined> =
+    Document.CreateDialogReturn<JournalEntryCategory.Stored, Config>;
 
   /**
    * The return type for {@linkcode JournalEntryCategory.deleteDialog | JournalEntryCategory#deleteDialog}.
@@ -917,14 +914,12 @@ declare class JournalEntryCategory extends BaseJournalEntryCategory.Internal.Cli
   static override defaultName(context: JournalEntryCategory.DefaultNameContext): string;
 
   // `createOptions` must contain a  `parent`, so is required.
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends JournalEntryCategory.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends JournalEntryCategory.CreateDialogOptions | undefined = undefined>(
     data: JournalEntryCategory.CreateDialogData | undefined,
-    createOptions: JournalEntryCategory.Database.CreateDocumentsOperation<Temporary>,
+    createOptions: JournalEntryCategory.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<JournalEntryCategory.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<JournalEntryCategory.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -940,7 +935,8 @@ declare class JournalEntryCategory extends BaseJournalEntryCategory.Internal.Cli
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: JournalEntryCategory.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<JournalEntryCategory.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<JournalEntryCategory.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

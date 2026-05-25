@@ -908,11 +908,8 @@ declare namespace AmbientLightDocument {
    * The return type for {@linkcode AmbientLightDocument.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends AmbientLightDocument.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<AmbientLightDocument.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends AmbientLightDocument.CreateDialogOptions | undefined> =
+    Document.CreateDialogReturn<AmbientLightDocument.Stored, Config>;
 
   /**
    * The return type for {@linkcode AmbientLightDocument.deleteDialog | AmbientLightDocument#deleteDialog}.
@@ -975,14 +972,12 @@ declare class AmbientLightDocument extends BaseAmbientLight.Internal.CanvasDocum
   static override defaultName(context: AmbientLightDocument.DefaultNameContext): string;
 
   // `createOptions` must contain a  `parent`, so is required.
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends AmbientLightDocument.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends AmbientLightDocument.CreateDialogOptions | undefined = undefined>(
     data: AmbientLightDocument.CreateDialogData | undefined,
-    createOptions: AmbientLightDocument.Database.CreateDocumentsOperation<Temporary>,
+    createOptions: AmbientLightDocument.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<AmbientLightDocument.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<AmbientLightDocument.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -998,7 +993,8 @@ declare class AmbientLightDocument extends BaseAmbientLight.Internal.CanvasDocum
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: AmbientLightDocument.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<AmbientLightDocument.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<AmbientLightDocument.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

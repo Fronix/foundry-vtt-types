@@ -51,6 +51,8 @@ expectTypeOf(script.isOwner).toEqualTypeOf<boolean>();
 
 // static properties and functions of `ClientDocumentMixin`
 expectTypeOf(Macro.createDialog()).toEqualTypeOf<Promise<Macro.Stored | null>>();
+// v14: `createDialog` accepts a fourth `renderOptions` argument forwarded to the created document's sheet render.
+expectTypeOf(Macro.createDialog({}, {}, {}, { force: true })).toEqualTypeOf<Promise<Macro.Stored | null>>();
 
 // properties of `Document`
 expectTypeOf(script.parent).toEqualTypeOf<null>();

@@ -974,11 +974,10 @@ declare namespace User {
    * The return type for {@linkcode User.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends User.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<User.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends User.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    User.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode User.deleteDialog | User#deleteDialog}.
@@ -1325,14 +1324,12 @@ declare class User extends BaseUser.Internal.ClientDocument {
 
   static override defaultName(context?: User.DefaultNameContext): string;
 
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends User.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends User.CreateDialogOptions | undefined = undefined>(
     data?: User.CreateDialogData,
-    createOptions?: User.Database.CreateDocumentsOperation<Temporary>,
+    createOptions?: User.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<User.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<User.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -1348,7 +1345,8 @@ declare class User extends BaseUser.Internal.ClientDocument {
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: User.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<User.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<User.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

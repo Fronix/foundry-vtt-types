@@ -1005,11 +1005,10 @@ declare namespace TileDocument {
    * The return type for {@linkcode TileDocument.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends TileDocument.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<TileDocument.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends TileDocument.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    TileDocument.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode TileDocument.deleteDialog | TileDocument#deleteDialog}.
@@ -1063,14 +1062,12 @@ declare class TileDocument extends BaseTile.Internal.CanvasDocument {
   static override defaultName(context: TileDocument.DefaultNameContext): string;
 
   // `createOptions` must contain a  `parent`, so is required.
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends TileDocument.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends TileDocument.CreateDialogOptions | undefined = undefined>(
     data: TileDocument.CreateDialogData | undefined,
-    createOptions: TileDocument.Database.CreateDocumentsOperation<Temporary>,
+    createOptions: TileDocument.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<TileDocument.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<TileDocument.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -1086,7 +1083,8 @@ declare class TileDocument extends BaseTile.Internal.CanvasDocument {
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: TileDocument.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<TileDocument.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<TileDocument.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

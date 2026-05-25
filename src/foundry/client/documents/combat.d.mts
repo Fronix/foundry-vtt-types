@@ -1092,11 +1092,10 @@ declare namespace Combat {
    * The return type for {@linkcode Combat.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends Combat.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<Combat.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends Combat.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    Combat.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode Combat.deleteDialog | Combat#deleteDialog}.
@@ -1680,14 +1679,12 @@ declare class Combat<out SubType extends Combat.SubType = Combat.SubType> extend
 
   static override defaultName(context?: Combat.DefaultNameContext): string;
 
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends Combat.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends Combat.CreateDialogOptions | undefined = undefined>(
     data?: Combat.CreateDialogData,
-    createOptions?: Combat.Database.CreateDocumentsOperation<Temporary>,
+    createOptions?: Combat.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<Combat.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<Combat.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -1703,7 +1700,8 @@ declare class Combat<out SubType extends Combat.SubType = Combat.SubType> extend
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: Combat.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<Combat.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<Combat.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

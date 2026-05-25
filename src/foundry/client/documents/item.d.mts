@@ -1090,11 +1090,10 @@ declare namespace Item {
    * The return type for {@linkcode Item.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends Item.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<Item.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends Item.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    Item.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode Item.deleteDialog | Item#deleteDialog}.
@@ -1237,14 +1236,12 @@ declare class Item<out SubType extends Item.SubType = Item.SubType> extends Base
 
   static override defaultName(context?: Item.DefaultNameContext): string;
 
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends Item.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends Item.CreateDialogOptions | undefined = undefined>(
     data?: Item.CreateDialogData,
-    createOptions?: Item.Database.CreateDocumentsOperation<Temporary>,
+    createOptions?: Item.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<Item.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<Item.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -1260,7 +1257,8 @@ declare class Item<out SubType extends Item.SubType = Item.SubType> extends Base
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: Item.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<Item.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<Item.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

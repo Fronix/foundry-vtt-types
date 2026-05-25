@@ -1010,11 +1010,10 @@ declare namespace JournalEntry {
    * The return type for {@linkcode JournalEntry.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends JournalEntry.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<JournalEntry.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends JournalEntry.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    JournalEntry.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode JournalEntry.deleteDialog | JournalEntry#deleteDialog}.
@@ -1152,14 +1151,12 @@ declare class JournalEntry extends BaseJournalEntry.Internal.ClientDocument {
 
   static override defaultName(context?: JournalEntry.DefaultNameContext): string;
 
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends JournalEntry.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends JournalEntry.CreateDialogOptions | undefined = undefined>(
     data?: JournalEntry.CreateDialogData,
-    createOptions?: JournalEntry.Database.CreateDocumentsOperation<Temporary>,
+    createOptions?: JournalEntry.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<JournalEntry.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<JournalEntry.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -1175,7 +1172,8 @@ declare class JournalEntry extends BaseJournalEntry.Internal.ClientDocument {
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: JournalEntry.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<JournalEntry.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<JournalEntry.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

@@ -965,11 +965,10 @@ declare namespace RegionBehavior {
    * The return type for {@linkcode RegionBehavior.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends RegionBehavior.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<RegionBehavior.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends RegionBehavior.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    RegionBehavior.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode RegionBehavior.deleteDialog | RegionBehavior#deleteDialog}.
@@ -1035,14 +1034,12 @@ declare class RegionBehavior<
   protected _handleRegionEvent(event: RegionDocument.RegionEvent): void;
 
   // `createOptions` must contain a  `parent`, so is required.
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends RegionBehavior.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends RegionBehavior.CreateDialogOptions | undefined = undefined>(
     data: RegionBehavior.CreateDialogData | undefined,
-    createOptions: RegionBehavior.Database.CreateDocumentsOperation<Temporary>,
+    createOptions: RegionBehavior.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<RegionBehavior.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<RegionBehavior.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -1058,7 +1055,8 @@ declare class RegionBehavior<
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: RegionBehavior.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<RegionBehavior.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<RegionBehavior.CreateDialogReturn<Options>>;
 
   /*
    * After this point these are not really overridden methods.

@@ -1022,11 +1022,10 @@ declare namespace Combatant {
    * The return type for {@linkcode Combatant.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends Combatant.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<Combatant.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends Combatant.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    Combatant.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode Combatant.deleteDialog | Combatant#deleteDialog}.
@@ -1189,14 +1188,12 @@ declare class Combatant<out SubType extends Combatant.SubType = Combatant.SubTyp
   static override defaultName(context: Combatant.DefaultNameContext): string;
 
   // `createOptions` must contain a  `parent`, so is required.
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends Combatant.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends Combatant.CreateDialogOptions | undefined = undefined>(
     data: Combatant.CreateDialogData | undefined,
-    createOptions: Combatant.Database.CreateDocumentsOperation<Temporary>,
+    createOptions: Combatant.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<Combatant.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<Combatant.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -1212,7 +1209,8 @@ declare class Combatant<out SubType extends Combatant.SubType = Combatant.SubTyp
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: Combatant.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<Combatant.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<Combatant.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

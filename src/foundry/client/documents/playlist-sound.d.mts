@@ -921,11 +921,10 @@ declare namespace PlaylistSound {
    * The return type for {@linkcode PlaylistSound.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends PlaylistSound.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<PlaylistSound.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends PlaylistSound.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    PlaylistSound.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode PlaylistSound.deleteDialog | PlaylistSound#deleteDialog}.
@@ -1070,14 +1069,12 @@ declare class PlaylistSound extends BasePlaylistSound.Internal.CanvasDocument {
   static override defaultName(context?: PlaylistSound.DefaultNameContext): string;
 
   // `createOptions` must contain a  `parent`, so is required.
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends PlaylistSound.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends PlaylistSound.CreateDialogOptions | undefined = undefined>(
     data: PlaylistSound.CreateDialogData | undefined,
-    createOptions: PlaylistSound.Database.CreateDocumentsOperation<Temporary>,
+    createOptions: PlaylistSound.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<PlaylistSound.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<PlaylistSound.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -1093,7 +1090,8 @@ declare class PlaylistSound extends BasePlaylistSound.Internal.CanvasDocument {
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: PlaylistSound.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<PlaylistSound.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<PlaylistSound.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

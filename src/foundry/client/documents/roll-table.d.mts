@@ -1015,11 +1015,10 @@ declare namespace RollTable {
    * The return type for {@linkcode RollTable.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends RollTable.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<RollTable.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends RollTable.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    RollTable.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode RollTable.deleteDialog | RollTable#deleteDialog}.
@@ -1376,14 +1375,12 @@ declare class RollTable extends BaseRollTable.Internal.ClientDocument {
 
   static override defaultName(context?: RollTable.DefaultNameContext): string;
 
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends RollTable.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends RollTable.CreateDialogOptions | undefined = undefined>(
     data?: RollTable.CreateDialogData,
-    createOptions?: RollTable.Database.CreateDocumentsOperation<Temporary>,
+    createOptions?: RollTable.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<RollTable.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<RollTable.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -1399,7 +1396,8 @@ declare class RollTable extends BaseRollTable.Internal.ClientDocument {
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: RollTable.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<RollTable.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<RollTable.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

@@ -1078,11 +1078,10 @@ declare namespace ChatMessage {
    * The return type for {@linkcode ChatMessage.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends ChatMessage.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<ChatMessage.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends ChatMessage.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    ChatMessage.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode ChatMessage.deleteDialog | ChatMessage#deleteDialog}.
@@ -1395,14 +1394,12 @@ declare class ChatMessage<out SubType extends ChatMessage.SubType = ChatMessage.
 
   static override defaultName(context?: ChatMessage.DefaultNameContext): string;
 
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends ChatMessage.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends ChatMessage.CreateDialogOptions | undefined = undefined>(
     data?: ChatMessage.CreateDialogData,
-    createOptions?: ChatMessage.Database.CreateDocumentsOperation<Temporary>,
+    createOptions?: ChatMessage.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<ChatMessage.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<ChatMessage.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -1418,7 +1415,8 @@ declare class ChatMessage<out SubType extends ChatMessage.SubType = ChatMessage.
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: ChatMessage.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<ChatMessage.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<ChatMessage.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

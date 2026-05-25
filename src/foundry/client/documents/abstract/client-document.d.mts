@@ -465,6 +465,7 @@ declare class InternalClientDocument<DocumentName extends Document.Type> {
    * @param data          - Document creation data               (default: `{}`)
    * @param createOptions - Document creation options            (default: `{}`)
    * @param options       - Options forwarded to DialogV2.prompt (default: `{}`)
+   * @param renderOptions - Options forwarded to the created Document's sheet render call (default: `{}`)
    * @returns A Promise which resolves to the created Document, or null if the dialog was closed.
    *
    * @remarks
@@ -480,7 +481,7 @@ declare class InternalClientDocument<DocumentName extends Document.Type> {
    * This returns `Promise<unknown>` here because as of 13.350 there's a bug ({@link https://github.com/foundryvtt/foundryvtt/issues/13545})
    * in {@linkcode Folder.createDialog}.
    */
-  static createDialog(data: never, createOptions: never, options?: never): Promise<unknown>;
+  static createDialog(data: never, createOptions: never, options?: never, renderOptions?: never): Promise<unknown>;
 
   /**
    * Present a Dialog form to confirm deletion of this Document.

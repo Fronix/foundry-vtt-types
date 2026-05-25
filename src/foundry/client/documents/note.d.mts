@@ -975,11 +975,10 @@ declare namespace NoteDocument {
    * The return type for {@linkcode NoteDocument.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends NoteDocument.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<NoteDocument.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends NoteDocument.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    NoteDocument.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode NoteDocument.deleteDialog | NoteDocument#deleteDialog}.
@@ -1016,14 +1015,12 @@ declare class NoteDocument extends BaseNote.Internal.CanvasDocument {
   constructor(data?: NoteDocument.CreateData, context?: NoteDocument.ConstructionContext);
 
   // `createOptions` must contain a  `parent`, so is required.
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends NoteDocument.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends NoteDocument.CreateDialogOptions | undefined = undefined>(
     data: NoteDocument.CreateDialogData | undefined,
-    createOptions: NoteDocument.Database.CreateDocumentsOperation<Temporary>,
+    createOptions: NoteDocument.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<NoteDocument.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<NoteDocument.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -1039,7 +1036,8 @@ declare class NoteDocument extends BaseNote.Internal.CanvasDocument {
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: NoteDocument.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<NoteDocument.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<NoteDocument.CreateDialogReturn<Options>>;
 
   /**
    * The associated JournalEntry which is referenced by this Note

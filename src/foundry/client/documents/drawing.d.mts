@@ -1024,11 +1024,10 @@ declare namespace DrawingDocument {
    * The return type for {@linkcode DrawingDocument.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends DrawingDocument.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<DrawingDocument.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends DrawingDocument.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    DrawingDocument.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode DrawingDocument.deleteDialog | DrawingDocument#deleteDialog}.
@@ -1105,14 +1104,12 @@ declare class DrawingDocument extends BaseDrawing.Internal.CanvasDocument {
   static override defaultName(context: DrawingDocument.DefaultNameContext): string;
 
   // `createOptions` must contain a  `parent`, so is required.
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends DrawingDocument.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends DrawingDocument.CreateDialogOptions | undefined = undefined>(
     data: DrawingDocument.CreateDialogData | undefined,
-    createOptions: DrawingDocument.Database.CreateDocumentsOperation<Temporary>,
+    createOptions: DrawingDocument.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<DrawingDocument.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<DrawingDocument.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -1128,7 +1125,8 @@ declare class DrawingDocument extends BaseDrawing.Internal.CanvasDocument {
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: DrawingDocument.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<DrawingDocument.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<DrawingDocument.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

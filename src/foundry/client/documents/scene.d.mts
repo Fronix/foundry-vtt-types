@@ -1633,11 +1633,10 @@ declare namespace Scene {
    * The return type for {@linkcode Scene.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends Scene.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<Scene.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends Scene.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    Scene.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode Scene.deleteDialog | Scene#deleteDialog}.
@@ -1989,14 +1988,12 @@ declare class Scene extends BaseScene.Internal.ClientDocument {
 
   static override defaultName(context?: Scene.DefaultNameContext): string;
 
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends Scene.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends Scene.CreateDialogOptions | undefined = undefined>(
     data?: Scene.CreateDialogData,
-    createOptions?: Scene.Database.CreateDocumentsOperation<Temporary>,
+    createOptions?: Scene.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<Scene.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<Scene.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -2012,7 +2009,8 @@ declare class Scene extends BaseScene.Internal.ClientDocument {
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: Scene.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<Scene.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<Scene.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

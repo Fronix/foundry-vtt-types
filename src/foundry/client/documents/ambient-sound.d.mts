@@ -959,11 +959,8 @@ declare namespace AmbientSoundDocument {
    * The return type for {@linkcode AmbientSoundDocument.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends AmbientSoundDocument.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<AmbientSoundDocument.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends AmbientSoundDocument.CreateDialogOptions | undefined> =
+    Document.CreateDialogReturn<AmbientSoundDocument.Stored, Config>;
 
   /**
    * The return type for {@linkcode AmbientSoundDocument.deleteDialog | AmbientSoundDocument#deleteDialog}.
@@ -1033,14 +1030,12 @@ declare class AmbientSoundDocument extends BaseAmbientSound.Internal.CanvasDocum
   static override defaultName(context: AmbientSoundDocument.DefaultNameContext): string;
 
   // `createOptions` must contain a  `parent`, so is required.
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends AmbientSoundDocument.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends AmbientSoundDocument.CreateDialogOptions | undefined = undefined>(
     data: AmbientSoundDocument.CreateDialogData | undefined,
-    createOptions: AmbientSoundDocument.Database.CreateDocumentsOperation<Temporary>,
+    createOptions: AmbientSoundDocument.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<AmbientSoundDocument.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<AmbientSoundDocument.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -1056,7 +1051,8 @@ declare class AmbientSoundDocument extends BaseAmbientSound.Internal.CanvasDocum
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: AmbientSoundDocument.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<AmbientSoundDocument.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<AmbientSoundDocument.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

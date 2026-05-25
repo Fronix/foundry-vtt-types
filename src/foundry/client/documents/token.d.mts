@@ -1726,11 +1726,10 @@ declare namespace TokenDocument {
    * The return type for {@linkcode TokenDocument.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends TokenDocument.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<TokenDocument.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends TokenDocument.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    TokenDocument.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode TokenDocument.deleteDialog | TokenDocument#deleteDialog}.
@@ -2853,14 +2852,12 @@ declare class TokenDocument extends BaseToken.Internal.CanvasDocument {
   static override defaultName(context: TokenDocument.DefaultNameContext): string;
 
   // `createOptions` must contain a  `parent`, so is required.
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends TokenDocument.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends TokenDocument.CreateDialogOptions | undefined = undefined>(
     data: TokenDocument.CreateDialogData | undefined,
-    createOptions: TokenDocument.Database.CreateDocumentsOperation<Temporary>,
+    createOptions: TokenDocument.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<TokenDocument.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<TokenDocument.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -2876,7 +2873,8 @@ declare class TokenDocument extends BaseToken.Internal.CanvasDocument {
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: TokenDocument.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<TokenDocument.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<TokenDocument.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

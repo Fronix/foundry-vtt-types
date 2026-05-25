@@ -1099,11 +1099,10 @@ declare namespace Cards {
    * The return type for {@linkcode Cards.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends Cards.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<Cards.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends Cards.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    Cards.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode Cards.deleteDialog | Cards#deleteDialog}.
@@ -1476,14 +1475,12 @@ declare class Cards<out SubType extends Cards.SubType = Cards.SubType> extends B
    */
   resetDialog(): Promise<this | false | null>;
 
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends Cards.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends Cards.CreateDialogOptions | undefined = undefined>(
     data?: Cards.CreateDialogData,
-    createOptions?: Cards.Database.CreateDocumentsOperation<Temporary>,
+    createOptions?: Cards.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<Cards.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<Cards.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -1499,7 +1496,8 @@ declare class Cards<out SubType extends Cards.SubType = Cards.SubType> extends B
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: Cards.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<Cards.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<Cards.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

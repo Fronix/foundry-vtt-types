@@ -1060,11 +1060,10 @@ declare namespace Playlist {
    * The return type for {@linkcode Playlist.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends Playlist.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<Playlist.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends Playlist.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    Playlist.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode Playlist.deleteDialog | Playlist#deleteDialog}.
@@ -1302,14 +1301,12 @@ declare class Playlist extends BasePlaylist.Internal.ClientDocument {
 
   static override defaultName(context?: Playlist.DefaultNameContext): string;
 
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends Playlist.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends Playlist.CreateDialogOptions | undefined = undefined>(
     data?: Playlist.CreateDialogData,
-    createOptions?: Playlist.Database.CreateDocumentsOperation<Temporary>,
+    createOptions?: Playlist.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<Playlist.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<Playlist.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -1325,7 +1322,8 @@ declare class Playlist extends BasePlaylist.Internal.ClientDocument {
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: Playlist.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<Playlist.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<Playlist.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

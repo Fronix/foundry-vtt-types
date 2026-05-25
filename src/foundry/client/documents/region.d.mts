@@ -173,14 +173,12 @@ declare class RegionDocument extends BaseRegion.Internal.CanvasDocument {
   static override defaultName(context: RegionDocument.DefaultNameContext): string;
 
   // `createOptions` must contain a  `parent`, so is required.
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends RegionDocument.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends RegionDocument.CreateDialogOptions | undefined = undefined>(
     data: RegionDocument.CreateDialogData | undefined,
-    createOptions: RegionDocument.Database.CreateDocumentsOperation<Temporary>,
+    createOptions: RegionDocument.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<RegionDocument.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<RegionDocument.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -196,7 +194,8 @@ declare class RegionDocument extends BaseRegion.Internal.CanvasDocument {
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: RegionDocument.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<RegionDocument.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<RegionDocument.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,
@@ -1228,11 +1227,10 @@ declare namespace RegionDocument {
    * The return type for {@linkcode RegionDocument.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends RegionDocument.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<RegionDocument.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends RegionDocument.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    RegionDocument.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode RegionDocument.deleteDialog | RegionDocument#deleteDialog}.

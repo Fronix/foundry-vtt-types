@@ -1084,11 +1084,10 @@ declare namespace ActorDelta {
    * The return type for {@linkcode ActorDelta.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends ActorDelta.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<ActorDelta.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends ActorDelta.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    ActorDelta.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode ActorDelta.deleteDialog | ActorDelta#deleteDialog}.
@@ -1293,14 +1292,12 @@ declare class ActorDelta<out SubType extends ActorDelta.SubType = ActorDelta.Sub
   static override defaultName(context: ActorDelta.DefaultNameContext): string;
 
   // `createOptions` must contain a  `parent`, so is required.
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends ActorDelta.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends ActorDelta.CreateDialogOptions | undefined = undefined>(
     data: ActorDelta.CreateDialogData | undefined,
-    createOptions: ActorDelta.Database.CreateDocumentsOperation<Temporary>,
+    createOptions: ActorDelta.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<ActorDelta.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<ActorDelta.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -1316,7 +1313,8 @@ declare class ActorDelta<out SubType extends ActorDelta.SubType = ActorDelta.Sub
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: ActorDelta.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<ActorDelta.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<ActorDelta.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

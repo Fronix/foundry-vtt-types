@@ -964,11 +964,8 @@ declare namespace MeasuredTemplateDocument {
    * The return type for {@linkcode MeasuredTemplateDocument.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends MeasuredTemplateDocument.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<MeasuredTemplateDocument.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends MeasuredTemplateDocument.CreateDialogOptions | undefined> =
+    Document.CreateDialogReturn<MeasuredTemplateDocument.Stored, Config>;
 
   /**
    * The return type for {@linkcode MeasuredTemplateDocument.deleteDialog | MeasuredTemplateDocument#deleteDialog}.
@@ -1030,14 +1027,12 @@ declare class MeasuredTemplateDocument extends BaseMeasuredTemplate.Internal.Can
   static override defaultName(context: MeasuredTemplateDocument.DefaultNameContext): string;
 
   // `createOptions` must contain a  `parent`, so is required.
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends MeasuredTemplateDocument.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends MeasuredTemplateDocument.CreateDialogOptions | undefined = undefined>(
     data: MeasuredTemplateDocument.CreateDialogData | undefined,
-    createOptions: MeasuredTemplateDocument.Database.CreateDocumentsOperation<Temporary>,
+    createOptions: MeasuredTemplateDocument.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<MeasuredTemplateDocument.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<MeasuredTemplateDocument.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -1053,7 +1048,8 @@ declare class MeasuredTemplateDocument extends BaseMeasuredTemplate.Internal.Can
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: MeasuredTemplateDocument.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<MeasuredTemplateDocument.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<MeasuredTemplateDocument.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

@@ -1052,11 +1052,10 @@ declare namespace Card {
    * The return type for {@linkcode Card.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends Card.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<Card.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends Card.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    Card.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode Card.deleteDialog | Card#deleteDialog}.
@@ -1239,14 +1238,12 @@ declare class Card<out SubType extends Card.SubType = Card.SubType> extends Base
   static override defaultName(context: Card.DefaultNameContext): string;
 
   // `createOptions` must contain a  `parent`, so is required.
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends Card.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends Card.CreateDialogOptions | undefined = undefined>(
     data: Card.CreateDialogData | undefined,
-    createOptions: Card.Database.CreateDocumentsOperation<Temporary>,
+    createOptions: Card.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<Card.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<Card.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -1262,7 +1259,8 @@ declare class Card<out SubType extends Card.SubType = Card.SubType> extends Base
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: Card.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<Card.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<Card.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

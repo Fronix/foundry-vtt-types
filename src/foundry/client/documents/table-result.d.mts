@@ -973,11 +973,10 @@ declare namespace TableResult {
    * The return type for {@linkcode TableResult.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends TableResult.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<TableResult.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends TableResult.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    TableResult.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode TableResult.deleteDialog | TableResult#deleteDialog}.
@@ -1061,14 +1060,12 @@ declare class TableResult<out SubType extends TableResult.SubType = TableResult.
   static override defaultName(context: TableResult.DefaultNameContext): string;
 
   // `createOptions` must contain a  `parent`, so is required.
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends TableResult.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends TableResult.CreateDialogOptions | undefined = undefined>(
     data: TableResult.CreateDialogData | undefined,
-    createOptions: TableResult.Database.CreateDocumentsOperation<Temporary>,
+    createOptions: TableResult.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<TableResult.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<TableResult.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -1084,7 +1081,8 @@ declare class TableResult<out SubType extends TableResult.SubType = TableResult.
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: TableResult.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<TableResult.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<TableResult.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

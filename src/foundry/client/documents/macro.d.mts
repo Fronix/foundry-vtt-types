@@ -1001,11 +1001,10 @@ declare namespace Macro {
    * The return type for {@linkcode Macro.createDialog}.
    * @see {@linkcode Document.CreateDialogReturn}
    */
-  // TODO: inline .Stored in v14 instead of taking Temporary
-  type CreateDialogReturn<
-    Temporary extends boolean | undefined,
-    Config extends Macro.CreateDialogOptions | undefined,
-  > = Document.CreateDialogReturn<Macro.TemporaryIf<Temporary>, Config>;
+  type CreateDialogReturn<Config extends Macro.CreateDialogOptions | undefined> = Document.CreateDialogReturn<
+    Macro.Stored,
+    Config
+  >;
 
   /**
    * The return type for {@linkcode Macro.deleteDialog | Macro#deleteDialog}.
@@ -1169,14 +1168,12 @@ declare class Macro<out SubType extends Macro.SubType = Macro.SubType> extends B
 
   static override defaultName(context?: Macro.DefaultNameContext): string;
 
-  static override createDialog<
-    Temporary extends boolean | undefined = undefined,
-    Options extends Macro.CreateDialogOptions | undefined = undefined,
-  >(
+  static override createDialog<Options extends Macro.CreateDialogOptions | undefined = undefined>(
     data?: Macro.CreateDialogData,
-    createOptions?: Macro.Database.CreateDocumentsOperation<Temporary>,
+    createOptions?: Macro.Database.CreateDocumentsOperation,
     options?: Options,
-  ): Promise<Macro.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<Macro.CreateDialogReturn<Options>>;
 
   /**
    * @deprecated "The `ClientDocument.createDialog` signature has changed. It now accepts database operation options in its second
@@ -1192,7 +1189,8 @@ declare class Macro<out SubType extends Macro.SubType = Macro.SubType> extends B
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     createOptions: Macro.CreateDialogDeprecatedOptions<Temporary>,
     options?: Options,
-  ): Promise<Macro.CreateDialogReturn<Temporary, Options>>;
+    renderOptions?: Document.CreateDialogRenderOptions,
+  ): Promise<Macro.CreateDialogReturn<Options>>;
 
   override deleteDialog<Options extends DialogV2.ConfirmConfig | undefined = undefined>(
     options?: Options,

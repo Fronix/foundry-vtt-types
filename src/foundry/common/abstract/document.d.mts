@@ -10,6 +10,7 @@ import type {
   Brand,
   Coalesce,
   ConcreteKeys,
+  DeepPartial,
   EmptyObject,
   FixedInstanceType,
   GetKey,
@@ -3385,12 +3386,18 @@ declare namespace Document {
   type _CreateDialogReturn<Doc extends Document.Any, Config extends DialogV2.PromptConfig> = DialogV2.PromptReturn<
     SimpleMerge<
       Config,
-      // This is technically wrong in v13 without `| undefined` in the callback return, but preemptively correct for v14.
-      // TODO: Remove the above note in v14.
       // eslint-disable-next-line @typescript-eslint/no-empty-object-type
       { ok: SimpleMerge<{ callback: () => Promise<Doc> }, GetKey<Config, "ok", {}>> }
     >
   >;
+
+  /**
+   * The interface for passing to a specific document's {@linkcode ClientDocument.createDialog | .createDialog}'s fourth parameter.
+   *
+   * @remarks These options are forwarded to the created Document's sheet render call (`doc.sheet.render(true, renderOptions)`),
+   * matching the `DeepPartial<RenderOptions>` shape that {@linkcode ApplicationV2.render} accepts.
+   */
+  type CreateDialogRenderOptions = DeepPartial<ApplicationV2.RenderOptions>;
 
   /**
    * A helper type for generating the return for {@linkcode ClientDocumentMixin.AnyMixed.deleteDialog | ClientDocument#deleteDialog}.
