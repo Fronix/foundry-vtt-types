@@ -1098,10 +1098,9 @@ declare namespace RollTable {
 
     /**
      * A chat message visibility mode to apply to the resulting message
-     * @remarks New in v14: a string key of `CONFIG.ChatMessage.modes`.
+     * @remarks New in v14: a key of `CONFIG.ChatMessage.modes`.
      */
-    // TODO(v14): tighten to the key type once `CONFIG.ChatMessage.modes` is modelled (chat-message migration).
-    messageMode?: string | undefined;
+    messageMode?: ChatMessage.MessageMode | undefined;
 
     /**
      * The chat roll mode to use when displaying the result

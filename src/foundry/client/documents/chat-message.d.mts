@@ -441,10 +441,20 @@ declare namespace ChatMessage {
     interface CreateOperation extends DatabaseBackend.CreateOperation<ChatMessage.CreateInput, ChatMessage.Parent> {
       /**
        * @remarks Only affects messages whose {@link ChatMessage.isRoll | `#isRoll` getter} returns true. If this is passed,
-       * {@linkcode ChatMessage._preCreate | ChatMessage#_preCreate} will call {@linkcode ChatMessage.applyRollMode} with it, affecting the
+       * {@linkcode ChatMessage._preCreate | ChatMessage#_preCreate} maps it to a {@linkcode messageMode} via
+       * {@linkcode foundry.dice.Roll._mapLegacyRollMode} and deletes it, ultimately affecting the
        * {@linkcode ChatMessage.whisper | whisper} and {@linkcode ChatMessage.blind | blind} properties of the to-be-created message.
+       * @deprecated since v14, until v16. Provide {@linkcode messageMode} instead.
        */
       rollMode?: ChatMessage.PassableRollMode;
+
+      /**
+       * @remarks The message visibility mode (a key of {@linkcode CONFIG.ChatMessage.modes}) applied to the
+       * to-be-created message by {@linkcode ChatMessage._preCreate | ChatMessage#_preCreate} via
+       * {@linkcode ChatMessage.applyMode}, affecting the {@linkcode ChatMessage.whisper | whisper} and
+       * {@linkcode ChatMessage.blind | blind} properties.
+       */
+      messageMode?: ChatMessage.MessageMode;
 
       /**
        * @remarks If passed `true`, {@linkcode ChatMessage._onCreate | ChatMessage#_onCreate} will call
@@ -1184,6 +1194,14 @@ declare namespace ChatMessage {
   type PassableRollMode = foundry.dice.Roll.Mode | "roll";
 
   /**
+   * A message visibility mode: a key of {@linkcode CONFIG.ChatMessage.modes}, passed to
+   * {@linkcode ChatMessage.applyMode} and the {@linkcode ChatMessage.Database.CreateOperation.messageMode | messageMode}
+   * create option. Core registers `"public" | "gm" | "blind" | "self" | "ic"`; systems and modules may register
+   * additional modes, hence the open `string` branch.
+   */
+  type MessageMode = "public" | "gm" | "blind" | "self" | "ic" | (string & {});
+
+  /**
    * These keys are overridden in `ChatMessage#renderHTML`
    *
    * @internal
@@ -1284,26 +1302,31 @@ declare class ChatMessage<out SubType extends ChatMessage.SubType = ChatMessage.
 
   /**
    * Transform a provided object of ChatMessage data by applying a certain roll mode to the data object.
-   *  - Public: `whisper` is set to `[]` and `blind` is set to `false`.
-   *  - Self: `whisper` is set to `[game.user.id]` and `blind` is set to `false`.
-   *  - Private: `whisper` is set to the GM users unless `whisper` is nonempty and `blind` is set to `false`.
-   *  - Blind: `whisper` is set to the GM users unless `whisper` is nonempty and `blind` is set to `true`.
-   * @param chatData - The object of ChatMessage data
-   * @param rollMode - The roll mode to apply to this message data. `"roll"` is the current roll mode.
-   * @returns The modified ChatMessage data with the roll mode applied
+   *  - `public`: `whisper` is set to `[]` and `blind` is set to `false`.
+   *  - `self`: `whisper` is set to `[game.user.id]` and `blind` is set to `false`.
+   *  - `gm`: `whisper` is set to the GM users unless `whisper` is nonempty and `blind` is set to `false`.
+   *  - `blind`: `whisper` is set to the GM users unless `whisper` is nonempty and `blind` is set to `true`.
+   * @param chatData - Candidate ChatMessage data which should be customized
+   * @param mode     - The message visibility mode to apply, otherwise apply the default mode stored in
+   *                   client settings.
+   * @returns Modified ChatMessage data with the message visibility mode applied
    */
-  static applyRollMode(
-    chatData: ChatMessage.CreateData,
-    rollMode: ChatMessage.PassableRollMode,
-  ): ChatMessage.CreateData;
+  static applyMode(chatData: ChatMessage.CreateData, mode?: ChatMessage.MessageMode): ChatMessage.CreateData;
 
   /**
-   * Update the data of a ChatMessage instance to apply a requested roll mode.
-   * This function calls {@link ChatMessage.applyRollMode} and updates the source of the ChatMessage.
-   * @param rollMode - The roll mode to apply to this message data. `"roll"` is the current roll mode.
+   * Update the data of a ChatMessage instance to apply a message visibility mode.
+   * This function calls {@link ChatMessage.applyMode} and updates the source of the ChatMessage.
+   * @param mode - The message visibility mode to apply to this message
    * @remarks Only calls `this.updateSource`, doesn't db update messages already stored
    */
-  applyRollMode(rollMode: ChatMessage.PassableRollMode): void;
+  applyMode(mode: ChatMessage.MessageMode): void;
+
+  /**
+   * Return the HTML content to display for this message when its content is not visible to the current user.
+   * Document subtype owners may override this in their system data model to customize the display.
+   * @remarks Defaults to `this.system._getHiddenContent?.() ?? "<p>???</p>"`
+   */
+  protected _getHiddenContent(): string;
 
   /**
    * Attempt to determine who is the speaking character (and token) for a certain Chat Message
@@ -1369,6 +1392,25 @@ declare class ChatMessage<out SubType extends ChatMessage.SubType = ChatMessage.
    * @deprecated since v13 until v15
    */
   getHTML(): Promise<JQuery>;
+
+  /**
+   * Update the data of a ChatMessage instance to apply a requested roll mode.
+   * @param mode - The roll mode to apply to this message data. `"roll"` is the current roll mode.
+   * @deprecated since v14, until v16. Use {@linkcode ChatMessage.applyMode | ChatMessage#applyMode} instead;
+   * the legacy roll mode is mapped to a {@linkcode ChatMessage.MessageMode | message mode} before being applied.
+   * @remarks Only calls `this.updateSource`, doesn't db update messages already stored
+   */
+  applyRollMode(mode: ChatMessage.PassableRollMode): void;
+
+  /**
+   * Transform a provided object of ChatMessage data by applying a requested roll mode.
+   * @param chatData - The object of ChatMessage data
+   * @param mode     - The roll mode to apply to this message data. `"roll"` is the current roll mode.
+   * @returns The modified ChatMessage data with the message visibility mode applied
+   * @deprecated since v14, until v16. Use {@linkcode ChatMessage.applyMode} instead; the legacy roll mode is
+   * mapped to a {@linkcode ChatMessage.MessageMode | message mode} before being applied.
+   */
+  static applyRollMode(chatData: ChatMessage.CreateData, mode: ChatMessage.PassableRollMode): ChatMessage.CreateData;
 
   /*
    * After this point these are not really overridden methods.

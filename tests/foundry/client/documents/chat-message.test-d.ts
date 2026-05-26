@@ -4,6 +4,17 @@ import type { AnyObject } from "fvtt-types/utils";
 expectTypeOf(new ChatMessage.implementation()).toEqualTypeOf<ChatMessage.Implementation>();
 expectTypeOf(new ChatMessage.implementation({})).toEqualTypeOf<ChatMessage.Implementation>();
 
+// v14: `applyMode` is the replacement for the now-deprecated `applyRollMode`. The mode is a key of
+// `CONFIG.ChatMessage.modes`; core registers these five, modules may register more (hence any string).
+expectTypeOf(ChatMessage.applyMode({})).toEqualTypeOf<ChatMessage.CreateData>();
+expectTypeOf(ChatMessage.applyMode({}, "public")).toEqualTypeOf<ChatMessage.CreateData>();
+expectTypeOf(ChatMessage.applyMode({}, "gm")).toEqualTypeOf<ChatMessage.CreateData>();
+expectTypeOf(ChatMessage.applyMode({}, "blind")).toEqualTypeOf<ChatMessage.CreateData>();
+expectTypeOf(ChatMessage.applyMode({}, "self")).toEqualTypeOf<ChatMessage.CreateData>();
+expectTypeOf(ChatMessage.applyMode({}, "ic")).toEqualTypeOf<ChatMessage.CreateData>();
+expectTypeOf(ChatMessage.applyMode({}, "module.customMode")).toEqualTypeOf<ChatMessage.CreateData>();
+
+/* eslint-disable @typescript-eslint/no-deprecated -- exercising the deprecated-since-v14 applyRollMode surface */
 expectTypeOf(
   ChatMessage.applyRollMode({}, CONST.DICE_ROLL_MODES.BLIND),
 ).toEqualTypeOf<foundry.documents.BaseChatMessage.CreateData>();
@@ -16,6 +27,7 @@ expectTypeOf(
 expectTypeOf(
   ChatMessage.applyRollMode({}, CONST.DICE_ROLL_MODES.SELF),
 ).toEqualTypeOf<foundry.documents.BaseChatMessage.CreateData>();
+/* eslint-enable @typescript-eslint/no-deprecated */
 
 declare module "fvtt-types/configuration" {
   namespace CONFIG {
@@ -36,10 +48,12 @@ test("Regression test for CONFIG.Dice.rollModes as choices", () => {
 });
 
 expectTypeOf(
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
   ChatMessage.applyRollMode({}, "custom-roll-mode"),
 ).toEqualTypeOf<foundry.documents.BaseChatMessage.CreateData>();
 
 // @ts-expect-error "unknown-roll-mode" is not a valid roll mode
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 ChatMessage.applyRollMode({}, "unknown-roll-mode");
 
 expectTypeOf(ChatMessage.getSpeaker()).toEqualTypeOf<ChatMessage.SpeakerData>();
@@ -73,6 +87,13 @@ expectTypeOf(chat.rolls).toEqualTypeOf<Roll[]>();
 expectTypeOf(chat.visible).toEqualTypeOf<boolean>();
 expectTypeOf(chat.author).toEqualTypeOf<User.Stored | null>();
 expectTypeOf(chat.prepareData()).toEqualTypeOf<void>();
+
+// v14: instance `applyMode` replaces `applyRollMode`
+expectTypeOf(chat.applyMode("public")).toEqualTypeOf<void>();
+expectTypeOf(chat.applyMode("gm")).toEqualTypeOf<void>();
+expectTypeOf(chat.applyMode("module.customMode")).toEqualTypeOf<void>();
+
+/* eslint-disable @typescript-eslint/no-deprecated -- exercising the deprecated-since-v14 applyRollMode surface */
 expectTypeOf(chat.applyRollMode(CONST.DICE_ROLL_MODES.BLIND)).toEqualTypeOf<void>();
 expectTypeOf(chat.applyRollMode(CONST.DICE_ROLL_MODES.PRIVATE)).toEqualTypeOf<void>();
 expectTypeOf(chat.applyRollMode(CONST.DICE_ROLL_MODES.PUBLIC)).toEqualTypeOf<void>();
@@ -87,6 +108,7 @@ expectTypeOf(chat.applyRollMode(game.settings!.get("core", "rollMode"))).toEqual
 
 // @ts-expect-error "unknown-roll-mode" is not a valid roll mode
 chat.applyRollMode("unknown-roll-mode");
+/* eslint-enable @typescript-eslint/no-deprecated */
 
 expectTypeOf(chat.getRollData()).toEqualTypeOf<AnyObject>();
 

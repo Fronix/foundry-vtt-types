@@ -16,5 +16,4 @@ declare const folder: Folder.Implementation;
 expectTypeOf(RollTable.fromFolder(folder)).toEqualTypeOf<Promise<RollTable.Stored | undefined>>();
 
 // `rollMode` is deprecated since v14 (until v16) in favor of `messageMode`.
-// eslint-disable-next-line @typescript-eslint/no-deprecated
 table.draw({ rollMode: "gmroll" });
