@@ -1066,7 +1066,7 @@ declare class PrototypeToken extends DataModel<PrototypeToken.Schema, PrototypeT
   static override defineSchema(): PrototypeToken.Schema;
 
   /**
-   * @defaultValue `["TOKEN"]`
+   * @defaultValue `["DOCUMENT", "TOKEN"]`
    */
   static override LOCALIZATION_PREFIXES: string[];
 
@@ -1147,6 +1147,133 @@ declare class PrototypeToken extends DataModel<PrototypeToken.Schema, PrototypeT
   getBarAttribute: ToMethod<TokenDocument.Implementation["getBarAttribute"]>;
 }
 
+declare namespace PrototypeTokenOverrides {
+  /**
+   * The fields of a single actor-type's overrides: a subset of the prototype-token schema with every leaf field
+   * made `required: false` / `initial: undefined` so an unset override is simply absent.
+   */
+  interface OverrideSchema extends DataSchema {
+    sight: fields.SchemaField<{
+      enabled: fields.BooleanField<{ required: false; initial: undefined }>;
+    }>;
+
+    ring: fields.SchemaField<{
+      enabled: fields.BooleanField<{ required: false; initial: undefined }>;
+    }>;
+
+    turnMarker: fields.SchemaField<{
+      // FIXME: explicit type params required to enforce the branded choice
+      mode: fields.NumberField<
+        {
+          required: false;
+          initial: undefined;
+          choices: CONST.TOKEN_TURN_MARKER_MODES[];
+          validationError: "must be a value in CONST.TOKEN_TURN_MARKER_MODES";
+        },
+        CONST.TOKEN_TURN_MARKER_MODES | null | undefined,
+        CONST.TOKEN_TURN_MARKER_MODES | undefined,
+        CONST.TOKEN_TURN_MARKER_MODES | undefined
+      >;
+
+      animation: fields.StringField<{ required: false; blank: false; nullable: true; initial: undefined }>;
+
+      src: fields.FilePathField<{ categories: ["IMAGE", "VIDEO"]; required: false; initial: undefined }>;
+
+      disposition: fields.BooleanField<{ required: false; initial: undefined }>;
+    }>;
+
+    // FIXME: explicit type params required to enforce the branded choice
+    displayName: fields.NumberField<
+      {
+        required: false;
+        initial: undefined;
+        choices: CONST.TOKEN_DISPLAY_MODES[];
+        validationError: "must be a value in CONST.TOKEN_DISPLAY_MODES";
+      },
+      CONST.TOKEN_DISPLAY_MODES | null | undefined,
+      CONST.TOKEN_DISPLAY_MODES | undefined,
+      CONST.TOKEN_DISPLAY_MODES | undefined
+    >;
+
+    // FIXME: explicit type params required to enforce the branded choice
+    displayBars: fields.NumberField<
+      {
+        required: false;
+        initial: undefined;
+        choices: CONST.TOKEN_DISPLAY_MODES[];
+        validationError: "must be a value in CONST.TOKEN_DISPLAY_MODES";
+      },
+      CONST.TOKEN_DISPLAY_MODES | null | undefined,
+      CONST.TOKEN_DISPLAY_MODES | undefined,
+      CONST.TOKEN_DISPLAY_MODES | undefined
+    >;
+
+    // FIXME: explicit type params required to enforce the branded choice
+    disposition: fields.NumberField<
+      {
+        required: false;
+        initial: undefined;
+        choices: CONST.TOKEN_DISPOSITIONS[];
+        validationError: "must be a value in CONST.TOKEN_DISPOSITIONS";
+      },
+      CONST.TOKEN_DISPOSITIONS | null | undefined,
+      CONST.TOKEN_DISPOSITIONS | undefined,
+      CONST.TOKEN_DISPOSITIONS | undefined
+    >;
+
+    lockRotation: fields.BooleanField<{ required: false; initial: undefined }>;
+  }
+
+  /**
+   * One `SchemaField<OverrideSchema>` per registered Actor subtype (the schema is built by
+   * `Actor.TYPES.reduce(...)` at runtime).
+   */
+  type Schema = {
+    [Type in Actor.SubType]: fields.SchemaField<OverrideSchema>;
+  };
+}
+
+/**
+ * The data model for the `core.prototypeTokenOverrides` setting.
+ */
+declare class PrototypeTokenOverrides extends DataModel<PrototypeTokenOverrides.Schema> {
+  static override defineSchema(): PrototypeTokenOverrides.Schema;
+
+  /**
+   * Localize all non-recursive data fields on first load of the application.
+   * @param fields - Subfields of a recursive field
+   * @param cache  - A running cache of localization results
+   */
+  static localizeFields(fields?: fields.DataField.Any[], cache?: Record<string, string>): void;
+
+  /** @defaultValue `["TOKEN"]` */
+  static override LOCALIZATION_PREFIXES: string[];
+
+  /**
+   * The name of the world setting that stores the prototype token overrides.
+   */
+  static SETTING: "prototypeTokenOverrides";
+
+  /**
+   * A cached copy of the currently-configured overrides.
+   */
+  static get overrides(): PrototypeTokenOverrides;
+
+  static set overrides(value: PrototypeTokenOverrides | null);
+
+  /**
+   * Apply configured overrides to prototype token data.
+   * @param source    - The prototype token source data on which to operate
+   * @param actorType - The prototype parent's actor type: used to retrieve type-specific overrides
+   */
+  static applyOverrides(source: AnyMutableObject, actorType?: string): void;
+
+  /**
+   * Apply configured overrides to all Actor documents within the World.
+   */
+  static applyAll(): void;
+}
+
 declare namespace TombstoneData {
   interface Schema extends DataSchema {
     /**
@@ -1177,6 +1304,7 @@ declare class TombstoneData extends DataModel<TombstoneData.Schema> {
 export {
   LightData,
   PrototypeToken,
+  PrototypeTokenOverrides,
   ShapeData,
   BaseShapeData,
   RectangleShapeData,

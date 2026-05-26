@@ -134,6 +134,17 @@ expectTypeOf(myProtoToken.getBarAttribute("foo")?.attribute).toEqualTypeOf<strin
 
 /******************************************************************/
 
+expectTypeOf(foundry.data.PrototypeTokenOverrides.SETTING).toEqualTypeOf<"prototypeTokenOverrides">();
+expectTypeOf(foundry.data.PrototypeTokenOverrides.overrides).toEqualTypeOf<foundry.data.PrototypeTokenOverrides>();
+expectTypeOf(foundry.data.PrototypeTokenOverrides.applyOverrides({}, "character")).toBeVoid();
+expectTypeOf(foundry.data.PrototypeTokenOverrides.applyAll()).toBeVoid();
+
+declare const myPrototypeTokenOverrides: foundry.data.PrototypeTokenOverrides;
+// The schema has one entry per Actor subtype; `base` is always present.
+expectTypeOf(myPrototypeTokenOverrides.base.lockRotation).toEqualTypeOf<boolean | undefined>();
+
+/******************************************************************/
+
 const myTombstone = new foundry.data.TombstoneData();
 
 expectTypeOf(myTombstone._id).toEqualTypeOf<string | null>();
