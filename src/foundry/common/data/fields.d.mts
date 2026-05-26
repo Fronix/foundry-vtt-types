@@ -993,6 +993,18 @@ declare class SchemaField<
   protected _initialize(fields: Fields): Fields;
 
   /**
+   * Extend this schema definition with additional fields.
+   * @param fields - The additional fields.
+   */
+  extendFields(fields: DataSchema): void;
+
+  /**
+   * Remove fields from this schema definition.
+   * @param fields - The fields to remove.
+   */
+  removeFields(fields: string[]): void;
+
+  /**
    * Iterate over a SchemaField by iterating over its fields.
    */
   [Symbol.iterator](): Generator<DataField.Unknown, void, undefined>;
@@ -1053,6 +1065,20 @@ declare class SchemaField<
    * Deletes any keys from `value` not in the schema, including `-=` and `==` keys
    */
   protected override _cleanType(value: InitializedType, options?: DataField.CleanOptions): InitializedType;
+
+  /**
+   * Expand a transacted object.
+   * @param data    - The object.
+   * @param options - Cleaning operation options.
+   * @param _state  - Cleaning operation state.
+   * @remarks `options`/`_state` are the DataModel cleaning options/state, deliberately left unmodeled.
+   */
+  static expandObject(data: AnyMutableObject, options: AnyObject, _state: AnyObject): void;
+
+  /**
+   * When iterating over the keys and values of an object, reconstruct serialized DataFieldOperator values.
+   */
+  static reconstructOperator(data: AnyMutableObject, k: string, v: unknown): void;
 
   override initialize(
     value: PersistedType,
