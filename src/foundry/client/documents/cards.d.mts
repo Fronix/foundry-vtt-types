@@ -1457,8 +1457,8 @@ declare class Cards<out SubType extends Cards.SubType = Cards.SubType> extends B
   playDialog(card: Card.Implementation): Promise<Card.Implementation[] | null>;
 
   /**
-   * Display a confirmation dialog for whether or not the user wishes to reset a Cards stack
-   * @see {@linkcode Cards.reset | Cards#reset}
+   * Display a confirmation dialog for whether the user wishes to reset a Cards stack
+   * @see {@linkcode Cards.recall | Cards#recall}
    */
   resetDialog(): Promise<this | false | null>;
 

@@ -18,6 +18,11 @@ expectTypeOf(cards).toEqualTypeOf<Cards.OfType<"deck">>();
 expectTypeOf(cards.thumbnail).toEqualTypeOf<string | null>();
 expectTypeOf(cards.availableCards).toEqualTypeOf<Card.Implementation[]>();
 expectTypeOf(cards.drawnCards).toEqualTypeOf<Card.Implementation[]>();
+expectTypeOf(cards.typeLabel).toEqualTypeOf<string>();
+expectTypeOf(cards.canClone).toEqualTypeOf<boolean>();
+
+// createDocuments override: keepEmbeddedIds defaults to false
+expectTypeOf(Cards.implementation.createDocuments([])).toEqualTypeOf<Promise<Cards.Stored[]>>();
 
 // deal
 expectTypeOf(cards.deal([cards])).toEqualTypeOf<Promise<Cards.Implementation>>();
@@ -114,10 +119,10 @@ expectTypeOf(
 ).toEqualTypeOf<Promise<Cards.OfType<"deck">>>();
 
 // @ts-expect-error "unknownProp" is not a valid option
-cards.reset({ unknownProp: 0 });
+cards.recall({ unknownProp: 0 });
 
 // @ts-expect-error "unknownProp" is not a valid option
-cards.reset({ updateData: { unknownProp: 3 } });
+cards.recall({ updateData: { unknownProp: 3 } });
 
 // dealDialog
 expectTypeOf(cards.dealDialog()).toEqualTypeOf<Promise<Cards.OfType<"deck"> | null>>();
