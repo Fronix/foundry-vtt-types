@@ -25,4 +25,10 @@ expectTypeOf(playlist.stopAll()).toEqualTypeOf<Promise<Playlist.Implementation |
 expectTypeOf(playlist.cycleMode()).toEqualTypeOf<Promise<Playlist.Implementation | undefined>>();
 expectTypeOf(playlist.toAnchor()).toEqualTypeOf<HTMLAnchorElement>();
 
+// v14 bulk-import API
+expectTypeOf(playlist.bulkImportDialog()).toEqualTypeOf<Promise<boolean>>();
+expectTypeOf(playlist.bulkImportSounds(["sounds/a.ogg", "sounds/b.ogg"])).toEqualTypeOf<
+  Promise<PlaylistSound.Implementation[]>
+>();
+
 expectTypeOf(playlist.sheet).toEqualTypeOf<Application.Any | DocumentSheetV2.Any | null>();

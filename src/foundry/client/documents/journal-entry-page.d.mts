@@ -1248,6 +1248,7 @@ declare class JournalEntryPage<
 
   protected override _buildEmbedHTML(
     config: TextEditor.DocumentHTMLEmbedConfig,
+    options?: TextEditor.EnrichmentOptions,
   ): Promise<HTMLCollection | HTMLElement | null>;
 
   protected override _createFigureEmbed(
