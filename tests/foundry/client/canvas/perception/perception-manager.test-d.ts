@@ -30,7 +30,6 @@ describe(" Tests", () => {
     // all
     expectTypeOf(
       manager.update({
-        refreshEdges: true,
         initializeLighting: false,
         initializeLightSources: undefined,
         refreshLighting: true,
@@ -43,26 +42,20 @@ describe(" Tests", () => {
         refreshOcclusion: false,
         refreshOcclusionStates: undefined,
         refreshOcclusionMask: true,
+        refreshOccludedSurfaces: undefined,
         initializeSounds: false,
         refreshSounds: undefined,
         soundFadeDuration: true,
-        // deprecated since v12, until v14
-        refreshTiles: false,
-        identifyInteriorWalls: undefined,
         // deprecated since v13, until v15
         initializeDarknessSources: true,
+        // deprecated since v14, until v16
+        refreshEdges: false,
       }),
     ).toBeVoid();
 
     expectTypeOf(manager.renderFlags.flags.initializeLightSources).toEqualTypeOf<
       interaction.RenderFlag<PerceptionManager.RENDER_FLAGS, "initializeLightSources">
     >();
-  });
-
-  test("Deprecated", () => {
-    // deprecated since v12, until v14
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    expectTypeOf(manager.refresh()).toBeVoid();
   });
 });
 type _x = (keyof PerceptionManager.RENDER_FLAGS)[];

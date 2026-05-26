@@ -13,9 +13,10 @@ import type {
   PointEffectSourceMixin,
   RenderedEffectSource,
 } from "#client/canvas/sources/_module.d.mts";
-import type { ClockwiseSweepPolygon } from "#client/canvas/geometry/_module.d.mts";
+import type { ClockwiseSweepPolygon, edges } from "#client/canvas/geometry/_module.d.mts";
 import type { CanvasVisibility } from "#client/canvas/groups/_module.d.mts";
 import type { PointSourceMesh } from "#client/canvas/containers/_module.d.mts";
+import type { Canvas } from "#client/canvas/_module.d.mts";
 
 /**
  * A specialized subclass of the BaseLightSource which renders a source of light as a point-based effect.
@@ -64,6 +65,14 @@ declare class PointLightSource<
   protected override _getPolygonConfiguration(): PointLightSource.PolygonConfig;
 
   /**
+   * Get the options used for Edge creation.
+   * @privateRemarks Override providing `type: "source"`, `direction`, `darkness`, and `priority`.
+   */
+  protected override _getEdgeCreationOptions(): edges.Edge.ConstructorOptions;
+
+  override testPoint(point: Canvas.ElevatedPoint): boolean;
+
+  /**
    * Test whether this LightSource provides visibility to see a certain target object.
    * @param config - The visibility test configuration
    * @returns Is the target object visible to this source?
@@ -74,18 +83,14 @@ declare class PointLightSource<
    * Can this LightSource theoretically detect a certain object based on its properties?
    * This check should not consider the relative positions of either object, only their state.
    * @param target - The target object being tested
+   * @param level  - The level the target is in
    * @returns Can the target object theoretically be detected by this vision source?
    * @remarks Only returns `false` in core's implementation if `target?.document` is a {@linkcode TokenDocument} with {@linkcode CONFIG.specialStatusEffects.INVISIBLE}
+   *
+   * FIXME(v14-levels): `level` is a `Level` document; typed as `object` until the Scene Levels subsystem
+   * is authored in Phase 7. It is unused by this implementation at runtime.
    */
-  protected _canDetectObject(target?: CanvasVisibility.TestObject): boolean;
-
-  /**
-   * @deprecated "`BaseLightSource#isDarkness` is now obsolete. Use {@linkcode foundry.canvas.sources.PointDarknessSource | PointDarknessSource} instead." (since v12, until v14)
-   * @remarks Always returns `false`
-   * @privateRemarks This isn't actually overridden here; {@linkcode BaseLightSource.isDarkness | BaseLightSource#isDarkness} always returns false, but it's typed as `boolean`
-   * there since {@linkcode foundry.canvas.sources.PointDarknessSource | PointDarknessSource#isDarkness} returns true.
-   */
-  get isDarkness(): false;
+  protected _canDetectObject(target?: CanvasVisibility.TestObject, level?: object): boolean;
 
   #PointLightSource: true;
 }

@@ -51,6 +51,7 @@ const sourceData = {
   dim: 20,
   disabled: false,
   elevation: 0,
+  level: null,
   externalRadius: 0,
   luminosity: 1,
   preview: false,
@@ -99,6 +100,8 @@ expectTypeOf(mySource["_canDetectObject"]()).toBeBoolean();
 expectTypeOf(mySource["_canDetectObject"](null)).toBeBoolean();
 expectTypeOf(mySource["_canDetectObject"](object)).toBeBoolean();
 
-// deprecated since v12, until v14
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(mySource.isDarkness).toEqualTypeOf<false>();
+expectTypeOf(
+  mySource["_getEdgeCreationOptions"](),
+).toEqualTypeOf<foundry.canvas.geometry.edges.Edge.ConstructorOptions>();
+
+expectTypeOf(mySource.testPoint({ x: 50, y: 50, elevation: 0 })).toBeBoolean();

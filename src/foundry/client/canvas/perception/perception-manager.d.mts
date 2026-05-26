@@ -29,11 +29,6 @@ declare class PerceptionManager extends RenderFlagsMixin() {
    */
   initialize(): void;
 
-  /**
-   * @deprecated "`PerceptionManager#refresh` is deprecated in favor of assigning granular \"refresh flags\"" (since v12, until v14)
-   */
-  refresh(): void;
-
   static #PerceptionManager: true;
 }
 
@@ -47,19 +42,13 @@ declare namespace PerceptionManager {
 
   interface RENDER_FLAGS {
     /**
-     * Recompute intersections between all registered edges. See {@linkcode foundry.canvas.geometry.edges.CanvasEdges.refresh | CanvasEdges#refresh}.
-     * @defaultValue `{}`
-     */
-    refreshEdges: RenderFlag<this, "refreshEdges">;
-
-    /**
      * Re-initialize the entire lighting configuration. An aggregate behavior
      * which does no work directly but propagates to set several other flags.
-     * @defaultValue `{ propagate: ["initializeDarknessSources", "initializeLightSources"] }`
+     * @defaultValue `{ propagate: ["initializeLightSources"] }`
      */
     initializeLighting: RenderFlag<this, "initializeLighting">;
 
-    /** @defaultValue `{ propagate: ["refreshLighting", "refreshVision", "refreshEdges"] }` */
+    /** @defaultValue `{ propagate: ["refreshLighting", "refreshVision"] }` */
     initializeLightSources: RenderFlag<this, "initializeLightSources">;
 
     /**
@@ -106,15 +95,21 @@ declare namespace PerceptionManager {
 
     /**
      * Refresh occlusion
-     * @defaultValue `{propagate: ["refreshOcclusionStates", "refreshOcclusionMask"] }`
+     * @defaultValue `{ propagate: ["refreshOcclusionStates", "refreshOcclusionMask"] }`
      */
     refreshOcclusion: RenderFlag<this, "refreshOcclusion">;
 
-    /** @defaultValue `{}` */
+    /** @defaultValue `{ propagate: ["refreshOccludedSurfaces"] }` */
     refreshOcclusionStates: RenderFlag<this, "refreshOcclusionStates">;
 
     /** @defaultValue `{}` */
     refreshOcclusionMask: RenderFlag<this, "refreshOcclusionMask">;
+
+    /**
+     * Refresh occluded surfaces
+     * @defaultValue `{ propagate: ["refreshOcclusionMask"] }`
+     */
+    refreshOccludedSurfaces: RenderFlag<this, "refreshOccludedSurfaces">;
 
     /**
      * Re-initialize the entire ambient sound configuration. See {@linkcode foundry.canvas.layers.SoundsLayer.initializeSources | SoundsLayer#initializeSources}.
@@ -135,22 +130,16 @@ declare namespace PerceptionManager {
     soundFadeDuration: RenderFlag<this, "soundFadeDuration">;
 
     /**
-     * @defaultValue `{ propagate: ["refreshOcclusion"], alias: true }`
-     * @deprecated "The `refreshTiles` flag is deprecated in favor of `refreshOcclusion`" (since v12, until v14)
-     */
-    refreshTiles: RenderFlag<this, "refreshTiles">;
-
-    /**
-     * @defaultValue `{ propagate: ["initializeLighting", "initializeVision"], alias: true }`
-     * @deprecated "The `identifyInteriorWalls` flag is now obsolete and has no replacement." (since v12, until v14)
-     */
-    identifyInteriorWalls: RenderFlag<this, "identifyInteriorWalls">;
-
-    /**
-     * @defaultValue `{ propagate: ["refreshLightSources"] }`
+     * @defaultValue `{ propagate: ["initializeLightSources"] }`
      * @deprecated "The `initializeDarknessSources` flag is now obsolete. `initializeLightSources` flag must be used instead." (since v13, until v15)
      */
     initializeDarknessSources: RenderFlag<this, "initializeDarknessSources">;
+
+    /**
+     * @defaultValue `{}`
+     * @deprecated "The `refreshEdges` flag is now obsolete and no longer requires to be set." (since v14, until v16)
+     */
+    refreshEdges: RenderFlag<this, "refreshEdges">;
   }
 }
 

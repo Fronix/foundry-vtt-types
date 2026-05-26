@@ -75,11 +75,17 @@ describe("DetectionMode tests", () => {
       myDetectionMode.testVisibility(visionSource, dmData, { object: undefined, tests: visibilityTests }),
     ).toBeBoolean();
 
-    expectTypeOf(myDetectionMode["_canDetect"](visionSource, token)).toBeBoolean();
+    // `level` is FIXME-typed `object` until the v14 `Level` document exists (Phase 7)
+    expectTypeOf(myDetectionMode["_canDetect"](visionSource, token, {})).toBeBoolean();
     expectTypeOf(myDetectionMode["_testPoint"](visionSource, dmData, token, visibilityTests[0]!)).toBeBoolean();
     expectTypeOf(myDetectionMode["_testLOS"](visionSource, dmData, token, visibilityTests[0]!)).toBeBoolean();
     expectTypeOf(myDetectionMode["_testAngle"](visionSource, dmData, token, visibilityTests[0]!)).toBeBoolean();
     expectTypeOf(myDetectionMode["_testRange"](visionSource, dmData, token, visibilityTests[0]!)).toBeBoolean();
+
+    // Static `_testCollision` (new in v14): config-form and los-form third argument
+    expectTypeOf(
+      DetectionMode["_testCollision"](visionSource, { point: visibilityTests[0]!.point }, { type: "sight" }),
+    ).toBeBoolean();
   });
 
   test("Deprecated", () => {

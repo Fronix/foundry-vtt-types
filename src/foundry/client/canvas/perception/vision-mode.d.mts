@@ -67,9 +67,9 @@ declare class VisionMode extends DataModel<
   /**
    * An animation function which runs every frame while this Vision Mode is active.
    * @param dt - The deltaTime passed by the PIXI Ticker
-   * @deprecated Always throws as of 13.346, see remarks
-   * @remarks Calls {@linkcode foundry.canvas.sources.RenderedEffectSource.animateTime | RenderedEffectSource#animateTime} with `this` set to this {@linkcode VisionMode}
-   * @throws Because of the above, as of 13.346 this will **always** throw: it tries to access `this.animation.seed`, but `VisionMode`s don't have an `#animation` object.
+   * @deprecated Always throws as of 14.363, see remarks
+   * @remarks Calls {@linkcode foundry.canvas.sources.PointVisionSource.animateTime | PointVisionSource#animateTime} with `this` set to this {@linkcode VisionMode}
+   * @throws Because of the above, as of 14.363 this will **always** throw: it tries to access `this.animation.seed`, but `VisionMode`s don't have an `#animation` object.
    * See {@link https://github.com/foundryvtt/foundryvtt/issues/13227}.
    */
   animate(dt: number): void;
@@ -192,17 +192,7 @@ declare namespace VisionMode {
   interface SourceData extends fields.SchemaField.SourceData<Schema> {}
 }
 
-/**
- * @deprecated "Kept here for full compatibility" (since v13, until v14)
- * @remarks Access via {@linkcode foundry.data.fields.ShaderField} instead
- */
-declare const ShaderField: clientFields.ShaderField;
-
-export {
-  VisionMode as default,
-  // eslint-disable-next-line @typescript-eslint/no-deprecated
-  ShaderField,
-};
+export default VisionMode;
 
 declare class AnyVisionMode extends VisionMode {
   constructor(...args: never);

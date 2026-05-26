@@ -52,6 +52,7 @@ const sourceData = {
   dim: 20,
   disabled: false,
   elevation: 0,
+  level: null,
   externalRadius: 0,
   luminosity: 1,
   preview: false,
@@ -85,6 +86,6 @@ expectTypeOf(mySource["_drawMesh"]("background")).toEqualTypeOf<PointSourceMesh 
 expectTypeOf(mySource["_updateGeometry"]()).toBeVoid();
 expectTypeOf(mySource["_updateDarknessUniforms"]()).toBeVoid();
 
-// deprecated since v12, until v14
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(mySource.isDarkness).toEqualTypeOf<true>();
+expectTypeOf(
+  mySource["_getEdgeCreationOptions"](),
+).toEqualTypeOf<foundry.canvas.geometry.edges.Edge.ConstructorOptions>();

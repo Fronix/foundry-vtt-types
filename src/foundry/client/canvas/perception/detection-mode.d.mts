@@ -1,9 +1,15 @@
-import type { Brand, Identity } from "#utils";
+import type { Brand, Identity, InexactPartial } from "#utils";
 import type { fields } from "#common/data/_module.d.mts";
 import type { DataSchema } from "#common/data/fields.d.mts";
 import type { DataModel } from "#common/abstract/_module.d.mts";
 import type { CanvasVisibility } from "#client/canvas/groups/_module.d.mts";
 import type { PointVisionSource } from "../sources/_module.d.mts";
+import type { PointSourcePolygon } from "../geometry/_module.d.mts";
+
+// FIXME(v14-levels): in v14 detection-mode methods take a `level` (`foundry.documents.Level`)
+// argument and `_testCollision` reads `level` off configs. The Scene Levels subsystem — including
+// the `Level` document — is not yet authored (deferred to Phase 7; see migration-v14
+// "Scene Levels subsystem"). `level` parameters are typed loosely as `object` until `Level` exists.
 
 /**
  * A Detection Mode which can be associated with any kind of sense/vision/perception.
@@ -58,13 +64,16 @@ declare class DetectionMode extends DataModel<DetectionMode.Schema> {
    * This check should not consider the relative positions of either object, only their state.
    * @param visionSource - The vision source being tested
    * @param target       - The target object being tested
+   * @param level        - The level the target is in
    * @returns Can the target object theoretically be detected by this vision source?
    * @remarks Will always be passed a `target` when called by {@linkcode testVisibility | DetectionMode#testVisibility}, it just might possibly be `undefined`.
    * All use is gated behind an `instanceof Token` check, so that's fine.
+   * @privateRemarks `level` is FIXME-typed `object` until the v14 `Level` document exists (Phase 7).
    */
   protected _canDetect(
     visionSource: PointVisionSource.Internal.Any,
     target: CanvasVisibility.TestObject | undefined,
+    level: object,
   ): boolean;
 
   /**
@@ -104,6 +113,26 @@ declare class DetectionMode extends DataModel<DetectionMode.Schema> {
     mode: TokenDocument.DetectionModeData,
     target: CanvasVisibility.TestObject | undefined,
     test: CanvasVisibility.Test,
+  ): boolean;
+
+  /**
+   * Test for LOS collision.
+   * For both the segment in the viewed level and in the target level, a ray is cast with the given configuration.
+   * @param visionSource - The vision source
+   * @param test         - The test
+   * @param config       - The configuration
+   * @returns True if there's a collision or the point is not in the vision angle, otherwise false
+   * @remarks
+   * Two-overload method in the v14 source: the second overload is `(visionSource, test, los)` where `los` is a
+   * {@linkcode PointSourcePolygon} and `test` is `Pick<CanvasVisibility.Test, "point" | "los">`. The single
+   * declaration here accepts both forms via the union third argument.
+   *
+   * The `level` config key is FIXME-omitted until the v14 `Level` document exists (Phase 7).
+   */
+  protected static _testCollision(
+    visionSource: PointVisionSource.Internal.Any,
+    test: InexactPartial<Pick<CanvasVisibility.Test, "point" | "los">>,
+    configOrLos?: PointSourcePolygon.Config | PointSourcePolygon.Any,
   ): boolean;
 
   /**

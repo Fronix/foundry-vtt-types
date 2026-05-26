@@ -1,5 +1,5 @@
 import type EventEmitterMixin from "#common/utils/event-emitter.mjs";
-import type { FixedInstanceType, Identity } from "#utils";
+import type { AnyObject, FixedInstanceType, Identity, InexactPartial } from "#utils";
 import type { SpriteMesh } from "#client/canvas/containers/_module.mjs";
 import type { CanvasVisibility } from "#client/canvas/groups/_module.d.mts";
 import type { Canvas, TextureExtractor } from "#client/canvas/_module.d.mts";
@@ -34,12 +34,6 @@ declare class FogManager extends EventEmitterMixin() {
   get extractor(): TextureExtractor | undefined | null;
 
   /**
-   * Define the number of fog refresh needed before the fog texture is extracted and pushed to the server.
-   * @defaultValue `70`
-   */
-  static COMMIT_THRESHOLD: number;
-
-  /**
    * The exploration SpriteMesh which holds the fog exploration texture.
    */
   get sprite(): SpriteMesh;
@@ -57,8 +51,15 @@ declare class FogManager extends EventEmitterMixin() {
 
   /**
    * Does the currently viewed Scene support fog of war exploration?
+   * @remarks `true` when the scene's `fog.mode` is greater than {@linkcode CONST.FOG_EXPLORATION_MODES.DISABLED}.
    */
-  get fogExploration(): Scene.Implementation["fog"]["exploration"];
+  get fogExploration(): boolean;
+
+  /**
+   * Is the currently viewed Scene in shared fog exploration?
+   * @remarks `true` when the scene's `fog.mode` is {@linkcode CONST.FOG_EXPLORATION_MODES.SHARED}.
+   */
+  get sharedExploration(): boolean;
 
   /**
    * Is this position explored?
@@ -66,6 +67,12 @@ declare class FogManager extends EventEmitterMixin() {
    * @returns Is this position explored?
    */
   isPointExplored(position: Canvas.Point): boolean;
+
+  /**
+   * Create a valid {@linkcode FogExploration} document for the current canvas context.
+   * @param data - Partial exploration data to merge into the created document
+   */
+  protected _createExplorationDocument(data?: FogExploration.CreateData): FogExploration.Implementation;
 
   /**
    * Create the exploration display object with or without a provided texture.
@@ -95,8 +102,29 @@ declare class FogManager extends EventEmitterMixin() {
 
   /**
    * Load existing fog of war data from local storage and populate the initial exploration sprite
+   * @param options - Options which modify how the fog is loaded
    */
-  load(): Promise<PIXI.Texture | void>;
+  load(options?: FogManager.LoadOptions): Promise<PIXI.Texture | void>;
+
+  /**
+   * Unionize exploration inputs for initial scene load.
+   * Override this method to change union rules or to return additional exploration data (ex: positions).
+   * This method must not perform any persistent DB operations.
+   */
+  protected _unionizeSharedExploration(
+    fogs: FogExploration.Implementation[],
+  ): Promise<{ texture: PIXI.RenderTexture; updateData: AnyObject | null }>;
+
+  /**
+   * Apply shared exploration received from another client.
+   * Subclasses may override this method to customize how explored texture and positions are merged locally.
+   */
+  protected _applySharedExploration(explored: string, positions?: AnyObject): Promise<AnyObject>;
+
+  /**
+   * Create a render texture for the exploration sprite if needed.
+   */
+  protected _createExplorationRenderTexture(): Promise<PIXI.RenderTexture>;
 
   /**
    * Dispatch a request to reset the fog of war exploration status for all users within this {@linkcode Scene}. Once the server has deleted
@@ -107,8 +135,9 @@ declare class FogManager extends EventEmitterMixin() {
   /**
    * Request a fog of war save operation.
    * Note: if a save operation is pending, we're waiting for its conclusion.
+   * @param options - Options which modify the save operation
    */
-  save(): Promise<void>;
+  save(options?: FogManager.SaveOptions): Promise<void>;
 
   /**
    * Synchronize one user's version of the Fog of War for this scene to other users.
@@ -119,7 +148,12 @@ declare class FogManager extends EventEmitterMixin() {
    * @param to   - A list of users that should have their Fog of War synced. If none are specified then all users will be synced.
    * @returns A promise that resolves when synchronization has been completed.
    */
-  sync(from: User.Stored, to?: User.Stored[]): Promise<void>;
+  sync(from: User.Implementation, to?: User.Implementation[]): Promise<void>;
+
+  /**
+   * The configured options used for fog base64 extraction.
+   */
+  protected _getBase64ExtractionConfiguration(): { type: string; quality: number };
 
   /**
    * Extract fog data as a base64 string
@@ -157,6 +191,28 @@ declare namespace FogManager {
 
   interface ImplementationClass extends Identity<CONFIG["Canvas"]["fogManager"]> {}
   interface Implementation extends FixedInstanceType<ImplementationClass> {}
+
+  /** @internal */
+  type _LoadOptions = InexactPartial<{
+    /**
+     * Preserve current fog until the new one is ready.
+     * @defaultValue `false`
+     */
+    preserve: boolean;
+  }>;
+
+  interface LoadOptions extends _LoadOptions {}
+
+  /** @internal */
+  type _SaveOptions = InexactPartial<{
+    /**
+     * Broadcast the fog to other clients for local unionization.
+     * @defaultValue `false`
+     */
+    share: boolean;
+  }>;
+
+  interface SaveOptions extends _SaveOptions {}
 
   /**
    * @deprecated Replaced by {@linkcode FogManager.ImplementationClass}.

@@ -26,7 +26,8 @@ declare class PointEffectSource {
    *   externalRadius: 0,
    *   rotation: 0,
    *   angle: 360,
-   *   walls: true
+   *   walls: true,
+   *   priority: 0
    * }
    * ```
    * @remarks `...super.defaultData` will depend on the mixed class; See {@linkcode foundry.canvas.sources.BaseLightSource.defaultData | BaseLightSource.defaultData},
@@ -62,14 +63,14 @@ declare class PointEffectSource {
   get radius(): number;
 
   /**
-   * The (elevated) origin of this point effect source.
-   */
-  get origin(): Canvas.ElevatedPoint;
-
-  /**
    * The priority of this point effect source.
    */
   get priority(): number;
+
+  /**
+   * The (elevated) origin of this point effect source.
+   */
+  get origin(): Canvas.ElevatedPoint;
 
   // TODO: Flatten<IntentionalPartial<SourceData>>
   protected _configure(changes: AnyObject): void;
@@ -104,6 +105,13 @@ declare class PointEffectSource {
    * Create the Edge instances that correspond to this source.
    */
   protected _createEdges(): void;
+
+  /**
+   * Get the options used for Edge creation.
+   * @remarks Effectively abstract — the base implementation throws; subclasses that create edges must
+   * implement it. The result is spread into the {@linkcode edges.Edge | Edge} constructor (with an `id` added).
+   */
+  protected _getEdgeCreationOptions(): edges.Edge.ConstructorOptions;
 
   /**
    * Remove edges from the active Edges collection.
