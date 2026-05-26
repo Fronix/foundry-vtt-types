@@ -19,6 +19,7 @@ describe("PrimaryOccludableObject tests", () => {
     myPOO.hoverFade = true; // Setter
 
     expectTypeOf(myPOO["_occlusionState"]).toEqualTypeOf<PrimaryOccludableObjectMixin.OcclusionState>();
+    expectTypeOf(myPOO["_occlusionState"].surface).toBeNumber();
     expectTypeOf(myPOO["_hoverFadeState"]).toEqualTypeOf<PrimaryOccludableObjectMixin.HoverFadeState>();
     expectTypeOf(myPOO["_restrictionState"]).toBeNumber();
 
@@ -29,24 +30,16 @@ describe("PrimaryOccludableObject tests", () => {
     myPOO.restrictsWeather = true; // Setter
 
     expectTypeOf(myPOO.isOccludable).toBeBoolean();
+
+    expectTypeOf(myPOO.elevation).toBeNumber();
+    myPOO.elevation = 30; // Setter (override)
+    expectTypeOf(myPOO["_occlusionElevation"]).toBeNumber();
+    expectTypeOf(myPOO["_occludedBySameElevationSurfaces"]).toBeBoolean();
+
     expectTypeOf(myPOO.debounceSetOcclusion(false)).toEqualTypeOf<boolean>();
-    expectTypeOf(myPOO.updateCanvasTransform()).toBeVoid();
+    expectTypeOf(myPOO.updateTransform()).toBeVoid();
     expectTypeOf(myPOO["_shouldRenderDepth"]()).toBeBoolean();
 
     expectTypeOf(myPOO.testOcclusion(someToken)).toEqualTypeOf<boolean>();
-    expectTypeOf(myPOO.testOcclusion(someToken, { corners: true })).toEqualTypeOf<boolean>();
-    expectTypeOf(myPOO.testOcclusion(someToken, { corners: undefined })).toEqualTypeOf<boolean>();
-  });
-
-  test("Deprecated", () => {
-    // deprecated since v12, until v14
-
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    expectTypeOf(myPOO.roof).toBeBoolean();
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    myPOO.roof = false; // Setter
-
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    expectTypeOf(myPOO.containsPixel(500, 500, 0.5)).toEqualTypeOf<boolean>();
   });
 });

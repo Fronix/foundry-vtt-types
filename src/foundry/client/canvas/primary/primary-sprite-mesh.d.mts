@@ -36,6 +36,12 @@ declare class PrimarySpriteMesh extends PrimaryOccludableObjectMixin(SpriteMesh)
    */
   textureAlphaThreshold: number;
 
+  /**
+   * The depth elevation of this sprite.
+   * @internal
+   */
+  protected get _depthElevation(): number;
+
   protected override _onTextureUpdate(): void;
 
   override setShaderClass(shaderClass: PrimaryBaseSamplerShader.AnyConstructor): void;
@@ -95,21 +101,6 @@ declare class PrimarySpriteMesh extends PrimaryOccludableObjectMixin(SpriteMesh)
    * @internal
    */
   protected _renderVoid(renderer: PIXI.Renderer): void;
-
-  /**
-   * @deprecated "`#getPixelAlpha `is deprecated without replacement." (since v12, until v14)
-   */
-  getPixelAlpha(x: number, y: number): number;
-
-  /**
-   * @deprecated "`#_getAlphaBounds` is deprecated without replacement." (since v12, until v14)
-   */
-  _getAlphaBounds(): PIXI.Rectangle;
-
-  /**
-   * @deprecated "`#_getTextureCoordinate` is deprecated without replacement." (since v12, until v14)
-   */
-  _getTextureCoordinate(testX: number, testY: number): PIXI.IPointData;
 
   #PrimarySpriteMesh: true;
 }
@@ -178,6 +169,12 @@ declare namespace PrimarySpriteMesh {
     elevation: PrimarySpriteMesh["elevation"];
 
     /** @remarks Doesn't exist prior to first render, set in {@linkcode PrimarySpriteMesh._updateBatchData | PrimarySpriteMesh#_updateBatchData} */
+    depthElevation: PrimarySpriteMesh["_depthElevation"];
+
+    /** @remarks Doesn't exist prior to first render, set in {@linkcode PrimarySpriteMesh._updateBatchData | PrimarySpriteMesh#_updateBatchData} */
+    occlusionElevation: PrimaryOccludableObjectMixin.AnyMixed["_occlusionElevation"];
+
+    /** @remarks Doesn't exist prior to first render, set in {@linkcode PrimarySpriteMesh._updateBatchData | PrimarySpriteMesh#_updateBatchData} */
     textureAlphaThreshold: PrimarySpriteMesh["textureAlphaThreshold"];
 
     /** @remarks Doesn't exist prior to first render, set in {@linkcode PrimarySpriteMesh._updateBatchData | PrimarySpriteMesh#_updateBatchData} */
@@ -194,6 +191,9 @@ declare namespace PrimarySpriteMesh {
 
     /** @remarks Doesn't exist prior to first render, set in {@linkcode PrimarySpriteMesh._updateBatchData | PrimarySpriteMesh#_updateBatchData} */
     visionOcclusion: PrimaryOccludableObjectMixin.OcclusionState["vision"];
+
+    /** @remarks Doesn't exist prior to first render, set in {@linkcode PrimarySpriteMesh._updateBatchData | PrimarySpriteMesh#_updateBatchData} */
+    surfaceOcclusion: PrimaryOccludableObjectMixin.OcclusionState["surface"];
 
     /** @remarks Doesn't exist prior to first render, set in {@linkcode PrimarySpriteMesh._updateBatchData | PrimarySpriteMesh#_updateBatchData} */
     restrictionState: PrimarySpriteMesh["_restrictionState"];

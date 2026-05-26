@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { FixedInstanceType, Mixin } from "#utils";
-import type Document from "#common/abstract/document.d.mts";
 import type { CanvasGroupMixin, PrimaryCanvasGroup } from "#client/canvas/groups/_module.d.mts";
 import type { placeables, primary } from "#client/canvas/_module.d.mts";
 
@@ -85,16 +84,6 @@ declare class PrimaryCanvasObject {
    * Render the depth of this object.
    */
   renderDepthData(renderer: PIXI.Renderer): void;
-
-  /**
-   * @deprecated "`PrimaryCanvasObject#document` is deprecated." (since v12, until v14)
-   */
-  get document(): placeables.PlaceableObject.AnyCanvasDocument | null;
-
-  /**
-   * @deprecated "`PrimaryCanvasObject#updateBounds` is deprecated and has no effect." (since v12, until v14)
-   */
-  updateBounds(): void;
 
   #PrimaryCanvasObject: true;
 }

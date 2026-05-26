@@ -70,16 +70,7 @@ describe("PrimarySpriteMesh tests", () => {
 
     expectTypeOf(myPSM.containsPoint({ x: 500, y: 500 })).toEqualTypeOf<boolean>();
     expectTypeOf(myPSM.containsPoint({ x: 500, y: 500 }, 0.2)).toEqualTypeOf<boolean>();
-  });
 
-  test("Deprecated", () => {
-    // deprecated since v12, until v14
-
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    expectTypeOf(myPSM.getPixelAlpha(500, 500)).toEqualTypeOf<number>();
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    expectTypeOf(myPSM._getAlphaBounds()).toEqualTypeOf<PIXI.Rectangle>();
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    expectTypeOf(myPSM._getTextureCoordinate(250, 250)).toEqualTypeOf<PIXI.IPointData>();
+    expectTypeOf(myPSM["_depthElevation"]).toBeNumber();
   });
 });

@@ -59,6 +59,7 @@ declare class WeatherEffects extends FullCanvasObjectMixin(CanvasLayer) {
   /**
    * Array of weather effects linked to this weather container.
    */
+  // eslint-disable-next-line @typescript-eslint/no-deprecated -- ParticleEffect is @deprecated (until v16) but still the v14 weather-effect base
   effects: Map<string, Array<ParticleEffect | WeatherShaderEffect>>;
 
   /**
@@ -255,6 +256,7 @@ declare namespace WeatherEffects {
   interface ParticleEffectConfiguration extends _CommonEffectConfiguration {
     id: string;
 
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- ParticleEffect is @deprecated (until v16) but still a valid v14 weather effectClass
     effectClass: ParticleEffect.AnyConstructor;
 
     /**
@@ -269,6 +271,7 @@ declare namespace WeatherEffects {
   interface SpecificallyAutumnLeavesConfiguration {
     id: string;
 
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- AutumnLeavesWeatherEffect is @deprecated (until v16) but still a valid v14 weather effectClass
     effectClass: AutumnLeavesWeatherEffect.AnyConstructor;
 
     /** @remarks {@linkcode AutumnLeavesWeatherEffect} overrides {@link ParticleEffect.getParticleEmitters | `ParticleEffect#getParticleEmitters`} -- the method that would throw when passed an empty config -- to not take any parameters and always use */

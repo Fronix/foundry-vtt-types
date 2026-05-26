@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-deprecated -- the whole class is @deprecated (since v14, until v16); the Any-pattern self-references are intentional */
 import type { Identity } from "#utils";
 import type { IDestroyOptions } from "pixi.js";
 import type { CanvasTransformMixin } from "./primary-canvas-object.d.mts";
@@ -5,12 +6,15 @@ import type { CanvasTransformMixin } from "./primary-canvas-object.d.mts";
 /**
  * A configurable particle effect meant to be used in the PrimaryCanvasGroup.
  * You must provide a full configuration object.
+ * @deprecated "The `foundry.canvas.primary.PrimaryParticleEffect` class is deprecated in favor of the newer
+ * {@linkcode foundry.canvas.animation.ParticleGenerator | foundry.canvas.animation.ParticleGenerator} API."
+ * (since v14, until v16)
  * @remarks "full configuration object" meaning something valid for passing to the {@linkcode PIXI.particles.Emitter} constructor.
  * Any properties optional on the {@linkcode PIXI.particles.EmitterConfigV3 | EmitterConfigV3} interface remain optional.
  * The {@linkcode PIXI.particles.EmitterConfigV3.autoUpdate | autoUpdate} and {@linkcode PIXI.particles.EmitterConfigV3.emit | emit}
  * properties are forced `true` and `false`, respectively, before the emitter is created.
  *
- * This class is entirely unused as of 13.346
+ * In v14 this class is export-deprecated (listed under `// Deprecated Exports` in the `primary/_module.mjs` barrel).
  */
 declare class PrimaryParticleEffect extends CanvasTransformMixin(PIXI.Container) {
   constructor(config: PIXI.particles.EmitterConfigV3);

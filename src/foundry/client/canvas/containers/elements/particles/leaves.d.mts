@@ -1,8 +1,12 @@
+/* eslint-disable @typescript-eslint/no-deprecated -- the whole class is @deprecated (since v14, until v16); the base-class + Any-pattern self-references are intentional */
 import type { Identity } from "#utils";
 import { ParticleEffect } from "#client/canvas/containers/_module.mjs";
 
 /**
  * A full-screen weather effect which renders gently falling autumn leaves.
+ * @deprecated since v14, until v16
+ * @remarks Inherits {@linkcode ParticleEffect}'s deprecation in favor of the newer
+ * {@link foundry.canvas.animation.ParticleGenerator | ParticleGenerator} API.
  */
 declare class AutumnLeavesWeatherEffect extends ParticleEffect {
   /**

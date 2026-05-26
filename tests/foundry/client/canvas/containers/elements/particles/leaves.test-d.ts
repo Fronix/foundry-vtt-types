@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-deprecated -- AutumnLeavesWeatherEffect is @deprecated (until v16); this whole file tests it */
 import { describe, expectTypeOf, test } from "vitest";
 
 import AutumnLeavesWeatherEffect = foundry.canvas.containers.AutumnLeavesWeatherEffect;

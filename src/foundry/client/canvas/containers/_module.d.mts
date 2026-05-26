@@ -21,5 +21,8 @@ export { default as QuadMesh } from "./elements/quad-mesh.mjs";
 export { default as ResizeHandle } from "./elements/resize-handle.mjs";
 export { default as SpriteMesh } from "./elements/sprite-mesh.mjs";
 
+// Deprecated exports
+/* eslint-disable @typescript-eslint/no-deprecated -- re-exporting @deprecated (until v16) classes, matching the v14 source barrel */
 export { default as ParticleEffect } from "./elements/particles/particle-effect.mjs";
 export { default as AutumnLeavesWeatherEffect } from "./elements/particles/leaves.mjs";
+/* eslint-enable @typescript-eslint/no-deprecated */

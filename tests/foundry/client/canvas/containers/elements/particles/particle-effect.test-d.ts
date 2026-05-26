@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-deprecated -- ParticleEffect is @deprecated (until v16); this whole file tests it */
 import { describe, expectTypeOf, test } from "vitest";
 
 import ParticleEffect = foundry.canvas.containers.ParticleEffect;

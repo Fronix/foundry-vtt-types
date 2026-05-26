@@ -47,13 +47,4 @@ describe("PrimaryCanvasObjectMixin tests", () => {
 
     expectTypeOf(myPCO.renderDepthData(renderer)).toEqualTypeOf<void>();
   });
-
-  test("Deprecated", () => {
-    // deprecated since v12, until v14
-
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    expectTypeOf(myPCO.document).toEqualTypeOf<foundry.canvas.placeables.PlaceableObject.AnyCanvasDocument | null>();
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    expectTypeOf(myPCO.updateBounds()).toBeVoid();
-  });
 });

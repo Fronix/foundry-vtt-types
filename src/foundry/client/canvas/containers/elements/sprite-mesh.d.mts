@@ -131,6 +131,21 @@ declare class SpriteMesh extends PIXI.Container {
   protected _tintAlphaDirty: boolean;
 
   /**
+   * True if this mesh drew its own content during the current renderer pass.
+   */
+  get renderedThisPass(): boolean;
+
+  /**
+   * True if this mesh was visited by the renderer during the current pass.
+   */
+  get visitedThisPass(): boolean;
+
+  /**
+   * True if the mesh was culld (visited but not drawn) during the current pass.
+   */
+  get culledThisPass(): boolean;
+
+  /**
    * The shader bound to this mesh.
    */
   get shader(): BaseSamplerShader;
@@ -217,6 +232,10 @@ declare class SpriteMesh extends PIXI.Container {
 
   override set width(width);
 
+  override get height(): number;
+
+  override set height(height);
+
   /**
    * The texture that the sprite is using
    */
@@ -296,6 +315,8 @@ declare class SpriteMesh extends PIXI.Container {
    */
   calculateTrimmedVertices(): void;
 
+  protected override _renderWithCulling(renderer: PIXI.Renderer): void;
+
   protected override _render(renderer: PIXI.Renderer): void;
 
   /**
@@ -305,7 +326,7 @@ declare class SpriteMesh extends PIXI.Container {
 
   protected override _calculateBounds(): void;
 
-  override getLocalBounds(rect: PIXI.Rectangle): PIXI.Rectangle;
+  override getLocalBounds(rect?: PIXI.Rectangle): PIXI.Rectangle;
 
   /**
    * Check to see if a point is contained within this SpriteMesh Quad.

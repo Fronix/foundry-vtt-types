@@ -233,6 +233,7 @@ declare class Tile extends PlaceableObject<TileDocument.Implementation> {
    * The runtime deprecation warning erroneously points to `PrimaryCanvasObject#testOcclusion`
    */
   // options: not null (destructured where forwarded)
+  // eslint-disable-next-line @typescript-eslint/no-deprecated -- TestOcclusionOptions is @deprecated; retained for this legacy Tile#testOcclusion shim
   testOcclusion(token: Token.Implementation, options?: PrimaryOccludableObjectMixin.TestOcclusionOptions): boolean;
 
   /**

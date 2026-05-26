@@ -20,10 +20,18 @@ declare class PrimaryOccludableObject {
   occluded: boolean;
 
   /**
-   * The occlusion mode of this occludable object.
+   * The occlusion mode of this occludable object (a union of {@linkcode CONST.OCCLUSION_MODES})
    * @defaultValue {@linkcode CONST.OCCLUSION_MODES.NONE}
    */
   occlusionMode: CONST.OCCLUSION_MODES;
+
+  /**
+   * Do surfaces at the same elevation as this object apply occlusion to this object?
+   * This property only applies to SURFACE occlusion.
+   * @defaultValue `true`
+   * @internal
+   */
+  protected _occludedBySameElevationSurfaces: boolean;
 
   /**
    * The unoccluded alpha of this object.
@@ -45,13 +53,14 @@ declare class PrimaryOccludableObject {
   set hoverFade(value);
 
   /**
-   * The amount of rendered FADE, RADIAL, and VISION occlusion.
+   * The amount of rendered FADE, RADIAL, VISION, and SURFACE occlusion.
    * @defaultValue
    * ```js
    * {
    *   fade: 0.0,
    *   radial: 0.0,
-   *   vision: 0.0
+   *   vision: 0.0,
+   *   surface: 0.0
    * }
    * ```
    * @internal
@@ -106,6 +115,20 @@ declare class PrimaryOccludableObject {
   get isOccludable(): boolean;
 
   /**
+   * @remarks Actually an override of {@linkcode foundry.canvas.primary.PrimaryCanvasObjectMixin.AnyMixed.elevation | PrimaryCanvasObjectMixin#elevation};
+   * the setter additionally resets the internal `#elevationNextDown` cache used by {@linkcode _occlusionElevation}.
+   */
+  get elevation(): number;
+
+  set elevation(value);
+
+  /**
+   * The occlusion elevation of this object.
+   * @internal
+   */
+  protected get _occlusionElevation(): number;
+
+  /**
    * Debounce assignment of the PCO occluded state to avoid cases like animated token movement which can rapidly
    * change PCO appearance.
    * Uses a 50ms debounce threshold.
@@ -115,9 +138,9 @@ declare class PrimaryOccludableObject {
   debounceSetOcclusion: (occluded: boolean) => boolean;
 
   /**
-   * @remarks Actually an override of {@linkcode foundry.canvas.primary.CanvasTransformMixin.AnyMixed.updateCanvasTransform | CanvasTransformMixin#updateCanvasTransform}
+   * @remarks Actually an override of `PIXI.Container#updateTransform`; additionally updates the hover-fade and occlusion states.
    */
-  updateCanvasTransform(): void;
+  updateTransform(): void;
 
   /**
    * @remarks Actually an override of {@linkcode foundry.canvas.primary.PrimaryCanvasObjectMixin.AnyMixed._shouldRenderDepth | PrimaryCanvasObjectMixin#_shouldRenderDepth}
@@ -126,30 +149,10 @@ declare class PrimaryOccludableObject {
 
   /**
    * Test whether a specific Token occludes this PCO.
-   * Occlusion is tested against 9 points, the center, the four corners-, and the four cardinal directions
    * @param token   - The Token to test
-   * @param options - Additional options that affect testing
    * @returns Is the Token occluded by the PCO?
    */
-  testOcclusion(token: Token.Implementation, options?: PrimaryOccludableObjectMixin.TestOcclusionOptions): boolean;
-
-  /**
-   * @deprecated "`#roof` is deprecated in favor of more granular options: {@linkcode PrimaryOccludableObject.restrictsLight | #restrictsLight}
-   * and {@linkcode PrimaryOccludableObject.restrictsWeather | #restrictsWeather}" (since v12, until v14)
-   */
-  get roof(): boolean;
-
-  /**
-   * @deprecated "`#roof` is deprecated in favor of more granular options: {@linkcode PrimaryOccludableObject.restrictsLight | #restrictsLight}
-   * and {@linkcode PrimaryOccludableObject.restrictsWeather | #restrictsWeather}" (since v12, until v14)
-   */
-  set roof(enabled);
-
-  /**
-   * @deprecated since v12, will be removed in v14
-   * @remarks "`#containsPixel` is deprecated. Use {@linkcode PrimaryOccludableObject.containsCanvasPoint | #containsCanvasPoint} instead."
-   */
-  containsPixel(x: number, y: number, alphaThreshold?: number): boolean;
+  testOcclusion(token: Token.Implementation): boolean;
 
   #PrimaryOccludableObject: true;
 }
@@ -164,7 +167,11 @@ declare namespace PrimaryOccludableObjectMixin {
 
   type BaseClass = PIXI.Container.AnyConstructor;
 
-  /** @internal */
+  /**
+   * @internal
+   * @deprecated v14 removed the `options` parameter from {@linkcode PrimaryOccludableObject.testOcclusion | PrimaryOccludableObject#testOcclusion}.
+   * This type is retained only so the (also-removed-in-v13) `Tile#testOcclusion`/`containsPixel` deprecation shims still resolve.
+   */
   type _TestOcclusionOptions = InexactPartial<{
     /**
      * Test corners of the hit-box in addition to the token center?
@@ -173,7 +180,11 @@ declare namespace PrimaryOccludableObjectMixin {
     corners: boolean;
   }>;
 
-  /** Additional options that affect testing */
+  /**
+   * @deprecated v14's {@linkcode PrimaryOccludableObject.testOcclusion | PrimaryOccludableObject#testOcclusion} no longer
+   * accepts options; retained only for the legacy `Tile` deprecation shim. (See {@linkcode _TestOcclusionOptions}.)
+   */
+  // eslint-disable-next-line @typescript-eslint/no-deprecated -- intentionally re-exposing the deprecated internal type for the Tile shim
   interface TestOcclusionOptions extends _TestOcclusionOptions {}
 
   interface OcclusionState {
@@ -185,6 +196,9 @@ declare namespace PrimaryOccludableObjectMixin {
 
     /** The amount of VISION occlusion */
     vision: number;
+
+    /** The amount of SURFACE occlusion */
+    surface: number;
   }
 
   interface HoverFadeState {

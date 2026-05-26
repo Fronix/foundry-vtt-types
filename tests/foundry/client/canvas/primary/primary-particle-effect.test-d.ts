@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-deprecated -- PrimaryParticleEffect is @deprecated since v14 (until v16); the whole class is exercised here. */
 import { describe, expectTypeOf, test } from "vitest";
 
 import PrimaryParticleEffect = foundry.canvas.primary.PrimaryParticleEffect;

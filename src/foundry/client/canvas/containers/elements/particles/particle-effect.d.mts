@@ -1,8 +1,12 @@
+/* eslint-disable @typescript-eslint/no-deprecated -- the whole class is @deprecated (since v14, until v16); the Any-pattern self-references are intentional */
 import type { Identity } from "#utils";
 import { FullCanvasObjectMixin } from "#client/canvas/containers/_module.mjs";
 
 /**
  * An interface for defining particle-based weather effects
+ * @deprecated since v14, until v16
+ * @remarks "The {@linkcode ParticleEffect} class is deprecated in favor of the newer
+ * {@link foundry.canvas.animation.ParticleGenerator | ParticleGenerator} API."
  */
 declare class ParticleEffect extends FullCanvasObjectMixin(PIXI.Container) {
   /**

@@ -1002,6 +1002,10 @@ declare namespace Canvas {
 
   interface PendingRenderFlags {
     OBJECTS: Set<RenderFlagsMixin.AnyMixed>;
+
+    /** @remarks Added in v14; the in-source JSDoc typedef on `pendingRenderFlags` is stale and omits this, but the runtime object has it (and `Canvas.RENDER_FLAG_PRIORITIES.INTERFACE`). Used by {@linkcode foundry.canvas.containers.ControlIcon}. */
+    INTERFACE: Set<RenderFlagsMixin.AnyMixed>;
+
     PERCEPTION: Set<RenderFlagsMixin.AnyMixed>;
   }
 }

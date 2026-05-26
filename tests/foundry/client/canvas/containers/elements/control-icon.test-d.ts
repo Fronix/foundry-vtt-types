@@ -5,9 +5,9 @@ import PreciseText = foundry.canvas.containers.PreciseText;
 
 describe("ControlIcon tests", () => {
   test("Construction", () => {
-    // @ts-expect-error Must pass at least `options.texture`
     new ControlIcon();
     new ControlIcon({ texture: "path/to/image.webp" });
+    new ControlIcon({ texture: PIXI.Texture.EMPTY });
     new ControlIcon({
       texture: "path/to/image.webp",
       borderColor: 0x00ff00,
@@ -26,16 +26,9 @@ describe("ControlIcon tests", () => {
   });
 
   test("Miscellaneous", () => {
-    expectTypeOf(myControlIcon.iconSrc).toBeString();
+    expectTypeOf(myControlIcon.texture).toEqualTypeOf<PIXI.Texture | string>();
     expectTypeOf(myControlIcon.size).toBeNumber();
-    expectTypeOf(myControlIcon.rect).toEqualTypeOf<[number, number, number, number]>();
-    expectTypeOf(myControlIcon.borderColor).toBeNumber();
-    expectTypeOf(myControlIcon.tintColor).toEqualTypeOf<number | null>();
-
-    expectTypeOf(myControlIcon.eventMode).toEqualTypeOf<PIXI.EventMode>();
-    expectTypeOf(myControlIcon.interactiveChildren).toBeBoolean();
-    expectTypeOf(myControlIcon.hitArea).toEqualTypeOf<PIXI.Rectangle>();
-    expectTypeOf(myControlIcon.cursor).toBeString();
+    myControlIcon.size = 80; // Setter
 
     expectTypeOf(myControlIcon.bg).toEqualTypeOf<PIXI.Graphics>();
     expectTypeOf(myControlIcon.icon).toEqualTypeOf<PIXI.Sprite>();
@@ -45,8 +38,22 @@ describe("ControlIcon tests", () => {
     expectTypeOf(myControlIcon.elevation).toBeNumber();
     myControlIcon.elevation = 20; // Setter
 
+    expectTypeOf(myControlIcon.applyRenderFlags()).toBeVoid();
     expectTypeOf(myControlIcon.draw()).toEqualTypeOf<Promise<ControlIcon>>();
-    expectTypeOf(myControlIcon.refresh()).toEqualTypeOf<ControlIcon>();
+    expectTypeOf(myControlIcon.refresh()).toBeVoid();
+
+    expectTypeOf(myControlIcon.destroy()).toBeVoid();
+    expectTypeOf(myControlIcon.destroy(true)).toBeVoid();
+    expectTypeOf(myControlIcon.destroy({ children: true })).toBeVoid();
+  });
+
+  test("Deprecated (until v16)", () => {
+    /* eslint-disable @typescript-eslint/no-deprecated -- deliberately testing deprecated members */
+    expectTypeOf(myControlIcon.iconSrc).toEqualTypeOf<PIXI.Texture | string>();
+    expectTypeOf(myControlIcon.rect).toEqualTypeOf<[number, number, number, number]>();
+    expectTypeOf(myControlIcon.borderColor).toEqualTypeOf<PIXI.ColorSource>();
+    expectTypeOf(myControlIcon.tintColor).toEqualTypeOf<PIXI.ColorSource>();
+
     expectTypeOf(
       myControlIcon.refresh({
         visible: true,
@@ -63,5 +70,6 @@ describe("ControlIcon tests", () => {
         borderVisible: undefined,
       }),
     ).toEqualTypeOf<ControlIcon>();
+    /* eslint-enable @typescript-eslint/no-deprecated */
   });
 });

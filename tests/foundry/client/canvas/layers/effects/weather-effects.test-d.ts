@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-deprecated -- references the @deprecated (until v16) ParticleEffect/AutumnLeavesWeatherEffect weather classes */
 import { expectTypeOf } from "vitest";
 
 import AbstractWeatherShader = foundry.canvas.rendering.shaders.AbstractWeatherShader;
