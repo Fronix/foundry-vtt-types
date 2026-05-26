@@ -23,6 +23,11 @@ declare const myWall: WallDocument.Stored;
 
 expectTypeOf(myWall.flags.core?.sheetClass).toEqualTypeOf<string | undefined>();
 
+expectTypeOf(myWall.isDoor).toEqualTypeOf<boolean>();
+expectTypeOf(myWall.isOpen).toEqualTypeOf<boolean>();
+expectTypeOf(myWall.prepareBaseData()).toEqualTypeOf<void>();
+expectTypeOf(myWall.getWallCategory()).toEqualTypeOf<WallDocument.WallCategory>();
+
 await WallDocument.create(
   {
     c: [0, 0, 0, 0],

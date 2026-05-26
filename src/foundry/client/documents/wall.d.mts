@@ -1090,6 +1090,11 @@ declare namespace WallDocument {
   type Coordinates = [x0: number, y0: number, x1: number, y1: number];
 
   /**
+   * A broad classification of a wall, returned by {@linkcode WallDocument.getWallCategory | WallDocument#getWallCategory}.
+   */
+  type WallCategory = "blank" | "invisible" | "terrain" | "window" | "ethereal" | "door" | "secret" | "normal";
+
+  /**
    * The arguments to construct the document.
    *
    * @deprecated Writing the signature directly has helped reduce circularities and therefore is
@@ -1111,6 +1116,26 @@ declare class WallDocument extends BaseWall.Internal.CanvasDocument {
    * @param context - Construction context options
    */
   constructor(data: WallDocument.CreateData, context?: WallDocument.ConstructionContext);
+
+  // TODO(v14 → Phase 5): The `edge`/`darkness` getters and `initializeEdge` method reference the canvas `Edge`
+  // type and the `EdgeSenseType`/`EdgeRestrictionType` constants whose `WALL_*`→`EDGE_*` rename is deferred to
+  // Phase 5 (see migration-v14 deferrals). Add them when that rename lands so the brands match.
+
+  /** Whether this Document represents a door. */
+  get isDoor(): boolean;
+
+  /** Whether this Document represents an open door. */
+  get isOpen(): boolean;
+
+  /** @remarks Mirrors `threshold.light` onto `threshold.darkness`. */
+  override prepareBaseData(): void;
+
+  /**
+   * Broadly classify a wall into one of several categories, based on its properties.
+   */
+  getWallCategory(): WallDocument.WallCategory;
+
+  // _onCreate, _onUpdate, and _onDelete are overridden but with no signature changes from BaseWall.
 
   /*
    * After this point these are not really overridden methods.

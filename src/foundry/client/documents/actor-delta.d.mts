@@ -1179,6 +1179,8 @@ declare class ActorDelta<out SubType extends ActorDelta.SubType = ActorDelta.Sub
 
   protected override _initialize(options?: ActorDelta.InitializeOptions): void;
 
+  // `id` is overridden (falls back to `this.parent.id` when `_id` is null) but with no signature change.
+
   /** Pass-through the type from the synthetic Actor, if it exists. */
   get type(): SubType;
 

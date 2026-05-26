@@ -8,6 +8,8 @@ const combatant = new Combatant.implementation({}, { parent: new Combat.implemen
 expectTypeOf(combatant.pack).toEqualTypeOf<null>();
 expectTypeOf(combatant.parent).toEqualTypeOf<Combat.Implementation>();
 expectTypeOf(combatant.combat).toEqualTypeOf<Combat.Implementation | null>();
+expectTypeOf(combatant.turnNumber).toEqualTypeOf<number | null>();
+expectTypeOf(combatant.isNPC).toEqualTypeOf<boolean>();
 expectTypeOf(combatant.actor).toEqualTypeOf<Actor.Implementation | null>();
 expectTypeOf(combatant.token).toEqualTypeOf<TokenDocument.Implementation | null>();
 expectTypeOf(combatant.players).toEqualTypeOf<User.Implementation[]>();

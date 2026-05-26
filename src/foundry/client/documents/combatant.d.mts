@@ -1093,6 +1093,12 @@ declare class Combatant<out SubType extends Combatant.SubType = Combatant.SubTyp
    */
   get combat(): Combat.Implementation | null;
 
+  /**
+   * The combatant's turn number if the parent Combat exists and has started
+   * @defaultValue `null`
+   */
+  turnNumber: number | null;
+
   /** This is treated as a non-player combatant if it has no associated actor and no player users who can control it */
   get isNPC(): boolean;
 
