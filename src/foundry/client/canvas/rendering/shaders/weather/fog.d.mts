@@ -29,9 +29,7 @@ declare class FogShader<
    */
   static FOG(mode: CONST.CANVAS_PERFORMANCE_MODES): string;
 
-  static override createProgram(): PIXI.Program;
-
-  static override fragmentShader(mode: CONST.CANVAS_PERFORMANCE_MODES): string;
+  protected static override _createFragmentShader(): string;
 }
 
 declare namespace FogShader {

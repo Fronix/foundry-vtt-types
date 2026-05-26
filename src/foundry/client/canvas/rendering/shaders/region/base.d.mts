@@ -34,7 +34,7 @@ declare class RegionShader extends AbstractBaseShader {
    *  `
    * ```
    */
-  static override vertexShader: string;
+  protected static override _createVertexShader(): string;
 
   /**
    * @defaultValue
@@ -50,7 +50,7 @@ declare class RegionShader extends AbstractBaseShader {
    *  `
    * ```
    */
-  static override fragmentShader: string;
+  protected static override _createFragmentShader(): string;
 
   /**
    * @defaultValue

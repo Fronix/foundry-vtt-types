@@ -6,7 +6,7 @@ declare const someMesh: PIXI.Mesh;
 declare const someRenderer: PIXI.Renderer;
 
 expectTypeOf(GridShader.TYPE_UNIFORM).toEqualTypeOf<string>();
-expectTypeOf(GridShader.fragmentShader).toEqualTypeOf<string>();
+expectTypeOf(GridShader["_createFragmentShader"]()).toEqualTypeOf<string>();
 expectTypeOf(GridShader.create()).toEqualTypeOf<GridShader>();
 
 declare const myGS: GridShader;

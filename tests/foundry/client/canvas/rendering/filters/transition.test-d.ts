@@ -17,6 +17,4 @@ expectTypeOf(
     type: TextureTransitionFilter.TYPES.HOLE,
   }),
 ).toEqualTypeOf<Promise<boolean>>();
-expectTypeOf(TextureTransitionFilter.fragmentShader).toEqualTypeOf<string>();
-
 expectTypeOf(myTTF.type).toEqualTypeOf<TextureTransitionFilter.TYPES>();

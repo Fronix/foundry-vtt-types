@@ -19,7 +19,7 @@ declare class IlluminationVisionShader extends AdaptiveVisionShader {
    */
   static SHADER_HEADER: string;
 
-  static override fragmentShader: string;
+  protected static override _createFragmentShader(): string;
 
   /**
    * @defaultValue

@@ -8,7 +8,7 @@ declare class AbstractBaseMaskFilter extends AbstractBaseFilter {
   /**
    * The default vertex shader used by all instances of AbstractBaseMaskFilter
    */
-  static vertexShader: string;
+  protected static override _createVertexShader(): string;
 
   /** @remarks Foundry does not use the `currentState` param */
   override apply(

@@ -10,9 +10,9 @@ declare class ColorAdjustmentsSamplerShader extends BaseSamplerShader {
    */
   static override classPluginName: string | null;
 
-  static override vertexShader: string;
+  protected static override _createVertexShader(): string;
 
-  static override fragmentShader: string;
+  protected static override _createFragmentShader(): string;
 
   /**
    * @defaultValue

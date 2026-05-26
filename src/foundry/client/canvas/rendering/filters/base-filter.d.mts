@@ -1,4 +1,4 @@
-import type { FixedInstanceType, Identity } from "#utils";
+import type { AnyObject, FixedInstanceType, Identity } from "#utils";
 import type { AbstractBaseShader } from "../shaders/_module.mjs";
 import type { BaseShaderMixin } from "../mixins/_module.mjs";
 
@@ -7,31 +7,15 @@ import type { BaseShaderMixin } from "../mixins/_module.mjs";
  */
 declare class AbstractBaseFilter extends BaseShaderMixin(PIXI.Filter) {
   /**
-   * The default uniforms used by the filter
-   * @defaultValue `{}`
-   */
-  static defaultUniforms: AbstractBaseShader.Uniforms;
-
-  /**
-   * The fragment shader which renders this filter.
-   * @defaultValue `undefined`
-   */
-  static fragmentShader: AbstractBaseShader.FragmentShaderFunction | string | undefined;
-
-  /**
-   * The vertex shader which renders this filter.
-   * @defaultValue `undefined`
-   */
-  static vertexShader: string | undefined;
-
-  /**
    * A factory method for creating the filter using its defined default values.
-   * @param initialUniforms - Initial uniform values which override filter defaults (default: `{}`)
+   * @param uniforms - An object of uniform values which override the class {@linkcode AbstractBaseFilter.defaultUniforms | defaultUniforms}. (default: `{}`)
+   * @param options  - Optional configuration parameters which may influence filter creation or initialization.
    * @returns The constructed AbstractFilter[sic] instance.
    */
   static create<ThisType extends AbstractBaseFilter.AnyConstructor>(
     this: ThisType,
-    initialUniforms?: AbstractBaseShader.Uniforms,
+    uniforms?: AbstractBaseShader.Uniforms,
+    options?: AnyObject,
   ): FixedInstanceType<ThisType>;
 }
 

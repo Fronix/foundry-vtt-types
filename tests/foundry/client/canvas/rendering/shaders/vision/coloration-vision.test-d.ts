@@ -6,7 +6,7 @@ import AbstractBaseShader = foundry.canvas.rendering.shaders.AbstractBaseShader;
 const CVS = ColorationVisionShader;
 let myCVS;
 
-expectTypeOf(CVS.fragmentShader).toEqualTypeOf<string>();
+expectTypeOf(CVS["_createFragmentShader"]()).toEqualTypeOf<string>();
 expectTypeOf(CVS.SHADER_HEADER).toEqualTypeOf<string>();
 expectTypeOf((myCVS = CVS.create())).toEqualTypeOf<ColorationVisionShader>();
 

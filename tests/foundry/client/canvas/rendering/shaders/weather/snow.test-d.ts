@@ -6,8 +6,7 @@ import AbstractBaseShader = foundry.canvas.rendering.shaders.AbstractBaseShader;
 const SS = SnowShader;
 let mySS;
 
-expectTypeOf(SS.fragmentShader).toEqualTypeOf<string>();
-expectTypeOf(SS.createProgram()).toEqualTypeOf<PIXI.Program>();
+expectTypeOf(SS["_createFragmentShader"]()).toEqualTypeOf<string>();
 expectTypeOf((mySS = SS.create())).toEqualTypeOf<SnowShader>();
 
 expectTypeOf(mySS.speed).toEqualTypeOf<number>();

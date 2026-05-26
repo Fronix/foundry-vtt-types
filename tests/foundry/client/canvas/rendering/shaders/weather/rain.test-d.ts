@@ -6,8 +6,7 @@ import AbstractBaseShader = foundry.canvas.rendering.shaders.AbstractBaseShader;
 const RS = RainShader;
 let myRS;
 
-expectTypeOf(RS.fragmentShader).toEqualTypeOf<string>();
-expectTypeOf(RS.createProgram()).toEqualTypeOf<PIXI.Program>();
+expectTypeOf(RS["_createFragmentShader"]()).toEqualTypeOf<string>();
 expectTypeOf((myRS = RS.create())).toEqualTypeOf<RainShader>();
 
 expectTypeOf(myRS.speed).toEqualTypeOf<number>();

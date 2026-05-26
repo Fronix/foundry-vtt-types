@@ -6,7 +6,7 @@ import type { AbstractBaseShader } from "../shaders/_module.mjs";
  * A filter used to apply color adjustments and other modifications to the environment.
  */
 declare class PrimaryCanvasGroupAmbienceFilter extends AbstractBaseMaskFilter {
-  static override fragmentShader: string;
+  protected static override _createFragmentShader(): string;
 
   /**
    * @defaultValue

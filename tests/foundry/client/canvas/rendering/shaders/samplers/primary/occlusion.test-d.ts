@@ -13,7 +13,7 @@ declare const someTex: PIXI.Texture;
 
 expectTypeOf(OccludableSamplerShader.reservedTextureUnits).toEqualTypeOf<number>();
 expectTypeOf(OccludableSamplerShader.classPluginName).toEqualTypeOf<string>();
-expectTypeOf(OccludableSamplerShader.fragmentShader).toEqualTypeOf<string>();
+expectTypeOf(OccludableSamplerShader["_createFragmentShader"]()).toEqualTypeOf<string>();
 expectTypeOf(OccludableSamplerShader.batchDefaultUniforms).toEqualTypeOf<BatchRenderer.BatchDefaultUniformsFunction>();
 expectTypeOf(
   OccludableSamplerShader["_packInterleavedGeometry"](

@@ -1,9 +1,42 @@
-import type { FixedInstanceType, Mixin } from "#utils";
+import type { AnyObject, FixedInstanceType, Mixin } from "#utils";
+import type { AbstractBaseShader } from "../shaders/_module.mjs";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare class BaseShader {
   /** @privateRemarks All mixin classes should accept anything for its constructor. */
   constructor(...args: any[]);
+
+  /**
+   * The default uniform values for the shader.
+   * A subclass of BaseShaderMixin must implement the defaultUniforms static getter.
+   * @defaultValue `{}`
+   * @privateRemarks Source declares this as a `static get` returning `{}`; modeled as a property so the
+   * ~36 subclass overrides (both `static get` and `static =` in the source) can stay plain properties
+   * without tripping accessor/property override errors.
+   */
+  static defaultUniforms: AbstractBaseShader.Uniforms;
+
+  /**
+   * Handle creation of the vertex shader string for this class.
+   * If this method is not provided, PIXI will assign a default vertex for this shader.
+   * @param options - Configuration options passed at creation time.
+   */
+  protected static _createVertexShader(options?: AnyObject): string;
+
+  /**
+   * Handle creation of the fragment shader string for this class.
+   * If this method is not provided, PIXI will assign a default fragment for this shader.
+   * @param options - Configuration options passed at creation time.
+   */
+  protected static _createFragmentShader(options?: AnyObject): string;
+
+  /**
+   * A one time initialization performed on creation.
+   * Subclasses may override to perform custom configuration of uniforms or state.
+   * @param options - Configuration options provided at creation time.
+   * @remarks Does nothing without subclass implementation.
+   */
+  protected _configure(options?: AnyObject): void;
 
   /**
    * Useful constant values computed at compile time
@@ -111,6 +144,20 @@ declare class BaseShader {
    * Enables GLSL 1.0 backwards compatibility in GLSL 3.00 ES fragment shaders.
    */
   static GLSL1_COMPATIBILITY_FRAGMENT: string;
+
+  /**
+   * @remarks Returns the deprecated `fragmentShader` getter's value if the subclass defines one,
+   * logging a compatibility warning (deprecated since v14, until v16); otherwise `undefined`.
+   * @ignore
+   */
+  protected static _fragmentShaderCompatibility(options?: AnyObject): string | undefined;
+
+  /**
+   * @remarks Returns the deprecated `vertexShader` getter's value if the subclass defines one,
+   * logging a compatibility warning (deprecated since v14, until v16); otherwise `undefined`.
+   * @ignore
+   */
+  protected static _vertexShaderCompatibility(options?: AnyObject): string | undefined;
 }
 
 /**

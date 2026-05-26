@@ -7,7 +7,7 @@ expectTypeOf(myBSS).toEqualTypeOf<BaseSamplerShader>();
 
 expectTypeOf(BaseSamplerShader.pausable).toEqualTypeOf<boolean>();
 expectTypeOf(BaseSamplerShader.classPluginName).toEqualTypeOf<string | null>();
-expectTypeOf(BaseSamplerShader.fragmentShader).toEqualTypeOf<string>();
+expectTypeOf(BaseSamplerShader["_createFragmentShader"]()).toEqualTypeOf<string>();
 expectTypeOf(BaseSamplerShader.registerPlugin({ force: true })).toEqualTypeOf<void>();
 // TODO: I'd like to test `.createPlugin` but the BatchPlugin magic isn't exported
 

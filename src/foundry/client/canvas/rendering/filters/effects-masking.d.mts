@@ -7,15 +7,6 @@ import type { AbstractBaseShader } from "../shaders/_module.mjs";
  */
 declare class VisualEffectsMaskingFilter extends AbstractBaseMaskFilter {
   /**
-   * @remarks `postProcessModes` is pulled out of `options` and passed to {@link VisualEffectsMaskingFilter.fragmentShader | `this.fragmentShader`},
-   * the rest of the object is treated as `initialUniforms` as per {@linkcode AbstractBaseFilter.create}
-   */
-  static override create<ThisType extends AbstractBaseFilter.AnyConstructor, T extends AnyObject>(
-    this: ThisType,
-    { postProcessModes, ...initialUniforms }?: VisualEffectsMaskingFilter.CreateOptions<T>,
-  ): FixedInstanceType<ThisType>;
-
-  /**
    * Masking modes.
    * @remarks Object is frozen
    */
@@ -41,6 +32,23 @@ declare class VisualEffectsMaskingFilter extends AbstractBaseMaskFilter {
    * ```
    */
   static override defaultUniforms: AbstractBaseShader.Uniforms;
+
+  /**
+   * Specify the fragment shader to use according to mode
+   * @param options - Creation options; `postProcessModes` (default `[]`) selects the post-process techniques applied.
+   */
+  protected static override _createFragmentShader(options?: VisualEffectsMaskingFilter.ConcreteCreateOptions): string;
+
+  /**
+   * @remarks `postProcessModes` is pulled out of the first argument and threaded into the `options` passed to
+   * {@linkcode VisualEffectsMaskingFilter._createFragmentShader | _createFragmentShader}; the rest of the object is
+   * treated as `initialUniforms` as per {@linkcode AbstractBaseFilter.create}.
+   */
+  static override create<ThisType extends AbstractBaseFilter.AnyConstructor, T extends AnyObject>(
+    this: ThisType,
+    { postProcessModes, ...initialUniforms }?: VisualEffectsMaskingFilter.CreateOptions<T>,
+    options?: AnyObject,
+  ): FixedInstanceType<ThisType>;
 
   /**
    * Update the filter shader with new post-process modes.
@@ -84,12 +92,6 @@ declare class VisualEffectsMaskingFilter extends AbstractBaseMaskFilter {
    */
   static fragmentPostProcess(postProcessModes?: VisualEffectsMaskingFilter.PostProcessModes): string;
 
-  /**
-   * Specify the fragment shader to use according to mode
-   * @param postProcessModes - (default: `[]`)
-   */
-  static override fragmentShader(postProcessModes?: VisualEffectsMaskingFilter.PostProcessModes): string;
-
   #VisualEffectsMaskingFilter: true;
 }
 
@@ -114,7 +116,7 @@ declare namespace VisualEffectsMaskingFilter {
   type _ConcreteCreateOptions = InexactPartial<{
     /**
      * @defaultValue `[]`
-     * @privateRemarks Default not in construction signature, but provided by {@linkcode VisualEffectsMaskingFilter.fragmentShader}
+     * @privateRemarks Default not in construction signature, but provided by {@linkcode VisualEffectsMaskingFilter._createFragmentShader}
      */
     postProcessModes: PostProcessModes;
   }>;

@@ -5,7 +5,7 @@ import type { AbstractBaseShader, BackgroundVisionShader } from "../../_module.m
  * Shader specialized in light amplification
  */
 declare class AmplificationBackgroundVisionShader extends BackgroundVisionShader {
-  static override fragmentShader: string;
+  protected static override _createFragmentShader(): string;
 
   /**
    * @defaultValue

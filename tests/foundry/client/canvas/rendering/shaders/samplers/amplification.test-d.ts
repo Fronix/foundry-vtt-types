@@ -8,7 +8,10 @@ expectTypeOf(myASS).toEqualTypeOf<AmplificationSamplerShader>();
 
 expectTypeOf(AmplificationSamplerShader.defaultUniforms).toEqualTypeOf<AbstractBaseShader.Uniforms>();
 expectTypeOf(AmplificationSamplerShader.classPluginName).toEqualTypeOf<string | null>();
-expectTypeOf(AmplificationSamplerShader.fragmentShader).toEqualTypeOf<string>();
+// `AmplificationSamplerShader` is the v14 holdout that keeps the deprecated `fragmentShader`
+// (as a method, deprecated since v14 until v16) rather than migrating to `_createFragmentShader`.
+// eslint-disable-next-line @typescript-eslint/no-deprecated
+expectTypeOf(AmplificationSamplerShader.fragmentShader()).toEqualTypeOf<string>();
 expectTypeOf(AmplificationSamplerShader.registerPlugin({ force: true })).toEqualTypeOf<void>();
 expectTypeOf(myASS.paused).toEqualTypeOf<boolean>;
 expectTypeOf(myASS.pluginName).toEqualTypeOf<string | null>();

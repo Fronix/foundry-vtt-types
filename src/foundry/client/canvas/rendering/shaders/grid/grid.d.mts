@@ -65,9 +65,9 @@ declare class GridShader extends AbstractBaseShader {
    */
   static DRAW_GRID_FUNCTION: string;
 
-  static override vertexShader: string;
+  protected static override _createVertexShader(): string;
 
-  static override get fragmentShader(): string;
+  protected static override _createFragmentShader(): string;
 
   /**
    * The fragment shader source. Subclasses can override it.

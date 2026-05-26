@@ -13,9 +13,9 @@ declare class WeatherOcclusionMaskFilter extends AbstractBaseMaskFilter {
    */
   elevation: number;
 
-  static override vertexShader: string;
+  protected static override _createVertexShader(): string;
 
-  static override fragmentShader: string;
+  protected static override _createFragmentShader(): string;
 
   /**
    * @defaultValue

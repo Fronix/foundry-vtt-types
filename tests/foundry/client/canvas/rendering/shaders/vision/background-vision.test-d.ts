@@ -6,7 +6,7 @@ import AbstractBaseShader = foundry.canvas.rendering.shaders.AbstractBaseShader;
 const BVS = BackgroundVisionShader;
 let myBVS;
 
-expectTypeOf(BVS.fragmentShader).toEqualTypeOf<string>();
+expectTypeOf(BVS["_createFragmentShader"]()).toEqualTypeOf<string>();
 expectTypeOf(BVS.FRAGMENT_END).toEqualTypeOf<string>();
 expectTypeOf((myBVS = BVS.create())).toEqualTypeOf<BackgroundVisionShader>();
 

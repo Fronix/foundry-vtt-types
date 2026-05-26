@@ -3,7 +3,7 @@ import type { AbstractBaseFilter, AbstractBaseMaskFilter } from "./_module.d.mts
 import type { AbstractBaseShader } from "../shaders/_module.mjs";
 
 declare class VisionMaskFilter extends AbstractBaseMaskFilter {
-  static override fragmentShader: string;
+  protected static override _createFragmentShader(): string;
 
   /**
    * @defaultValue

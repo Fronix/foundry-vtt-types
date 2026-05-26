@@ -6,9 +6,7 @@ import AbstractBaseShader = foundry.canvas.rendering.shaders.AbstractBaseShader;
 const myFS = FogShader.create();
 expectTypeOf(myFS).toEqualTypeOf<FogShader>();
 
-expectTypeOf(FogShader.fragmentShader).toExtend<AbstractBaseShader.FragmentShaderFunction>();
-expectTypeOf(FogShader.fragmentShader(CONST.CANVAS_PERFORMANCE_MODES.LOW)).toEqualTypeOf<string>();
-expectTypeOf(FogShader.createProgram()).toEqualTypeOf<PIXI.Program>();
+expectTypeOf(FogShader["_createFragmentShader"]()).toEqualTypeOf<string>();
 expectTypeOf(FogShader.OCTAVES(CONST.CANVAS_PERFORMANCE_MODES.HIGH)).toEqualTypeOf<string>();
 
 expectTypeOf(myFS.speed).toEqualTypeOf<number>();

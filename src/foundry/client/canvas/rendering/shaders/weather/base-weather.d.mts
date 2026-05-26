@@ -1,4 +1,4 @@
-import type { RemoveIndexSignatures, FixedInstanceType, Identity } from "#utils";
+import type { RemoveIndexSignatures, Identity } from "#utils";
 import type AbstractBaseShader from "../base-shader.mjs";
 
 type AbstractBaseShaderClass = typeof AbstractBaseShader;
@@ -35,26 +35,14 @@ declare class AbstractWeatherShader<
   /**
    * Compute the weather masking value.
    */
-  static FRAGMENT_HEADER: string;
-
-  static commonUniforms: AbstractWeatherShader.CommonUniforms;
+  static get FRAGMENT_HEADER(): string;
 
   /**
    * Default uniforms for a specific class
    */
   static override defaultUniforms: AbstractBaseShader.Uniforms;
 
-  static override create<ThisType extends AbstractBaseShader.AnyConstructor>(
-    this: ThisType,
-    initialUniforms?: AbstractBaseShader.Uniforms,
-  ): FixedInstanceType<ThisType>;
-
-  /**
-   * Create the shader program.
-   */
-  static createProgram(): PIXI.Program;
-
-  static override vertexShader: string;
+  protected static override _createVertexShader(): string;
 
   /**
    * Update the scale of this effect with new values
@@ -77,6 +65,11 @@ declare class AbstractWeatherShader<
   speed: number;
 
   protected override _preRender: AbstractBaseShader.PreRenderFunction;
+
+  /**
+   * Default uniforms for a specific class
+   */
+  static get commonUniforms(): AbstractWeatherShader.CommonUniforms;
 
   #AbstractWeatherShader: true;
 }

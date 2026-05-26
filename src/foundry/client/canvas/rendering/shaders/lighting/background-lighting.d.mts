@@ -10,9 +10,9 @@ declare class AdaptiveBackgroundShader extends AdaptiveLightingShader {
   /**
    * Memory allocations for the Adaptive Background Shader
    */
-  static SHADER_HEADER: string;
+  static get SHADER_HEADER(): string;
 
-  static override fragmentShader: string;
+  protected static override _createFragmentShader(): string;
 
   /**
    * @defaultValue

@@ -8,6 +8,6 @@ expectTypeOf(myHRS).toEqualTypeOf<HighlightRegionShader>();
 declare const someMesh: PIXI.Mesh;
 declare const someRenderer: PIXI.Renderer;
 
-expectTypeOf(HighlightRegionShader.fragmentShader).toEqualTypeOf<string>();
+expectTypeOf(HighlightRegionShader["_createFragmentShader"]()).toEqualTypeOf<string>();
 
 expectTypeOf(myHRS["_preRender"](someMesh, someRenderer)).toEqualTypeOf<void>();

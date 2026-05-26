@@ -10,9 +10,14 @@ declare class AmplificationSamplerShader extends ColorAdjustmentsSamplerShader {
    */
   static override classPluginName: string | null;
 
-  static override vertexShader: string;
+  protected static override _createVertexShader(): string;
 
-  static override fragmentShader: string;
+  /**
+   * @deprecated since v14, until v16
+   * @remarks This shader keeps the deprecated `fragmentShader` getter form (as a method) rather than
+   * migrating to `_createFragmentShader`; the base `_fragmentShaderCompatibility` shim routes it.
+   */
+  static fragmentShader(): string;
 
   /**
    * @defaultValue

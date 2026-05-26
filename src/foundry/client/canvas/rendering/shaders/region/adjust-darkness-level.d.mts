@@ -69,7 +69,7 @@ declare class AdjustDarknessLevelRegionShader extends AbstractDarknessLevelRegio
    *  `
    * ```
    */
-  static override fragmentShader: string;
+  protected static override _createFragmentShader(): string;
 
   /**
    * @defaultValue
@@ -114,7 +114,7 @@ declare class IlluminationDarknessLevelRegionShader extends AbstractDarknessLeve
    *  `
    * ```
    */
-  static override fragmentShader: string;
+  protected static override _createFragmentShader(): string;
 }
 
 declare namespace IlluminationDarknessLevelRegionShader {

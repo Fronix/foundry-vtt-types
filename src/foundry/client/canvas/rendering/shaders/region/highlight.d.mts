@@ -40,7 +40,7 @@ declare class HighlightRegionShader extends RegionShader {
    *  `
    * ```
    */
-  static override vertexShader: string;
+  protected static override _createVertexShader(): string;
 
   /**
    * @defaultValue
@@ -67,7 +67,7 @@ declare class HighlightRegionShader extends RegionShader {
    *  `
    * ```
    */
-  static override fragmentShader: string;
+  protected static override _createFragmentShader(): string;
 
   /**
    * @defaultValue

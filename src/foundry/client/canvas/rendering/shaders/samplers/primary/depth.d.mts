@@ -69,14 +69,14 @@ declare class DepthSamplerShader extends BaseSamplerShader {
    */
   protected static _batchFragmentShader: string;
 
-  static override get vertexShader(): string;
+  protected static override _createVertexShader(): string;
 
   /**
    * The vertex shader source. Subclasses can override it.
    */
   protected static _vertexShader: string;
 
-  static override get fragmentShader(): string;
+  protected static override _createFragmentShader(): string;
 
   /**
    * The fragment shader source. Subclasses can override it.

@@ -1,4 +1,4 @@
-import type { FixedInstanceType, Identity } from "#utils";
+import type { AnyObject, FixedInstanceType, Identity } from "#utils";
 import type { AbstractBaseFilter } from "./_module.d.mts";
 import type { AbstractBaseShader } from "../shaders/_module.mjs";
 
@@ -48,10 +48,13 @@ declare class GlowOverlayFilter extends AbstractBaseFilter {
 
   /**
    * Dynamically create the fragment shader used for filters of this type.
+   * @remarks Foundry's runtime override takes `(quality, distance)` numbers positionally rather than the
+   * base method's single `options` object; the `AnyObject` in the first parameter's union exists only to keep
+   * this override structurally assignable to {@linkcode foundry.canvas.rendering.shaders.AbstractBaseShader._createFragmentShader | the base method}.
    */
-  static createFragmentShader(quality: number, distance: number): string;
+  protected static override _createFragmentShader(quality?: AnyObject | number, distance?: number): string;
 
-  static override vertexShader: string;
+  protected static override _createVertexShader(): string;
 
   static override create<ThisType extends AbstractBaseFilter.AnyConstructor>(
     this: ThisType,

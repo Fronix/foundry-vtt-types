@@ -1,5 +1,5 @@
 import type { FixedInstanceType, Identity, InexactPartial } from "#utils";
-import type { AbstractBaseFilter, AbstractBaseMaskFilter } from "./_module.d.mts";
+import type { AbstractBaseMaskFilter } from "./_module.d.mts";
 import type { AbstractBaseShader } from "../shaders/_module.mjs";
 
 /**
@@ -26,15 +26,9 @@ declare class VisibilityFilter extends AbstractBaseMaskFilter {
    */
   static override defaultUniforms: AbstractBaseShader.Uniforms;
 
-  static override create<ThisType extends AbstractBaseFilter.AnyConstructor>(
-    this: ThisType,
-    initialUniforms?: AbstractBaseShader.Uniforms,
-    options?: VisibilityFilter.FragmentShaderOptions,
-  ): FixedInstanceType<ThisType>;
+  protected static override _createVertexShader(): string;
 
-  static override vertexShader: string;
-
-  static override fragmentShader(options: VisibilityFilter.FragmentShaderOptions): string;
+  protected static override _createFragmentShader(options?: VisibilityFilter.FragmentShaderOptions): string;
 
   /**
    * Set the blur strength

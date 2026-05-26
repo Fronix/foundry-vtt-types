@@ -6,7 +6,7 @@ import type { AbstractBaseShader } from "../shaders/_module.mjs";
  * Invisibility effect filter for placeables.
  */
 declare class InvisibilityFilter extends AbstractBaseFilter {
-  static override fragmentShader: string;
+  protected static override _createFragmentShader(): string;
 
   /**
    * @defaultValue

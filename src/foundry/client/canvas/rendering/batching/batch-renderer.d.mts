@@ -94,7 +94,8 @@ declare namespace BatchRenderer {
     ) => void
   >;
 
-  type PreRenderBatchFunction = ToMethod<(batchRenderer: typeof BatchRenderer) => void>;
+  /** @remarks Called as `this._preRenderBatch?.(this)` in `BatchRenderer#start`, so it receives the renderer instance. */
+  type PreRenderBatchFunction = ToMethod<(batchRenderer: BatchRenderer) => void>;
 
   type BatchDefaultUniformsFunction = ToMethod<(maxTextures: number) => AbstractBaseShader.Uniforms>;
 

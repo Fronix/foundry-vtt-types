@@ -2,7 +2,7 @@ import { expectTypeOf } from "vitest";
 
 import AbstractBaseMaskFilter = foundry.canvas.rendering.filters.AbstractBaseMaskFilter;
 
-expectTypeOf(AbstractBaseMaskFilter.vertexShader).toEqualTypeOf<string>();
+expectTypeOf(AbstractBaseMaskFilter["_createVertexShader"]()).toEqualTypeOf<string>();
 
 const myABMF = AbstractBaseMaskFilter.create();
 expectTypeOf(myABMF).toEqualTypeOf<AbstractBaseMaskFilter>();
