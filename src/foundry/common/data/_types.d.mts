@@ -20,6 +20,11 @@ type DataFieldContext = fields.DataField.ConstructionContext;
 
 type DataFieldValidationOptions = unknown;
 
+// The v14 DataModel cleaning/update/sanitization pipeline typedefs map to DataModel internals that the repo
+// deliberately leaves unmodeled (consistent with the protected `updateSource`/`cleanData` omission policy in
+// common/abstract/data.d.mts), so there is no repo type to alias here:
+//   DataModelCleaningOptions, DataModelUpdateState, DataModelSanitizationOptions, EmbeddedCollectionUpdateContext
+
 type FormGroupConfig = applicationFields.FormGroupConfig;
 
 type FormInputConfig = applicationFields.FormInputConfig<unknown>;
@@ -40,6 +45,8 @@ type ChoiceInputConfig = fields.StringField.PrepareChoiceConfig;
 
 type ArrayFieldOptions = fields.ArrayField.Options<unknown>;
 
+type TypedObjectFieldOptions = fields.TypedObjectField.Options<unknown>;
+
 type DocumentUUIDFieldOptions = fields.DocumentUUIDField.Options;
 
 type FilePathFieldOptions = fields.FilePathField.Options;
@@ -49,5 +56,9 @@ type DocumentFlags = Record<string, Record<string, unknown>>;
 type DocumentStats = fields.DocumentStatsField.Data;
 
 type JavaScriptFieldOptions = fields.JavaScriptField.Options;
+
+type GridOffsetFieldOptions = fields.GridOffsetField.Options;
+
+type GridOffsetsFieldOptions = fields.GridOffsetsField.Options;
 
 type ElementValidationFailure = foundry.data.validation.DataModelValidationFailure.ElementValidationFailure;
