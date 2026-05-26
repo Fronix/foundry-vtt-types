@@ -103,10 +103,10 @@ Legend: `[x]` done (source-diffed + CI-green + type-tested), `[~]` partial (note
 - [ ] `active-effect.d.mts`
 - [ ] `actor-delta.d.mts`
 - [ ] `actor.d.mts`
-- [ ] `adventure.d.mts`
+- [x] `adventure.d.mts` — added missing `static fromIndex(id, pack)` (v14's first member); import/prepareImport/importContent/fromSource already accurate.
 - [x] `ambient-light.d.mts` — removed stale `_onUpdate`-override comment (v14 moved it to the `AmbientLight` placeable), added `prepareDerivedData`, fixed `animate` remark; `shape` deferred (→5/7).
 - [x] `ambient-sound.d.mts` — added `prepareDerivedData`, fixed "Wall" copy-paste comment; `shape` deferred (→5/7).
-- [ ] `card.d.mts`
+- [x] `card.d.mts` — verified clean (all 14 getters/methods present in v14 order).
 - [ ] `cards.d.mts`
 - [ ] `chat-message.d.mts`
 - [ ] `combat.d.mts`
@@ -118,18 +118,18 @@ Legend: `[x]` done (source-diffed + CI-green + type-tested), `[~]` partial (note
 - [x] `item.d.mts` — fixed stale `_onCreateOperation`/`_onDeleteOperation` comment (v14 overrides `_preCreate`/`_onDelete`); class members otherwise v14-accurate.
 - [x] `journal-entry-category.d.mts` — verified clean (`prepareDerivedData` only, matches v14).
 - [ ] `journal-entry-page.d.mts`
-- [ ] `journal-entry.d.mts`
-- [ ] `macro.d.mts`
+- [x] `journal-entry.d.mts` — verified clean (visible/getUserLevel/sceneNote/show/panToNote/sortCategories + \_onUpdate/\_onDelete comment); added test file.
+- [x] `macro.d.mts` — verified clean (isAuthor/canExecute/thumbnail/canUserExecute/execute/\_onClickDocumentLink + \_onCreate comment).
 - [ ] `measured-template.d.mts` (class members only; reconciliation = P7)
 - [x] `note.d.mts` — added missing `get isAuthor()` + `prepareDerivedData()`.
 - [ ] `playlist-sound.d.mts`
 - [ ] `playlist.d.mts`
-- [ ] `region-behavior.d.mts`
+- [x] `region-behavior.d.mts` — fixed `_handleRegionEvent` return (`void`→`Promise<void>`, it's `async`) + `active`/`viewed` doc drift; added test file.
 - [ ] `region.d.mts`
 - [ ] `roll-table.d.mts`
 - [ ] `scene.d.mts`
-- [ ] `setting.d.mts`
-- [ ] `table-result.d.mts`
+- [x] `setting.d.mts` — verified clean (config/\_initialize/\_castType + \_onCreate/\_onUpdate comment).
+- [x] `table-result.d.mts` — verified clean (icon/prepareBaseData/getHTML/documentToAnchor/getChatText + \_preUpdate comment; getChatText correctly `until V15`).
 - [ ] `tile.d.mts`
 - [ ] `token.d.mts`
 - [ ] `user.d.mts`
@@ -141,6 +141,7 @@ Legend: `[x]` done (source-diffed + CI-green + type-tested), `[~]` partial (note
 - **"Done" interpretation for Phase 4:** a file is `[x]` when its **live** member surface matches v14 (presence + order + signatures) **and** its deprecations carry the right `until vXX` markers. The actual _removal_ of `until v14` deprecations is **Phase 8's** sweep — leaving a correctly-marked `until v14` deprecation in place does **not** block a Phase-4 `[x]`. (Example: `FogExploration.static get()` is `until v14` → left for P8.)
 - **`shape` derived property deferral (→ 5/7):** `tile`/`ambient-light`/`ambient-sound` assign `this.shape` and `drawing` assigns `this._shape` of a `client/data/shapes.mjs` type (`Rectangle`/`Circle`/`Cone`/`Ellipse`/`Polygon` ShapeData). That file is unauthored, so the typed member is omitted with an inline `// TODO(v14)` in each of the 4 docs. Add the members once `client/data/shapes.d.mts` lands.
 - **Batch 1 committed (9 docs):** ambient-light, ambient-sound, combatant-group, drawing, fog-exploration, item, journal-entry-category, note, tile. Pattern observed: most leaf docs only add a few getters + `prepareBaseData`/`prepareDerivedData` overrides over the Phase-1/3 surface; the common drift is (a) stale "X is overridden" comments naming v13 methods, and (b) `@defaultValue`/remark text not updated for v14. Tests: each got `expectTypeOf` assertions for the new surface.
+- **Batch 2 committed (7 docs):** adventure, card, journal-entry, macro, region-behavior, setting, table-result. 5 were already v14-clean (card/macro/setting/table-result/journal-entry — the bulk of these docs' surface was authored accurately). Fixes: adventure missing `static fromIndex`; region-behavior `_handleRegionEvent` was typed `void` but is `async`. New test files added for journal-entry + region-behavior (were missing). So far **16/33 done**; remaining are the heavier docs (actor, token, scene, region, combat, active-effect, cards, chat-message, playlist, roll-table, folder, user, combatant, actor-delta, journal-entry-page, playlist-sound, measured-template).
 
 ---
 

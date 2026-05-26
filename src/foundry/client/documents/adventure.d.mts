@@ -1046,6 +1046,13 @@ declare class Adventure extends BaseAdventure.Internal.ClientDocument {
   constructor(data: Adventure.CreateData, context?: Adventure.ConstructionContext);
 
   /**
+   * Create a shallow Adventure document from a compendium index entry.
+   * @param id   - The adventure's document ID.
+   * @param pack - The compendium pack containing the adventure.
+   */
+  static fromIndex(id: string, pack: foundry.documents.collections.CompendiumCollection.Any): Adventure.Implementation;
+
+  /**
    * @remarks If this creation is happening in a provided `pack`, and that pack is **not** system-specific,
    * strips `Actor`s, `Item`s, and `Actor` and `Item` `Folders` from `source`s
    */

@@ -1000,10 +1000,13 @@ declare class RegionBehavior<
   /** A convenience reference to the Scene which contains this RegionBehavior. */
   get scene(): Scene.Implementation | null;
 
-  /** A RegionBehavior is active if and only if it was created, hasn't been deleted yet, and isn't disabled. */
+  /**
+   * A RegionBehavior is active if and only if it was created, hasn't been deleted yet, isn't disabled,
+   * and its Region isn't hidden.
+   */
   get active(): boolean;
 
-  /** A RegionBehavior is viewed if and only if it is active and the Scene of its Region is viewed. */
+  /** A RegionBehavior is viewed if and only if it is active and the Region is viewed. */
   get viewed(): boolean;
 
   override prepareBaseData(): void;
@@ -1019,7 +1022,7 @@ declare class RegionBehavior<
    * @param event - The Region event
    * @internal
    */
-  protected _handleRegionEvent(event: RegionDocument.RegionEvent): void;
+  protected _handleRegionEvent(event: RegionDocument.RegionEvent): Promise<void>;
 
   // `createOptions` must contain a  `parent`, so is required.
   static override createDialog<Options extends RegionBehavior.CreateDialogOptions | undefined = undefined>(

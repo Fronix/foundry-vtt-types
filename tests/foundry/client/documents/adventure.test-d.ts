@@ -21,3 +21,6 @@ expectTypeOf(adventure.importContent({ toCreate: {}, toUpdate: {}, documentCount
 expectTypeOf(adventure.sheet).toEqualTypeOf<Application.Any | DocumentSheetV2.Any | null>();
 
 expectTypeOf(Adventure.fromSource({ name: "My adventure" })).toEqualTypeOf<Adventure.Implementation>();
+
+declare const pack: foundry.documents.collections.CompendiumCollection.Any;
+expectTypeOf(Adventure.fromIndex("XXXXXXXXXXXXXXXX", pack)).toEqualTypeOf<Adventure.Implementation>();
