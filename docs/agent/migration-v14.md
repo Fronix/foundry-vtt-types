@@ -114,7 +114,7 @@ Legend: `[x]` done (source-diffed + CI-green + type-tested), `[~]` partial (note
 - [x] `combatant.d.mts` — added missing `turnNumber: number | null`; the rest (combat/isNPC/permission/visible/actor/token/players/isDefeated/initiative/\_prepareGroup/clearMovementHistory) already accurate.
 - [x] `drawing.d.mts` — fixed `defaultDrawingFields` `@defaultValue` (v14 added elevation/levels/interface), added `prepareDerivedData`; `_shape` deferred (→5/7).
 - [x] `fog-exploration.d.mts` — verified load/getTexture/\_on\* present; widened `LoadQuery.scene`/`.user` to `string | Scene.Implementation`/`string | User.Implementation` per v14. Deprecated `static get()` correctly marked "until v14" (P8 sweep).
-- [ ] `folder.d.mts`
+- [x] `folder.d.mts` — fixed `children` type (`Folder.ChildNode` → `Folder.ChildNode[]`, it's an array); rest (depth/displayed/contents/documentClass/documentCollection/expanded/ancestors/inCompendium/exportToCompendium/exportDialog/getSubfolders/getParentFolders) already accurate.
 - [x] `item.d.mts` — fixed stale `_onCreateOperation`/`_onDeleteOperation` comment (v14 overrides `_preCreate`/`_onDelete`); class members otherwise v14-accurate.
 - [x] `journal-entry-category.d.mts` — verified clean (`prepareDerivedData` only, matches v14).
 - [ ] `journal-entry-page.d.mts`
@@ -132,7 +132,7 @@ Legend: `[x]` done (source-diffed + CI-green + type-tested), `[~]` partial (note
 - [x] `table-result.d.mts` — verified clean (icon/prepareBaseData/getHTML/documentToAnchor/getChatText + \_preUpdate comment; getChatText correctly `until V15`).
 - [ ] `tile.d.mts`
 - [ ] `token.d.mts`
-- [ ] `user.d.mts`
+- [x] `user.d.mts` — added missing `idle: boolean | undefined` and `viewedLevel: string | null` (the Levels analog of `viewedScene`, a plain ID so unblocked); rest (targets/movingTokens/roleLabel/isDesignated/query/assignHotbarMacro/etc.) already accurate.
 - [~] `wall.d.mts` — added `isDoor`/`isOpen`/`prepareBaseData`/`getWallCategory` + the `WallCategory` type (class body was previously bare). `edge`/`darkness`/`initializeEdge` deferred to Phase 5 (EDGE rename / Edge type) — see deferrals row.
 
 ### Running notes
@@ -142,7 +142,8 @@ Legend: `[x]` done (source-diffed + CI-green + type-tested), `[~]` partial (note
 - **`shape` derived property deferral (→ 5/7):** `tile`/`ambient-light`/`ambient-sound` assign `this.shape` and `drawing` assigns `this._shape` of a `client/data/shapes.mjs` type (`Rectangle`/`Circle`/`Cone`/`Ellipse`/`Polygon` ShapeData). That file is unauthored, so the typed member is omitted with an inline `// TODO(v14)` in each of the 4 docs. Add the members once `client/data/shapes.d.mts` lands.
 - **Batch 1 committed (9 docs):** ambient-light, ambient-sound, combatant-group, drawing, fog-exploration, item, journal-entry-category, note, tile. Pattern observed: most leaf docs only add a few getters + `prepareBaseData`/`prepareDerivedData` overrides over the Phase-1/3 surface; the common drift is (a) stale "X is overridden" comments naming v13 methods, and (b) `@defaultValue`/remark text not updated for v14. Tests: each got `expectTypeOf` assertions for the new surface.
 - **Batch 2 committed (7 docs):** adventure, card, journal-entry, macro, region-behavior, setting, table-result. 5 were already v14-clean (card/macro/setting/table-result/journal-entry — the bulk of these docs' surface was authored accurately). Fixes: adventure missing `static fromIndex`; region-behavior `_handleRegionEvent` was typed `void` but is `async`. New test files added for journal-entry + region-behavior (were missing).
-- **Batch 3 committed (4 docs):** actor-delta, combatant, playlist-sound, wall. playlist-sound already complete. Fixes: combatant missing `turnNumber`; actor-delta `get id()` note. **wall is `[~]`** — its class body was essentially empty; added the non-edge members but `edge`/`darkness`/`initializeEdge` ride the Phase-5 EDGE-rename deferral. Watch for other docs whose class body is under-populated (wall was a surprise). **20/33 done** (1 partial: wall). Remaining: active-effect, actor, cards, chat-message, combat, folder, journal-entry-page, playlist, region, roll-table, scene, token, user.
+- **Batch 3 committed (4 docs):** actor-delta, combatant, playlist-sound, wall. playlist-sound already complete. Fixes: combatant missing `turnNumber`; actor-delta `get id()` note. **wall is `[~]`** — its class body was essentially empty; added the non-edge members but `edge`/`darkness`/`initializeEdge` ride the Phase-5 EDGE-rename deferral. Watch for other docs whose class body is under-populated (wall was a surprise).
+- **Batch 4 committed (2 docs):** folder, user. Fixes: folder `children` was typed as a single node, should be an array (`Folder.ChildNode[]`); user missing `idle` + `viewedLevel`. **22/33 done** (1 partial: wall). Remaining (the 11 heavy docs): active-effect, actor, cards, chat-message, combat, journal-entry-page, playlist, region, roll-table, scene, token. These are 300–4000 src lines each — best done one-or-two per session. **Recurring drift patterns to check in each:** (1) stale "X overridden" comments naming v13 methods, (2) array properties typed as single (folder.children), (3) genuinely-missing runtime properties (combatant.turnNumber, user.idle/viewedLevel, drawing fields), (4) `async` methods typed as sync return (region-behavior.\_handleRegionEvent), (5) `@defaultValue`/remark text not refreshed for v14, (6) under-populated class bodies (wall).
 
 ---
 

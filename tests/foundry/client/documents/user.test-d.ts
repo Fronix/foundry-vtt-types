@@ -12,9 +12,11 @@ new User.implementation({});
 const user = new User.implementation({ name: "Test" });
 
 expectTypeOf(user.active).toEqualTypeOf<boolean>();
+expectTypeOf(user.idle).toEqualTypeOf<boolean | undefined>();
 expectTypeOf(user.targets).toEqualTypeOf<UserTargets>();
 expectTypeOf(user.id).toEqualTypeOf<string | null>();
 expectTypeOf(user.viewedScene).toEqualTypeOf<string | null>();
+expectTypeOf(user.viewedLevel).toEqualTypeOf<string | null>();
 assertType<Partial<Record<string, boolean>>>(user.permissions);
 expectTypeOf(user.getHotbarMacros().map((each) => each.macro)).toEqualTypeOf<Array<Macro.Implementation | null>>();
 expectTypeOf(user.getHotbarMacros().map((each) => each.macro)).toEqualTypeOf<Array<Macro.Implementation | null>>();

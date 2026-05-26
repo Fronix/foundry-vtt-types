@@ -1163,6 +1163,12 @@ declare class User extends BaseUser.Internal.ClientDocument {
   active: boolean;
 
   /**
+   * Is this User currently considered idle?
+   * @remarks Uninitialized (so `undefined`) until set by activity tracking.
+   */
+  idle: boolean | undefined;
+
+  /**
    * Track references to the current set of Tokens which are targeted by the User
    * @defaultValue `new foundry.canvas.placeables.tokens.UserTargets(this)`
    */
@@ -1173,6 +1179,12 @@ declare class User extends BaseUser.Internal.ClientDocument {
    * @defaultValue `null`
    */
   viewedScene: string | null;
+
+  /**
+   * Track the ID of the Scene Level that is currently being viewed by the User
+   * @defaultValue `null`
+   */
+  viewedLevel: string | null;
 
   /**
    * Track the Token documents that this User is currently moving.

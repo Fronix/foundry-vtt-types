@@ -1114,7 +1114,7 @@ declare class Folder<out SubType extends Folder.SubType = Folder.SubType> extend
    * Initialized by {@linkcode DirectoryCollection.initializeTree | DirectoryCollection#initializeTree}, so always
    * `undefined` in temporary documents, and prior to first UI render in stored documents
    */
-  children: Folder.ChildNode | undefined;
+  children: Folder.ChildNode[] | undefined;
 
   /**
    * Return whether the folder is displayed in the sidebar to the current User.

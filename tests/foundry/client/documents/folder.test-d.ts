@@ -10,7 +10,7 @@ const folder = new Folder.implementation({ name: "foo", type: "JournalEntry" });
 expectTypeOf(folder).toEqualTypeOf<Folder.OfType<"JournalEntry">>();
 
 expectTypeOf(folder.depth).toEqualTypeOf<number | undefined>();
-expectTypeOf(folder.children).toEqualTypeOf<Folder.ChildNode | undefined>();
+expectTypeOf(folder.children).toEqualTypeOf<Folder.ChildNode[] | undefined>();
 expectTypeOf(folder.displayed).toEqualTypeOf<boolean>();
 expectTypeOf(folder.expanded).toEqualTypeOf<boolean>();
 expectTypeOf(folder.ancestors).toEqualTypeOf<Folder.Stored[]>();
