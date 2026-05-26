@@ -36,8 +36,45 @@ expectTypeOf(myShape.points).toEqualTypeOf<Array<number | undefined>>();
 
 /******************************************************************/
 
-// BaseShapeData, RectangleShapeData, CircleShapeData, EllipseShapeData, and PolygonShapeData
-// are tested in `tests/foundry/client/canvas/regions/shape.test-d.ts`
+// v14 BaseShapeData subclasses. `type` is intentionally not asserted: the per-shape branded `type`
+// literal collapses to `never` across the union (see the branded-choice note in docs/agent/bugs.md).
+
+declare const rectangle: foundry.data.RectangleShapeData;
+expectTypeOf(rectangle.hole).toEqualTypeOf<boolean>();
+expectTypeOf(rectangle.anchorX).toBeNumber();
+expectTypeOf(rectangle.gridBased).toEqualTypeOf<boolean>();
+
+declare const circle: foundry.data.CircleShapeData;
+expectTypeOf(circle.radius).toBeNumber();
+expectTypeOf(circle.gridBased).toEqualTypeOf<boolean>();
+
+declare const emanation: foundry.data.EmanationShapeData;
+expectTypeOf(emanation.radius).toBeNumber();
+expectTypeOf(emanation.gridBased).toEqualTypeOf<boolean>();
+
+declare const cone: foundry.data.ConeShapeData;
+expectTypeOf(cone.radius).toBeNumber();
+expectTypeOf(cone.curvature).toEqualTypeOf<"round" | "flat" | "semicircle">();
+expectTypeOf(cone.gridBased).toEqualTypeOf<boolean>();
+
+declare const ring: foundry.data.RingShapeData;
+expectTypeOf(ring.innerWidth).toBeNumber();
+expectTypeOf(ring.outerWidth).toBeNumber();
+
+declare const line: foundry.data.LineShapeData;
+expectTypeOf(line.length).toBeNumber();
+expectTypeOf(line.width).toBeNumber();
+
+declare const polygon: foundry.data.PolygonShapeData;
+expectTypeOf(polygon.points).toEqualTypeOf<number[]>();
+expectTypeOf(polygon.origin).toEqualTypeOf<{ x: number; y: number } | null>();
+
+declare const token: foundry.data.TokenShapeData;
+expectTypeOf(token.shape).toEqualTypeOf<ValueOf<typeof CONST.TOKEN_SHAPES>>();
+
+declare const grid: foundry.data.GridShapeData;
+expectTypeOf(grid.offsets).toEqualTypeOf<{ i: number; j: number }[]>();
+expectTypeOf(grid.origin).toEqualTypeOf<{ x: number; y: number } | null>();
 
 /******************************************************************/
 
