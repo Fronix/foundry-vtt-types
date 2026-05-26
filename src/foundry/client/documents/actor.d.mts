@@ -1320,7 +1320,11 @@ declare class Actor<out SubType extends Actor.SubType = Actor.SubType> extends f
     foundry.utils.IterableWeakSet<TokenDocument.Implementation>
   >;
 
-  /** @remarks `||=`s the `prototypeToken`'s `name` and `texture.src` fields with the main actor's values */
+  /**
+   * @remarks Applies configured compendium art to the source `img` and `prototypeToken.texture.src`
+   * (when the Actor is in a pack and {@linkcode foundry.helpers.media.CompendiumArt | game.compendiumArt}
+   * is enabled), then calls the `applyCompendiumArt` hook.
+   */
   protected override _initializeSource(
     data: this | Actor.CreateData,
     options?: Document.InitializeSourceOptions,
@@ -1342,6 +1346,12 @@ declare class Actor<out SubType extends Actor.SubType = Actor.SubType> extends f
 
   /** @deprecated Foundry made this property truly private in v13 (this warning will be removed in v14) */
   protected _lastWildcard: never;
+
+  /**
+   * ActiveEffect changes to be applied to Tokens instead of Actors, with each key being a phase
+   * @defaultValue `{}`
+   */
+  tokenActiveEffectChanges: Record<string, ActiveEffect.ChangeData[]>;
 
   /**
    * Provide a thumbnail image path used to represent this document.
@@ -1386,8 +1396,12 @@ declare class Actor<out SubType extends Actor.SubType = Actor.SubType> extends f
 
   /**
    * Apply any transformations to the Actor data which are caused by ActiveEffects.
+   * @param phase - The application phase under which changes are to be applied.
+   * @remarks Omitting `phase` is deprecated since v14 (until v16); it falls back to `"initial"` then
+   * `"final"` across the data-preparation cycle and logs a compatibility warning. Pass a phase
+   * registered in {@linkcode ActiveEffect.CHANGE_PHASES} (e.g. `"initial"` or `"final"`).
    */
-  applyActiveEffects(): void;
+  applyActiveEffects(phase?: string): void;
 
   /**
    * Retrieve an Array of active tokens which represent this Actor in the current canvas Scene.
@@ -1406,9 +1420,7 @@ declare class Actor<out SubType extends Actor.SubType = Actor.SubType> extends f
   ): Actor.GetActiveTokensReturn<ReturnDocument>;
 
   /**
-   * Get all ActiveEffects that may apply to this Actor.
-   * If CONFIG.ActiveEffect.legacyTransferral is true, this is equivalent to actor.effects.contents.
-   * If CONFIG.ActiveEffect.legacyTransferral is false, this will also return all the transferred ActiveEffects on any
+   * Get all ActiveEffects that may apply to this Actor. This will also return all the transferred ActiveEffects on any
    * of the Actor's owned Items.
    */
   allApplicableEffects(): Generator<ActiveEffect.Implementation, void, undefined>;
@@ -1454,6 +1466,13 @@ declare class Actor<out SubType extends Actor.SubType = Actor.SubType> extends f
 
   override prepareData(): void;
 
+  override prepareBaseData(): void;
+
+  /**
+   * Clear or replace properties not automatically reset by upstream initialization.
+   */
+  protected _clearData(): void;
+
   override prepareEmbeddedDocuments(): void;
 
   /**
@@ -1492,7 +1511,7 @@ declare class Actor<out SubType extends Actor.SubType = Actor.SubType> extends f
    * @param token - The Token
    * @internal
    */
-  protected _registerDependantToken(token: TokenDocument.Implementation): void;
+  protected _registerDependentToken(token: TokenDocument.Implementation): void;
 
   /**
    * Remove a token from this actor's dependents.
@@ -1508,7 +1527,7 @@ declare class Actor<out SubType extends Actor.SubType = Actor.SubType> extends f
    */
   protected _unregisterDependentScene(scene: Scene.Implementation): void;
 
-  // _onUpdate is overridden but with no signature changes from BaseActor.
+  // _onCreate, _onUpdate, and _onDelete are overridden but with no signature changes from BaseActor.
 
   protected override _onCreateDescendantDocuments(...args: Actor.OnCreateDescendantDocumentsArgs): void;
 
@@ -1528,6 +1547,14 @@ declare class Actor<out SubType extends Actor.SubType = Actor.SubType> extends f
    * @remarks Forwards to {@linkcode Token._onUpdateBaseActor | Token#_onUpdateBaseActor}
    */
   protected _updateDependentTokens(update: Actor.UpdateData, options: Actor.Database.OnUpdateOptions): void;
+
+  /**
+   * Workflows to perform following the update of ActiveEffect durations. This method is called for all users.
+   * @param effects - Effects whose durations were updated
+   * @param event   - The identifier of the event that triggered the duration refresh
+   * @param context - Additional contextual information associated with the duration refresh
+   */
+  onUpdateEffectDurations(effects: ActiveEffect.Implementation[], event: string, context?: AnyObject): Promise<void>;
 
   /*
    * After this point these are not really overridden methods.

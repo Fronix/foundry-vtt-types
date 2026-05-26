@@ -24,7 +24,10 @@ expectTypeOf(actor.temporaryEffects).toEqualTypeOf<ActiveEffect.Implementation[]
 expectTypeOf(actor.token).toEqualTypeOf<TokenDocument.Implementation | null>();
 expectTypeOf(actor.inCombat).toEqualTypeOf<boolean>();
 
+expectTypeOf(actor.tokenActiveEffectChanges).toEqualTypeOf<Record<string, ActiveEffect.ChangeData[]>>();
+
 expectTypeOf(actor.applyActiveEffects()).toEqualTypeOf<void>();
+expectTypeOf(actor.applyActiveEffects("final")).toEqualTypeOf<void>();
 expectTypeOf(actor.getActiveTokens(false)).toEqualTypeOf<Token.Implementation[]>();
 expectTypeOf(actor.getActiveTokens(false, Math.random() > 0.5)).toEqualTypeOf<
   Token.Implementation[] | TokenDocument.Implementation[]
@@ -45,10 +48,15 @@ expectTypeOf(actor.getRollData()).toEqualTypeOf<AnyObject>();
 expectTypeOf(actor.getTokenImages()).toEqualTypeOf<Promise<string[]>>();
 expectTypeOf(actor.modifyTokenAttribute("", 2, true, true)).toEqualTypeOf<Promise<Actor.OfType<"base"> | undefined>>();
 
+expectTypeOf(actor.prepareBaseData()).toEqualTypeOf<void>();
 expectTypeOf(actor.prepareEmbeddedDocuments()).toEqualTypeOf<void>();
 
 expectTypeOf(actor.rollInitiative()).toEqualTypeOf<Promise<Combat.Implementation | null>>();
 expectTypeOf(actor.getDependentTokens()).toEqualTypeOf<TokenDocument.Implementation[]>();
+
+declare const someEffects: ActiveEffect.Implementation[];
+expectTypeOf(actor.onUpdateEffectDurations(someEffects, "combatEnd")).toEqualTypeOf<Promise<void>>();
+expectTypeOf(actor.onUpdateEffectDurations(someEffects, "combatEnd", {})).toEqualTypeOf<Promise<void>>();
 
 test("actor system update", () => {
   // Note(LukeAbby): This test _should_ fail at some point. Specifically it should require `==type`
