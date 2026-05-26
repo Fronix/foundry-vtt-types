@@ -5610,6 +5610,236 @@ declare namespace JavaScriptField {
   > {}
 }
 
+/**
+ * A subclass of {@linkcode ArrayField} for shapes.
+ * @template Options                - the options of the ShapesField instance
+ * @template AssignmentElementType  - the assignment type for the elements in the array
+ * @template InitializedElementType - the initialized type for the elements in the array
+ * @template AssignmentType         - the type of the allowed assignment values of the ShapesField
+ * @template InitializedType        - the type of the initialized values of the ShapesField
+ * @template PersistedElementType   - the persisted type for the elements in the array
+ * @template PersistedType          - the type of the persisted values of the ShapesField
+ * @remarks The element is a {@linkcode TypedSchemaField} built from {@linkcode foundry.data.BaseShapeData.TYPES | foundry.data.BaseShapeData.TYPES}.
+ */
+declare class ShapesField<
+  const Options extends ShapesField.Options = ShapesField.DefaultOptions,
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  const AssignmentElementType = ArrayField.AssignmentElementType<ShapesField.ElementFieldType>,
+  const InitializedElementType = ArrayField.InitializedElementType<ShapesField.ElementFieldType>,
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  const AssignmentType = ArrayField.AssignmentType<AssignmentElementType, Options>,
+  const InitializedType = ArrayField.InitializedType<InitializedElementType, Options>,
+  const PersistedElementType = ArrayField.PersistedElementType<ShapesField.ElementFieldType>,
+  const PersistedType extends PersistedElementType[] | null | undefined = ArrayField.PersistedType<
+    PersistedElementType,
+    Options
+  >,
+> extends ArrayField<
+  ShapesField.ElementFieldType,
+  Options,
+  AssignmentElementType,
+  InitializedElementType,
+  AssignmentType,
+  InitializedType,
+  PersistedElementType,
+  PersistedType
+> {
+  /**
+   * @param options - Options which configure the behavior of the field
+   * @param context - Additional context which describes the field
+   * @remarks The element field is constructed internally as a {@linkcode TypedSchemaField} over
+   * {@linkcode foundry.data.BaseShapeData.TYPES}; this field takes no element argument.
+   */
+  constructor(options?: Options, context?: DataField.ConstructionContext);
+
+  /**
+   * @remarks Initializes each shape and assigns its array index to the shape's internal `_index`.
+   */
+  override initialize(
+    value: PersistedType,
+    model: DataModel.Any,
+    options?: DataField.InitializeOptions,
+  ): InitializedType | (() => InitializedType | null);
+}
+
+declare namespace ShapesField {
+  /** The element field type for the {@linkcode ShapesField} class. */
+  type ElementFieldType = TypedSchemaField<foundry.data.BaseShapeData.Types>;
+
+  /** A shorthand for the options of a {@linkcode ShapesField} class. */
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  interface Options extends ArrayField.Options<ArrayField.AssignmentElementType<ElementFieldType>> {}
+
+  /** The type of the default options for the {@linkcode ShapesField} class. */
+  type DefaultOptions = ArrayField.DefaultOptions;
+}
+
+/**
+ * The field for a grid offset.
+ * @template Dimensions      - the number of dimensions of the offset (`2` or `3`)
+ * @template Options         - the options of the GridOffsetField instance
+ * @template AssignmentType  - the type of the allowed assignment values of the GridOffsetField
+ * @template InitializedType - the type of the initialized values of the GridOffsetField
+ * @template PersistedType   - the type of the persisted values of the GridOffsetField
+ */
+declare class GridOffsetField<
+  const Dimensions extends 2 | 3 = 2,
+  const Options extends GridOffsetField.Options<Dimensions> = GridOffsetField.DefaultOptions,
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  const AssignmentType = GridOffsetField.AssignmentType<Dimensions, Options>,
+  const InitializedType = GridOffsetField.InitializedType<Dimensions, Options>,
+  const PersistedType extends AnyObject | null | undefined = GridOffsetField.PersistedType<Dimensions, Options>,
+> extends SchemaField<GridOffsetField.Schema<Dimensions>, Options, AssignmentType, InitializedType, PersistedType> {
+  /**
+   * @param options - Options which configure the behavior of the field
+   * @param context - Additional context which describes the field
+   * @throws If `dimensions` is set to anything other than `2` or `3`
+   */
+  constructor(options?: Options, context?: DataField.ConstructionContext);
+
+  static override get _defaults(): GridOffsetField.Options;
+
+  /**
+   * @remarks Parses a `"i.j"` (2D) or `"i.j.k"` (3D) string into offset coordinates before delegating to super.
+   */
+  protected override _cast(value: unknown): AssignmentType;
+}
+
+declare namespace GridOffsetField {
+  /**
+   * Options which configure the behavior of a {@linkcode GridOffsetField}.
+   * @template Dimensions - the number of dimensions of the offset
+   */
+  interface Options<Dimensions extends 2 | 3 = 2> extends DataField.Options<
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    SchemaField.AssignmentData<Schema<Dimensions>>
+  > {
+    /**
+     * The number of dimensions of the offset, either `2` (`{i, j}`) or `3` (`{i, j, k}`).
+     * @defaultValue `2`
+     */
+    dimensions?: 2 | 3 | undefined;
+  }
+
+  /** The type of the default options for the {@linkcode GridOffsetField} class. */
+  type DefaultOptions = SimpleMerge<SchemaField.DefaultOptions, { dimensions: 2 }>;
+
+  /**
+   * A helper type for the given options type merged into the default options of the {@linkcode GridOffsetField} class.
+   * @template Opts - the options that override the default options
+   */
+  type MergedOptions<Opts extends Options<2 | 3>> = SimpleMerge<DefaultOptions, Opts>;
+
+  /** The 2D grid offset schema (`{i, j}`). */
+  interface Schema2D extends DataSchema {
+    /** The grid space column. */
+    i: NumberField<{ required: true; nullable: false; integer: true; initial: undefined }>;
+
+    /** The grid space row. */
+    j: NumberField<{ required: true; nullable: false; integer: true; initial: undefined }>;
+  }
+
+  /** The 3D grid offset schema (`{i, j, k}`). */
+  interface Schema3D extends Schema2D {
+    /** The grid space depth. */
+    k: NumberField<{ required: true; nullable: false; integer: true }>;
+  }
+
+  /** The grid offset schema for the given number of dimensions. */
+  type Schema<Dimensions extends 2 | 3 = 2> = Dimensions extends 3 ? Schema3D : Schema2D;
+
+  /**
+   * A shorthand for the assignment type of a {@linkcode GridOffsetField} class.
+   * @deprecated AssignmentType is being deprecated. See {@linkcode SchemaField.AssignmentData} for more details.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  type AssignmentType<Dimensions extends 2 | 3, Opts extends Options<Dimensions>> = DataField.DerivedAssignmentType<
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    SchemaField.AssignmentData<Schema<Dimensions>>,
+    MergedOptions<Opts>
+  >;
+
+  /** A shorthand for the initialized type of a {@linkcode GridOffsetField} class. */
+  type InitializedType<Dimensions extends 2 | 3, Opts extends Options<Dimensions>> = DataField.DerivedInitializedType<
+    SchemaField.InitializedData<Schema<Dimensions>>,
+    MergedOptions<Opts>
+  >;
+
+  /** A shorthand for the persisted type of a {@linkcode GridOffsetField} class. */
+  type PersistedType<Dimensions extends 2 | 3, Opts extends Options<Dimensions>> = DataField.DerivedInitializedType<
+    SchemaField.SourceData<Schema<Dimensions>>,
+    MergedOptions<Opts>
+  >;
+}
+
+/**
+ * The field of an array/set of grid offsets.
+ * @template Dimensions             - the number of dimensions of each offset (`2` or `3`)
+ * @template Options                - the options of the GridOffsetsField instance
+ * @template AssignmentElementType  - the assignment type for the elements in the array
+ * @template InitializedElementType - the initialized type for the elements in the array
+ * @template AssignmentType         - the type of the allowed assignment values of the GridOffsetsField
+ * @template InitializedType        - the type of the initialized values of the GridOffsetsField
+ * @template PersistedElementType   - the persisted type for the elements in the array
+ * @template PersistedType          - the type of the persisted values of the GridOffsetsField
+ */
+declare class GridOffsetsField<
+  const Dimensions extends 2 | 3 = 2,
+  const Options extends GridOffsetsField.Options = GridOffsetsField.DefaultOptions,
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  const AssignmentElementType = ArrayField.AssignmentElementType<GridOffsetField<Dimensions>>,
+  const InitializedElementType = ArrayField.InitializedElementType<GridOffsetField<Dimensions>>,
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  const AssignmentType = ArrayField.AssignmentType<AssignmentElementType, Options>,
+  const InitializedType = ArrayField.InitializedType<InitializedElementType, Options>,
+  const PersistedElementType = ArrayField.PersistedElementType<GridOffsetField<Dimensions>>,
+  const PersistedType extends PersistedElementType[] | null | undefined = ArrayField.PersistedType<
+    PersistedElementType,
+    Options
+  >,
+> extends ArrayField<
+  GridOffsetField<Dimensions>,
+  Options,
+  AssignmentElementType,
+  InitializedElementType,
+  AssignmentType,
+  InitializedType,
+  PersistedElementType,
+  PersistedType
+> {
+  /**
+   * @param options - Options which configure the behavior of the field
+   * @param context - Additional context which describes the field
+   * @remarks The element field is constructed internally as a {@linkcode GridOffsetField} of the configured
+   * `dimensions`; this field takes no element argument.
+   */
+  constructor(options?: Options, context?: DataField.ConstructionContext);
+
+  static override get _defaults(): GridOffsetsField.Options;
+
+  /**
+   * @remarks Stringifies each offset (`"i.j"` / `"i.j.k"`) and renders an `HTMLGridOffset{2,3}DTagsElement`.
+   */
+  protected override _toInput(config: DataField.ToInputConfig<InitializedType>): HTMLElement | HTMLCollection;
+}
+
+declare namespace GridOffsetsField {
+  /** Options which configure the behavior of a {@linkcode GridOffsetsField}. */
+  interface Options extends ArrayField.Options<
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    ArrayField.AssignmentElementType<GridOffsetField>
+  > {
+    /**
+     * The number of dimensions of each offset, either `2` or `3`.
+     * @defaultValue `2`
+     */
+    dimensions?: 2 | 3 | undefined;
+  }
+
+  /** The type of the default options for the {@linkcode GridOffsetsField} class. */
+  type DefaultOptions = SimpleMerge<ArrayField.DefaultOptions, { dimensions: 2 }>;
+}
+
 export {
   AlphaField,
   AngleField,
@@ -5631,6 +5861,8 @@ export {
   EmbeddedDocumentField,
   FilePathField,
   ForeignDocumentField,
+  GridOffsetField,
+  GridOffsetsField,
   HTMLField,
   HueField,
   IntegerSortField,
@@ -5638,6 +5870,7 @@ export {
   JSONField,
   NumberField,
   ObjectField,
+  ShapesField,
   TypedObjectField,
   TypedSchemaField,
   SchemaField,

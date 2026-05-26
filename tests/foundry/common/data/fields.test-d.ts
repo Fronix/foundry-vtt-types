@@ -399,3 +399,42 @@ test("nullable SchemaField", () => {
 //     return oneOfEverythingSchema;
 //   }
 // }
+
+/******************************************************************/
+
+// v14: GridOffsetField, GridOffsetsField, ShapesField
+
+const gridSchema = {
+  offset: new fields.GridOffsetField(),
+  offsets: new fields.GridOffsetsField(),
+  shapes: new fields.ShapesField(),
+};
+
+class GridModel extends foundry.abstract.DataModel<typeof gridSchema> {
+  static override defineSchema() {
+    return gridSchema;
+  }
+}
+
+test("v14 GridOffsetField / GridOffsetsField / ShapesField", () => {
+  const model = new GridModel({ offset: { i: 0, j: 0 } });
+
+  // GridOffsetField defaults to 2 dimensions (`{ i, j }`).
+  expectTypeOf(model.offset).toEqualTypeOf<{ i: number; j: number }>();
+
+  // 3 dimensions adds `k` to the schema.
+  expectTypeOf<fields.SchemaField.InitializedData<fields.GridOffsetField.Schema<3>>>().toEqualTypeOf<{
+    i: number;
+    j: number;
+    k: number;
+  }>();
+
+  // GridOffsetsField initializes to an array of grid offsets.
+  expectTypeOf(model.offsets).toEqualTypeOf<{ i: number; j: number }[]>();
+
+  // ShapesField initializes to an array of BaseShapeData instances; `hole` is common to every shape subclass.
+  const shape = model.shapes[0];
+  if (shape) {
+    expectTypeOf(shape.hole).toEqualTypeOf<boolean>();
+  }
+});
