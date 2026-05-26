@@ -1196,7 +1196,7 @@ declare class Item<out SubType extends Item.SubType = Item.SubType> extends Base
    */
   getRollData(): AnyObject;
 
-  // _preCreate, _onCreateOperation and _onDeleteOperation are all overridden but with no signature changes from BaseItem.
+  // _preCreate and _onDelete are both overridden but with no signature changes from BaseItem.
 
   /*
    * After this point these are not really overridden methods.

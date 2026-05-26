@@ -432,8 +432,8 @@ declare namespace AmbientLightDocument {
         DatabaseBackend.UpdateOperation<AmbientLightDocument.UpdateInput, AmbientLightDocument.Parent>,
         DatabaseBackend._CommonCanvasDocumentUpdateProperties {
       /**
-       * @remarks Appears to be unused. {@linkcode AmbientLightDocument._onUpdate} conditionally sets this `false`, but nothing in
-       * `AmbientLightDocument`, {@linkcode BaseAmbientLight}, {@linkcode AmbientLight}, or anywhere else ever checks for it.
+       * @remarks Appears to be unused. As of v14 nothing in `AmbientLightDocument`, {@linkcode BaseAmbientLight},
+       * the {@linkcode AmbientLight} placeable, or anywhere else sets or checks for it.
        */
       animate?: boolean;
     }
@@ -948,12 +948,15 @@ declare class AmbientLightDocument extends BaseAmbientLight.Internal.CanvasDocum
     context?: AmbientLightDocument.ConstructionContext,
   );
 
-  // _onUpdate is overridden but with no signature changes from its implementation in BaseAmbientLight.
-
   /**
    * Is this ambient light source global in nature?
    */
   get isGlobal(): boolean;
+
+  // TODO(v14): The `shape` derived property (`CircleShapeData | ConeShapeData`, assigned in `prepareDerivedData`)
+  // is not yet declared — it depends on `client/data/shapes.d.mts`, which is unauthored (see migration-v14 deferrals).
+
+  override prepareDerivedData(): void;
 
   /*
    * After this point these are not really overridden methods.

@@ -1078,14 +1078,19 @@ declare class DrawingDocument extends BaseDrawing.Internal.CanvasDocument {
 
   /**
    * Fields included in the drawing defaults setting
-   * @defaultValue `["strokeWidth", "strokeColor", "strokeAlpha", "bezierFactor", "fillType", "fillColor", "fillAlpha", "texture", "text", "fontFamily", "fontSize", "textColor", "textAlpha"]`
+   * @defaultValue `["strokeWidth", "strokeColor", "strokeAlpha", "bezierFactor", "fillType", "fillColor", "fillAlpha", "texture", "text", "fontFamily", "fontSize", "textColor", "textAlpha", "elevation", "levels", "interface"]`
    */
   static defaultDrawingFields: (keyof DrawingDocument.InitializedData)[];
+
+  // TODO(v14): The `_shape` derived property (`RectangleShapeData | EllipseShapeData | PolygonShapeData`, assigned in
+  // `prepareDerivedData`) is not yet declared — it depends on `client/data/shapes.d.mts`, unauthored (see migration-v14 deferrals).
 
   /**
    * Is the current User the author of this drawing?
    */
   get isAuthor(): boolean;
+
+  override prepareDerivedData(): void;
 
   /*
    * After this point these are not really overridden methods.

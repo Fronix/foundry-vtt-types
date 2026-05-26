@@ -1,7 +1,7 @@
 import type { MaybeArray, Merge, NullishProps } from "#utils";
 import type { fields } from "#common/data/_module.d.mts";
 import type { DatabaseBackend, Document } from "#common/abstract/_module.d.mts";
-import type { BaseFogExploration, BaseScene, BaseUser } from "#client/documents/_module.d.mts";
+import type { BaseFogExploration, BaseScene, BaseUser, Scene, User } from "#client/documents/_module.d.mts";
 import type { DialogV2 } from "#client/applications/api/_module.d.mts";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Only used for links.
@@ -931,16 +931,18 @@ declare namespace FogExploration {
   /** @internal */
   type _LoadQuery = NullishProps<{
     /**
-     * A certain Scene ID
+     * A certain Scene document or its ID
      * @defaultValue `canvas.scene`
+     * @remarks v14 `load` accepts the {@linkcode Scene} document directly or its ID; it normalizes via `scene?.id`.
      */
-    scene: string;
+    scene: string | Scene.Implementation;
 
     /**
-     * A certain User ID
+     * A certain User document or its ID
      * @defaultValue `game.user`
+     * @remarks v14 `load` accepts the {@linkcode User} document directly or its ID; it normalizes via `user.id`.
      */
-    user: string;
+    user: string | User.Implementation;
   }>;
   interface LoadQuery extends _LoadQuery {}
 

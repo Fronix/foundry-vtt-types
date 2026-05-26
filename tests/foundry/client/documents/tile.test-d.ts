@@ -9,3 +9,4 @@ new TileDocument.implementation({});
 const tile = new TileDocument.implementation({ width: 400, height: 400 });
 expectTypeOf(tile).toEqualTypeOf<TileDocument.Implementation>();
 expectTypeOf(tile.prepareDerivedData()).toEqualTypeOf<void>();
+expectTypeOf(tile.prepareBaseData()).toEqualTypeOf<void>();

@@ -1038,6 +1038,12 @@ declare class TileDocument extends BaseTile.Internal.CanvasDocument {
    */
   constructor(data: TileDocument.CreateData, context?: TileDocument.ConstructionContext);
 
+  // TODO(v14): The `shape` derived property (`RectangleShapeData`, assigned in `prepareDerivedData`)
+  // is not yet declared — it depends on `client/data/shapes.d.mts`, which is unauthored (see migration-v14 deferrals).
+
+  // @remarks `prepareBaseData` defines the deprecated `occlusion.mode` runtime getter (since v14).
+  override prepareBaseData(): void;
+
   override prepareDerivedData(): void;
 
   /*

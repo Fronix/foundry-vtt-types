@@ -1021,6 +1021,11 @@ declare class AmbientSoundDocument extends BaseAmbientSound.Internal.CanvasDocum
     context?: AmbientSoundDocument.ConstructionContext,
   );
 
+  // TODO(v14): The `shape` derived property (`CircleShapeData`, assigned in `prepareDerivedData`)
+  // is not yet declared — it depends on `client/data/shapes.d.mts`, which is unauthored (see migration-v14 deferrals).
+
+  override prepareDerivedData(): void;
+
   /*
    * After this point these are not really overridden methods.
    * They are here because Foundry's documents are complex and have lots of edge cases.
@@ -1033,7 +1038,7 @@ declare class AmbientSoundDocument extends BaseAmbientSound.Internal.CanvasDocum
 
   // ClientDocument overrides
 
-  // Descendant Document operations have been left out because Wall does not have any descendant documents.
+  // Descendant Document operations have been left out because AmbientSound does not have any descendant documents.
 
   // `context` must contain a `parent`, so is required.
   static override defaultName(context: AmbientSoundDocument.DefaultNameContext): string;

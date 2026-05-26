@@ -1052,6 +1052,13 @@ declare class NoteDocument extends BaseNote.Internal.CanvasDocument {
    */
   get label(): string;
 
+  /**
+   * Is the current User the author of this note?
+   */
+  get isAuthor(): boolean;
+
+  override prepareDerivedData(): void;
+
   /*
    * After this point these are not really overridden methods.
    * They are here because Foundry's documents are complex and have lots of edge cases.

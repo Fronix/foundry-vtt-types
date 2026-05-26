@@ -51,3 +51,4 @@ const doc = new DrawingDocument.implementation({ shape: { width: 9, height: 9 } 
 expectTypeOf(doc).toEqualTypeOf<DrawingDocument.Implementation>();
 
 expectTypeOf(doc.isAuthor).toEqualTypeOf<boolean>();
+expectTypeOf(doc.prepareDerivedData()).toEqualTypeOf<void>();
