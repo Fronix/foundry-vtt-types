@@ -51,11 +51,17 @@ expectTypeOf<CONST.USER_ROLES>().toExtend<number>();
 expectTypeOf<CONST.USER_ROLE_NAMES>().toExtend<string>();
 expectTypeOf<CONST.MEASURED_TEMPLATE_TYPES>().toExtend<string>();
 expectTypeOf<CONST.USER_PERMISSIONS>().toExtend<string>();
+expectTypeOf<CONST.EDGE_RESTRICTION_TYPES>().toExtend<string>();
+expectTypeOf<CONST.EDGE_SENSE_TYPES>().toExtend<number>();
+expectTypeOf<CONST.EDGE_DIRECTIONS>().toExtend<number>();
+expectTypeOf<CONST.EDGE_DIRECTION_MODES>().toExtend<number>();
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 expectTypeOf<CONST.WALL_DIRECTIONS>().toExtend<number>();
 expectTypeOf<CONST.WALL_DOOR_TYPES>().toExtend<number>();
 expectTypeOf<CONST.WALL_DOOR_STATES>().toExtend<number>();
 expectTypeOf<CONST.WALL_DOOR_INTERACTIONS>().toExtend<string>();
 expectTypeOf<CONST.WALL_RESTRICTION_TYPES>().toExtend<string>();
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 expectTypeOf<CONST.WALL_SENSE_TYPES>().toExtend<number>();
 expectTypeOf<CONST.WALL_MOVEMENT_TYPES>().toExtend<number>();
 expectTypeOf<CONST.KEYBINDING_PRECEDENCE>().toExtend<number>();

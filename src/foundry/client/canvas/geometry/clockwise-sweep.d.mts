@@ -58,7 +58,7 @@ declare class ClockwiseSweepPolygon extends PointSourcePolygon {
    * and {@linkcode ClockwiseSweepPolygon.Config.includeDarkness | includeDarkness}
    */
   protected _determineEdgeTypes(
-    type: Edge.EdgeTypes,
+    type: PointSourcePolygon.PolygonType,
     priority: number,
     config?: ClockwiseSweepPolygon.Config,
   ): ClockwiseSweepPolygon.EdgeTypesConfiguration;

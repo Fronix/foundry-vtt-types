@@ -26,7 +26,7 @@ expectTypeOf(vertex.isLimitingCW).toEqualTypeOf<boolean | undefined>();
 expectTypeOf(vertex.isBlockingCCW).toEqualTypeOf<boolean | undefined>();
 expectTypeOf(vertex.isBlockingCW).toEqualTypeOf<boolean | undefined>();
 expectTypeOf(vertex.isInternal).toEqualTypeOf<boolean>();
-expectTypeOf(vertex.restriction).toEqualTypeOf<CONST.WALL_SENSE_TYPES>();
+expectTypeOf(vertex.restriction).toEqualTypeOf<CONST.EDGE_SENSE_TYPES>();
 expectTypeOf(vertex["_visited"]).toEqualTypeOf<boolean>();
 expectTypeOf(vertex["_distance"]).toEqualTypeOf<number | undefined>();
 expectTypeOf(vertex["_d2"]).toEqualTypeOf<number | undefined>();
@@ -37,6 +37,6 @@ expectTypeOf(vertex.isLimited).toEqualTypeOf<boolean>();
 
 declare const edge: Edge;
 expectTypeOf(vertex.attachEdge(edge, 3, "light")).toEqualTypeOf<void>();
+expectTypeOf(vertex.attachEdge(edge, 3, "darkness")).toEqualTypeOf<void>();
 expectTypeOf(vertex.equals(vertex)).toEqualTypeOf<boolean>();
-expectTypeOf(vertex.isTerminal).toBeBoolean();
 expectTypeOf(vertex.equals(vertex)).toBeBoolean();

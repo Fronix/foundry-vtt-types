@@ -1665,26 +1665,11 @@ export declare const USER_PERMISSIONS: DeepReadonly<{
 export type USER_PERMISSIONS = keyof typeof USER_PERMISSIONS;
 
 /**
- * The allowed directions of effect that a Wall can have
- * @see {@link https://foundryvtt.com/article/walls/}
+ * @deprecated "`CONST.WALL_DIRECTIONS` is deprecated in favor of {@linkcode CONST.EDGE_DIRECTIONS}." (since v14, until v16)
+ * @remarks A runtime `Proxy` over {@linkcode EDGE_DIRECTIONS}; identical values.
  */
-export declare const WALL_DIRECTIONS: Readonly<{
-  /**
-   * The wall collides from both directions.
-   */
-  BOTH: 0 & WALL_DIRECTIONS;
-
-  /**
-   * The wall collides only when a ray strikes its left side.
-   */
-  LEFT: 1 & WALL_DIRECTIONS;
-
-  /**
-   * The wall collides only when a ray strikes its right side.
-   */
-  RIGHT: 2 & WALL_DIRECTIONS;
-}>;
-export type WALL_DIRECTIONS = Brand<number, "constants.WALL_DIRECTIONS">;
+export declare const WALL_DIRECTIONS: typeof EDGE_DIRECTIONS;
+export type WALL_DIRECTIONS = EDGE_DIRECTIONS;
 
 /**
  * The allowed door types which a Wall may contain
@@ -1737,10 +1722,86 @@ export declare const WALL_DOOR_INTERACTIONS: readonly ["open", "close", "lock", 
 export type WALL_DOOR_INTERACTIONS = ValueOf<typeof WALL_DOOR_INTERACTIONS>;
 
 /**
- * The properties which restrict the way interaction occurs with a specific edge.
+ * The edge properties which restrict the way interaction occurs with a specific edge
+ * @see {@link https://foundryvtt.com/article/walls/}
  */
 export declare const EDGE_RESTRICTION_TYPES: readonly ["light", "darkness", "sight", "sound", "move"];
 export type EDGE_RESTRICTION_TYPES = ValueOf<typeof EDGE_RESTRICTION_TYPES>;
+
+/**
+ * The types of sensory collision which an Edge may impose
+ * @see {@link https://foundryvtt.com/article/walls/}
+ */
+export declare const EDGE_SENSE_TYPES: Readonly<{
+  /**
+   * Senses do not collide with this edge.
+   */
+  NONE: 0 & EDGE_SENSE_TYPES;
+
+  /**
+   * Senses collide with this edge.
+   */
+  LIMITED: 10 & EDGE_SENSE_TYPES;
+
+  /**
+   * Senses collide with the second intersection, bypassing the first.
+   */
+  NORMAL: 20 & EDGE_SENSE_TYPES;
+
+  /**
+   * Senses bypass the edge within a certain proximity threshold.
+   */
+  PROXIMITY: 30 & EDGE_SENSE_TYPES;
+
+  /**
+   * Senses bypass the edge outside a certain proximity threshold.
+   */
+  DISTANCE: 40 & EDGE_SENSE_TYPES;
+}>;
+export type EDGE_SENSE_TYPES = Brand<number, "constants.EDGE_SENSE_TYPES">;
+
+/**
+ * The allowed directions of effect that a Edge can have
+ * @see {@link https://foundryvtt.com/article/walls/}
+ */
+export declare const EDGE_DIRECTIONS: Readonly<{
+  /**
+   * The edge collides from both directions.
+   */
+  BOTH: 0 & EDGE_DIRECTIONS;
+
+  /**
+   * The edge collides only when a ray strikes its left side.
+   */
+  LEFT: 1 & EDGE_DIRECTIONS;
+
+  /**
+   * The edge collides only when a ray strikes its right side.
+   */
+  RIGHT: 2 & EDGE_DIRECTIONS;
+}>;
+export type EDGE_DIRECTIONS = Brand<number, "constants.EDGE_DIRECTIONS">;
+
+/**
+ * The possible direction modes.
+ */
+export declare const EDGE_DIRECTION_MODES: Readonly<{
+  /**
+   * The edge direction applies normally.
+   */
+  NORMAL: 0 & EDGE_DIRECTION_MODES;
+
+  /**
+   * The edge direction applies reversed.
+   */
+  REVERSED: 1 & EDGE_DIRECTION_MODES;
+
+  /**
+   * The edge blocks in both directions always.
+   */
+  BOTH: 2 & EDGE_DIRECTION_MODES;
+}>;
+export type EDGE_DIRECTION_MODES = Brand<number, "constants.EDGE_DIRECTION_MODES">;
 
 /**
  * The wall properties which restrict the way interaction occurs with a specific wall
@@ -1749,41 +1810,16 @@ export declare const WALL_RESTRICTION_TYPES: readonly ["light", "sight", "sound"
 export type WALL_RESTRICTION_TYPES = ValueOf<typeof WALL_RESTRICTION_TYPES>;
 
 /**
- * The types of sensory collision which a Wall may impose
- * @see {@link https://foundryvtt.com/article/walls/}
+ * @deprecated "`CONST.WALL_SENSE_TYPES` is deprecated in favor of {@linkcode CONST.EDGE_SENSE_TYPES}." (since v14, until v16)
+ * @remarks A runtime `Proxy` over {@linkcode EDGE_SENSE_TYPES}; identical values.
  */
-export declare const WALL_SENSE_TYPES: Readonly<{
-  /**
-   * Senses do not collide with this wall.
-   */
-  NONE: 0 & WALL_SENSE_TYPES;
-
-  /**
-   * Senses collide with this wall.
-   */
-  LIMITED: 10 & WALL_SENSE_TYPES;
-
-  /**
-   * Senses collide with the second intersection, bypassing the first.
-   */
-  NORMAL: 20 & WALL_SENSE_TYPES;
-
-  /**
-   * Senses bypass the wall within a certain proximity threshold.
-   */
-  PROXIMITY: 30 & WALL_SENSE_TYPES;
-
-  /**
-   * Senses bypass the wall outside a certain proximity threshold.
-   */
-  DISTANCE: 40 & WALL_SENSE_TYPES;
-}>;
-export type WALL_SENSE_TYPES = Brand<number, "constants.WALL_SENSE_TYPES">;
+export declare const WALL_SENSE_TYPES: typeof EDGE_SENSE_TYPES;
+export type WALL_SENSE_TYPES = EDGE_SENSE_TYPES;
 
 /**
  * The types of movement collision which a Wall may impose
  * @see {@link https://foundryvtt.com/article/walls/}
- * @privateRemarks Foundry just does `NONE: WALL_SENSE_TYPES.NONE` etc but we want to have a separate brand
+ * @privateRemarks Foundry just does `NONE: EDGE_SENSE_TYPES.NONE` etc but we want to have a separate brand
  */
 export declare const WALL_MOVEMENT_TYPES: Readonly<{
   /**

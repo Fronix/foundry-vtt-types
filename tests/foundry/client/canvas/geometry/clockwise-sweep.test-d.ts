@@ -38,17 +38,15 @@ const maximumConfig = {
   debug: false,
   density: 50,
   edgeOptions: {
-    darkness: true,
+    source: true,
     wall: false,
     innerBounds: true,
-    light: false,
     outerBounds: true,
   },
   edgeTypes: {
-    darkness: 2,
+    source: 1,
     wall: 0,
     innerBounds: 2,
-    light: 1,
     outerBounds: 2,
   },
   externalRadius: 750,
@@ -72,17 +70,15 @@ const maximumInexactConfig = {
   debug: undefined,
   density: undefined,
   edgeOptions: {
-    darkness: undefined,
+    source: undefined,
     wall: undefined,
     innerBounds: undefined,
-    light: undefined,
     outerBounds: undefined,
   },
   edgeTypes: {
-    darkness: undefined,
+    source: undefined,
     wall: undefined,
     innerBounds: undefined,
-    light: undefined,
     outerBounds: undefined,
   },
   externalRadius: 750, // not allowed to be explicitly undefined
@@ -197,20 +193,18 @@ expectTypeOf(myCSP.edges).toEqualTypeOf<Set<edges.Edge>>();
 expectTypeOf(myCSP.rays).toEqualTypeOf<ClockwiseSweepPolygon.Ray[]>();
 expectTypeOf(myCSP.useInnerBounds).toBeBoolean();
 
-expectTypeOf(
-  myCSP["_determineEdgeTypes"]("innerBounds", 7),
-).toEqualTypeOf<ClockwiseSweepPolygon.EdgeTypesConfiguration>();
+expectTypeOf(myCSP["_determineEdgeTypes"]("move", 7)).toEqualTypeOf<ClockwiseSweepPolygon.EdgeTypesConfiguration>();
 expectTypeOf(
   myCSP["_determineEdgeTypes"]("darkness", 6, minimalConfig),
 ).toEqualTypeOf<ClockwiseSweepPolygon.EdgeTypesConfiguration>();
 expectTypeOf(
-  myCSP["_determineEdgeTypes"]("wall", 0, maximumConfig),
+  myCSP["_determineEdgeTypes"]("light", 0, maximumConfig),
 ).toEqualTypeOf<ClockwiseSweepPolygon.EdgeTypesConfiguration>();
 
 expectTypeOf(myCSP["_identifyEdges"]()).toBeVoid();
 
 expectTypeOf(
-  myCSP["_testEdgeInclusion"](someEdge, { wall: 1, innerBounds: 2, darkness: 0, light: undefined, outerBounds: 2 }),
+  myCSP["_testEdgeInclusion"](someEdge, { wall: 1, innerBounds: 2, source: 0, outerBounds: 2 }),
 ).toEqualTypeOf<boolean>();
 
 expectTypeOf(myCSP["_defineBoundingBox"]()).toEqualTypeOf<PIXI.Rectangle>();

@@ -114,7 +114,7 @@ declare class WallsLayer extends PlaceablesLayer<"Wall"> {
    * The Scene Controls tools provide several different types of prototypical Walls to choose from
    * This method helps to translate each tool into a default wall data configuration for that type
    * @param tool - The active canvas tool
-   * @remarks If a tool is not provided, returns an object with `light`, `sight`, `sound`, and `move` keys, all with the value `CONST.WALL_SENSE_TYPES.NORMAL`
+   * @remarks If a tool is not provided, returns an object with `light`, `sight`, `sound`, and `move` keys, all with the value `CONST.EDGE_SENSE_TYPES.NORMAL`
    */
   protected _getWallDataFromActiveTool(tool?: WallsLayer.WallTools | null): WallDocument.Source;
 

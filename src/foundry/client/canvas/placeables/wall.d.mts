@@ -256,11 +256,11 @@ declare class Wall extends PlaceableObject<WallDocument.Implementation> {
   /**
    * Determine the orientation of this wall with respect to a reference point
    * @param point - Some reference point, relative to which orientation is determined
-   * @returns An orientation in CONST.WALL_DIRECTIONS which indicates whether the Point is left, right, or collinear (both) with the Wall
+   * @returns An orientation in CONST.EDGE_DIRECTIONS which indicates whether the Point is left, right, or collinear (both) with the Wall
    * @deprecated since v12, until v14
    * @remarks "`Wall#orientPoint` has been moved to {@link Edge.orientPoint | `foundry.canvas.geometry.edges.Edge#orientPoint`}"
    */
-  orientPoint(point: Canvas.Point): CONST.WALL_DIRECTIONS;
+  orientPoint(point: Canvas.Point): CONST.EDGE_DIRECTIONS;
 
   /**
    * Test whether to apply a configured threshold of this wall.

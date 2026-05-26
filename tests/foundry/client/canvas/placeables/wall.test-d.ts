@@ -120,7 +120,7 @@ expectTypeOf(wall.hasActiveRoof).toBeBoolean();
 // eslint-disable-next-line @typescript-eslint/no-deprecated
 expectTypeOf(wall.identifyInteriorState()).toBeVoid();
 // eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(wall.orientPoint({ x: 50, y: 79 })).toEqualTypeOf<CONST.WALL_DIRECTIONS>();
+expectTypeOf(wall.orientPoint({ x: 50, y: 79 })).toEqualTypeOf<CONST.EDGE_DIRECTIONS>();
 
 // eslint-disable-next-line @typescript-eslint/no-deprecated
 expectTypeOf(wall.applyThreshold("light", wall.center)).toBeBoolean();

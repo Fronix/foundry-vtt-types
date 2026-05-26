@@ -1,8 +1,9 @@
-import type { InterfaceToObject, MaybeArray, Merge } from "#utils";
+import type { InexactPartial, InterfaceToObject, MaybeArray, Merge } from "#utils";
 import type { fields } from "#common/data/_module.d.mts";
 import type { DatabaseBackend, Document } from "#common/abstract/_module.d.mts";
 import type { BaseWall } from "#common/documents/_module.d.mts";
 import type { DialogV2 } from "#client/applications/api/_module.d.mts";
+import type Edge from "#client/canvas/geometry/edges/edge.d.mts";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Only used for links.
 import type ClientDatabaseBackend from "#client/data/client-backend.d.mts";
@@ -267,19 +268,19 @@ declare namespace WallDocument {
 
     /**
      * The illumination restriction type of this wall
-     * @defaultValue `CONST.WALL_SENSE_TYPES.NORMAL` (`20`)
+     * @defaultValue `CONST.EDGE_SENSE_TYPES.NORMAL` (`20`)
      */
     light: fields.NumberField<
       {
         required: true;
-        choices: Record<CONST.WALL_SENSE_TYPES, string>;
-        initial: typeof CONST.WALL_SENSE_TYPES.NORMAL;
-        validationError: "must be a value in CONST.WALL_SENSE_TYPES";
+        choices: Record<CONST.EDGE_SENSE_TYPES, string>;
+        initial: typeof CONST.EDGE_SENSE_TYPES.NORMAL;
+        validationError: "must be a value in CONST.EDGE_SENSE_TYPES";
       },
       // FIXME: Without these overrides, the branded type from `choices` is not respected, and the field types as `number`
-      CONST.WALL_SENSE_TYPES | null | undefined,
-      CONST.WALL_SENSE_TYPES | null,
-      CONST.WALL_SENSE_TYPES | null
+      CONST.EDGE_SENSE_TYPES | null | undefined,
+      CONST.EDGE_SENSE_TYPES | null,
+      CONST.EDGE_SENSE_TYPES | null
     >;
 
     /**
@@ -301,53 +302,53 @@ declare namespace WallDocument {
 
     /**
      * The visual restriction type of this wall
-     * @defaultValue `CONST.WALL_SENSE_TYPES.NORMAL` (`20`)
+     * @defaultValue `CONST.EDGE_SENSE_TYPES.NORMAL` (`20`)
      */
     sight: fields.NumberField<
       {
         required: true;
-        choices: Record<CONST.WALL_SENSE_TYPES, string>;
-        initial: typeof CONST.WALL_SENSE_TYPES.NORMAL;
-        validationError: "must be a value in CONST.WALL_SENSE_TYPES";
+        choices: Record<CONST.EDGE_SENSE_TYPES, string>;
+        initial: typeof CONST.EDGE_SENSE_TYPES.NORMAL;
+        validationError: "must be a value in CONST.EDGE_SENSE_TYPES";
       },
       // FIXME: Without these overrides, the branded type from `choices` is not respected, and the field types as `number`
-      CONST.WALL_SENSE_TYPES | null | undefined,
-      CONST.WALL_SENSE_TYPES | null,
-      CONST.WALL_SENSE_TYPES | null
+      CONST.EDGE_SENSE_TYPES | null | undefined,
+      CONST.EDGE_SENSE_TYPES | null,
+      CONST.EDGE_SENSE_TYPES | null
     >;
 
     /**
      * The auditory restriction type of this wall
-     * @defaultValue `CONST.WALL_SENSE_TYPES.NORMAL` (`20`)
+     * @defaultValue `CONST.EDGE_SENSE_TYPES.NORMAL` (`20`)
      */
     sound: fields.NumberField<
       {
         required: true;
-        choices: Record<CONST.WALL_SENSE_TYPES, string>;
-        initial: typeof CONST.WALL_SENSE_TYPES.NORMAL;
-        validationError: "must be a value in CONST.WALL_SENSE_TYPES";
+        choices: Record<CONST.EDGE_SENSE_TYPES, string>;
+        initial: typeof CONST.EDGE_SENSE_TYPES.NORMAL;
+        validationError: "must be a value in CONST.EDGE_SENSE_TYPES";
       },
       // FIXME: Without these overrides, the branded type from `choices` is not respected, and the field types as `number`
-      CONST.WALL_SENSE_TYPES | null | undefined,
-      CONST.WALL_SENSE_TYPES | null,
-      CONST.WALL_SENSE_TYPES | null
+      CONST.EDGE_SENSE_TYPES | null | undefined,
+      CONST.EDGE_SENSE_TYPES | null,
+      CONST.EDGE_SENSE_TYPES | null
     >;
 
     /**
      * The direction of effect imposed by this wall
-     * @defaultValue `CONST.WALL_DIRECTIONS.BOTH`
+     * @defaultValue `CONST.EDGE_DIRECTIONS.BOTH`
      */
     dir: fields.NumberField<
       {
         required: true;
-        choices: Record<CONST.WALL_DIRECTIONS, string>;
-        initial: typeof CONST.WALL_DIRECTIONS.BOTH;
-        validationError: "must be a value in CONST.WALL_DIRECTIONS";
+        choices: Record<CONST.EDGE_DIRECTIONS, string>;
+        initial: typeof CONST.EDGE_DIRECTIONS.BOTH;
+        validationError: "must be a value in CONST.EDGE_DIRECTIONS";
       },
       // FIXME: Without these overrides, the branded type from `choices` is not respected, and the field types as `number`
-      CONST.WALL_DIRECTIONS | null | undefined,
-      CONST.WALL_DIRECTIONS | null,
-      CONST.WALL_DIRECTIONS | null
+      CONST.EDGE_DIRECTIONS | null | undefined,
+      CONST.EDGE_DIRECTIONS | null,
+      CONST.EDGE_DIRECTIONS | null
     >;
 
     /**
@@ -1094,6 +1095,27 @@ declare namespace WallDocument {
    */
   type WallCategory = "blank" | "invisible" | "terrain" | "window" | "ethereal" | "door" | "secret" | "normal";
 
+  /** @internal */
+  type _InitializeEdgeOptions = InexactPartial<{
+    /**
+     * Delete the edge of this Wall document?
+     * @defaultValue `false`
+     */
+    deleted: boolean;
+
+    /**
+     * The IDs of prior Levels, if the levels this Wall document is included in has changed.
+     */
+    priorLevels: string[] | Set<string>;
+
+    /**
+     * The restriction types that are either now affected or no longer affected by this Wall document.
+     */
+    changedTypes: Set<CONST.EDGE_RESTRICTION_TYPES>;
+  }>;
+
+  interface InitializeEdgeOptions extends _InitializeEdgeOptions {}
+
   /**
    * The arguments to construct the document.
    *
@@ -1117,9 +1139,16 @@ declare class WallDocument extends BaseWall.Internal.CanvasDocument {
    */
   constructor(data: WallDocument.CreateData, context?: WallDocument.ConstructionContext);
 
-  // TODO(v14 → Phase 5): The `edge`/`darkness` getters and `initializeEdge` method reference the canvas `Edge`
-  // type and the `EdgeSenseType`/`EdgeRestrictionType` constants whose `WALL_*`→`EDGE_*` rename is deferred to
-  // Phase 5 (see migration-v14 deferrals). Add them when that rename lands so the brands match.
+  /**
+   * The Edge instance which represents this Wall.
+   * The Edge is re-created when data for the Wall changes.
+   */
+  get edge(): Edge | null;
+
+  /**
+   * The darkness edge sense type, which is the same value as {@link WallDocument.light | `WallDocument#light`}.
+   */
+  get darkness(): CONST.EDGE_SENSE_TYPES;
 
   /** Whether this Document represents a door. */
   get isDoor(): boolean;
@@ -1134,6 +1163,12 @@ declare class WallDocument extends BaseWall.Internal.CanvasDocument {
    * Broadly classify a wall into one of several categories, based on its properties.
    */
   getWallCategory(): WallDocument.WallCategory;
+
+  /**
+   * Initialize the edge which represents this Wall document.
+   * @param options - Options which modify how the edge is initialized
+   */
+  initializeEdge(options?: WallDocument.InitializeEdgeOptions): void;
 
   // _onCreate, _onUpdate, and _onDelete are overridden but with no signature changes from BaseWall.
 

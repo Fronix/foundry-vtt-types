@@ -23,10 +23,16 @@ declare const myWall: WallDocument.Stored;
 
 expectTypeOf(myWall.flags.core?.sheetClass).toEqualTypeOf<string | undefined>();
 
+expectTypeOf(myWall.edge).toEqualTypeOf<foundry.canvas.geometry.edges.Edge | null>();
+expectTypeOf(myWall.darkness).toEqualTypeOf<CONST.EDGE_SENSE_TYPES>();
 expectTypeOf(myWall.isDoor).toEqualTypeOf<boolean>();
 expectTypeOf(myWall.isOpen).toEqualTypeOf<boolean>();
 expectTypeOf(myWall.prepareBaseData()).toEqualTypeOf<void>();
 expectTypeOf(myWall.getWallCategory()).toEqualTypeOf<WallDocument.WallCategory>();
+expectTypeOf(myWall.initializeEdge()).toEqualTypeOf<void>();
+expectTypeOf(
+  myWall.initializeEdge({ deleted: true, priorLevels: ["a", "b"], changedTypes: new Set(["light", "darkness"]) }),
+).toEqualTypeOf<void>();
 
 await WallDocument.create(
   {
