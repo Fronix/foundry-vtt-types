@@ -3,7 +3,6 @@ import type { Identity, InexactPartial, IntentionalPartial, MaybeArray, Merge, N
 import type { fields } from "#common/data/_module.d.mts";
 import type { DatabaseBackend, Document, EmbeddedCollection } from "#common/abstract/_module.mjs";
 import type { BaseCombat, BaseCombatant, BaseCombatantGroup, BaseScene } from "#common/documents/_module.d.mts";
-import type { Token } from "#client/canvas/placeables/_module.d.mts";
 import type { DialogV2 } from "#client/applications/api/_module.d.mts";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Only used for links.
@@ -1281,6 +1280,12 @@ declare namespace Combat {
   }> &
     InexactPartial<{
       /**
+       * A message visibility mode to apply to the resulting chat message, a key of
+       * {@linkcode CONFIG.ChatMessage.modes}
+       */
+      messageMode: ChatMessage.MessageMode;
+
+      /**
        * Additional options with which to customize created Chat Messages
        * @defaultValue `{}`
        * @remarks Can't be `null` as it only has a parameter default
@@ -1289,6 +1294,18 @@ declare namespace Combat {
     }>;
 
   interface InitiativeOptions extends _InitiativeOptions {}
+
+  /** @internal */
+  type _ResetAllOptions = InexactPartial<{
+    /**
+     * Update the Combat turn after resetting initiative scores to keep the turn on the same Combatant.
+     * @defaultValue `true`
+     */
+    updateTurn: boolean;
+  }>;
+
+  /** The options for {@linkcode Combat.resetAll | Combat#resetAll} */
+  interface ResetAllOptions extends _ResetAllOptions {}
 
   interface HistoryData {
     round: number | null;
@@ -1388,11 +1405,10 @@ declare class Combat<out SubType extends Combat.SubType = Combat.SubType> extend
   get isView(): boolean;
 
   /**
-   * Set the current Combat encounter as active within the Scene.
-   * Deactivate all other Combat encounters within the viewed Scene and set this one as active
+   * A convenience alias for updating this document to become active.
    * @param options - Additional context to customize the update workflow
    */
-  activate(options?: Combat.Database.UpdateOneDocumentOperation): Promise<Combat.Implementation[]>;
+  activate(options?: Combat.Database.UpdateOneDocumentOperation): Promise<this>;
 
   /** @remarks Calls {@linkcode Combat.setupTurns | Combat#setupTurns} if there is at least one Combatant and `this.turns` is empty */
   override prepareDerivedData(): void;
@@ -1440,8 +1456,11 @@ declare class Combat<out SubType extends Combat.SubType = Combat.SubType> extend
   /** Toggle whether this combat is linked to the scene or globally available. */
   toggleSceneLink(): Promise<this>;
 
-  /** Reset all combatant initiative scores, setting the turn back to zero */
-  resetAll(): Promise<this | undefined>;
+  /**
+   * Reset all combatant initiative scores.
+   * @param options - Additional options
+   */
+  resetAll(options?: Combat.ResetAllOptions): Promise<this>;
 
   /**
    * Roll initiative for one or multiple Combatants within the Combat document
@@ -1640,16 +1659,16 @@ declare class Combat<out SubType extends Combat.SubType = Combat.SubType> extend
   ): void;
 
   /**
-   * @deprecated Since v12, no stated end
-   * @remarks Foundry provides no deprecation warning; use {@linkcode Combat.getCombatantsByActor | Combat#getCombatantsByActor} instead.
+   * @deprecated since v14, until v15
+   * @remarks Logs a deprecation warning; use {@linkcode Combat.getCombatantsByActor | Combat#getCombatantsByActor} instead.
    */
   getCombatantByActor(actor: string | Actor.Implementation): Combatant.Implementation | null;
 
   /**
-   * @deprecated Since v12, no stated end
-   * @remarks Foundry provides no deprecation warning; use {@linkcode Combat.getCombatantsByActor | Combat#getCombatantsByActor} instead.
+   * @deprecated since v14, until v15
+   * @remarks Logs a deprecation warning; use {@linkcode Combat.getCombatantsByToken | Combat#getCombatantsByToken} instead.
    */
-  getCombatantByToken(token: string | Token.Implementation): Combatant.Implementation | null;
+  getCombatantByToken(token: string | TokenDocument.Implementation): Combatant.Implementation | null;
 
   /*
    * After this point these are not really overridden methods.

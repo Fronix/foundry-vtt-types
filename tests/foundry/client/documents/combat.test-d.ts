@@ -14,11 +14,16 @@ expectTypeOf(combat.started).toEqualTypeOf<boolean>();
 expectTypeOf(combat.visible).toEqualTypeOf<boolean>();
 expectTypeOf(combat.isActive).toEqualTypeOf<boolean>();
 
-expectTypeOf(combat.activate()).toEqualTypeOf<Promise<Combat.Implementation[]>>();
+expectTypeOf(combat.activate()).toEqualTypeOf<Promise<Combat.Implementation>>();
 expectTypeOf(combat.prepareDerivedData()).toEqualTypeOf<void>();
+
+expectTypeOf(combat.getCombatantsByActor("")).toEqualTypeOf<Combatant.Implementation[]>();
+expectTypeOf(combat.getCombatantsByToken("")).toEqualTypeOf<Combatant.Implementation[]>();
 
 // eslint-disable-next-line @typescript-eslint/no-deprecated
 expectTypeOf(combat.getCombatantByActor("")).toEqualTypeOf<Combatant.Implementation | null>();
+// eslint-disable-next-line @typescript-eslint/no-deprecated
+expectTypeOf(combat.getCombatantByToken("")).toEqualTypeOf<Combatant.Implementation | null>();
 
 expectTypeOf(combat.startCombat()).toEqualTypeOf<Promise<Combat.Implementation>>();
 expectTypeOf(combat.nextRound()).toEqualTypeOf<Promise<Combat.Implementation>>();
@@ -28,9 +33,13 @@ expectTypeOf(combat.previousTurn()).toEqualTypeOf<Promise<Combat.Implementation>
 expectTypeOf(combat.endCombat()).toEqualTypeOf<Promise<Combat.Implementation>>();
 
 expectTypeOf(combat.toggleSceneLink()).toEqualTypeOf<Promise<Combat.Implementation>>();
-expectTypeOf(combat.resetAll()).toEqualTypeOf<Promise<Combat.Implementation | undefined>>();
+expectTypeOf(combat.resetAll()).toEqualTypeOf<Promise<Combat.Implementation>>();
+expectTypeOf(combat.resetAll({ updateTurn: false })).toEqualTypeOf<Promise<Combat.Implementation>>();
 
 expectTypeOf(combat.rollInitiative("")).toEqualTypeOf<Promise<Combat.Implementation>>();
+expectTypeOf(
+  combat.rollInitiative("", { formula: null, updateTurn: true, messageMode: "gm", messageOptions: {} }),
+).toEqualTypeOf<Promise<Combat.Implementation>>();
 expectTypeOf(combat.rollAll()).toEqualTypeOf<Promise<Combat.Implementation>>();
 expectTypeOf(combat.rollNPC()).toEqualTypeOf<Promise<Combat.Implementation>>();
 expectTypeOf(combat.setInitiative("", 1)).toEqualTypeOf<Promise<void>>();
