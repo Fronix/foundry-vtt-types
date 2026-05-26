@@ -99,6 +99,13 @@ declare const schemaWithLight: foundry.data.fields.SchemaField.InitializedData<{
 }>;
 expectTypeOf(schemaWithLight.light).toEqualTypeOf<foundry.data.LightData>();
 
+/** DataModelSchemaField (v14 base of EmbeddedDataField) */
+
+declare const dataModelSchemaField: foundry.data.fields.DataModelSchemaField<typeof foundry.data.LightData>;
+expectTypeOf(dataModelSchemaField.model).toEqualTypeOf<typeof foundry.data.LightData>();
+// EmbeddedDataField is a subclass of DataModelSchemaField.
+expectTypeOf(embeddedLightField).toExtend<foundry.data.fields.DataModelSchemaField<typeof foundry.data.LightData>>();
+
 /** EmbeddedCollectionField */
 
 declare const effectsField: foundry.data.fields.EmbeddedCollectionField<

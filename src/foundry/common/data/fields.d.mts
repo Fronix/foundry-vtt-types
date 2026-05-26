@@ -2774,7 +2774,119 @@ declare namespace SetField {
 }
 
 /**
- * A subclass of {@linkcode ObjectField} which embeds some other DataModel definition as an inner object.
+ * A subclass of {@linkcode SchemaField} which embeds some other DataModel definition as an inner object.
+ * It is the base class of {@linkcode EmbeddedDataField} and {@linkcode EmbeddedDocumentField}.
+ * @template ModelType       - the DataModel for the embedded data
+ * @template Options         - the options of the DataModelSchemaField instance
+ * @template AssignmentType  - the type of the allowed assignment values of the DataModelSchemaField
+ * @template InitializedType - the type of the initialized values of the DataModelSchemaField
+ * @template PersistedType   - the type of the persisted values of the DataModelSchemaField
+ * @remarks
+ * Defaults:
+ * - AssignmentType: `SchemaField.AssignmentType<ModelType["schema"]["fields"]> | null | undefined`
+ * - InitializedType: `SchemaField.InitializedType<ModelType["schema"]["fields"]>`
+ * - PersistedType: `SchemaField.PersistedType<ModelType["schema"]["fields"]>`
+ * - InitialValue: `{}`
+ */
+declare class DataModelSchemaField<
+  const ModelType extends DataModel.AnyConstructor,
+  const Options extends DataModelSchemaField.Options<ModelType> = DataModelSchemaField.DefaultOptions,
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  const AssignmentType = DataModelSchemaField.AssignmentType<ModelType, Options>,
+  const InitializedType = DataModelSchemaField.InitializedType<ModelType, Options>,
+  const PersistedType extends AnyObject | null | undefined = DataModelSchemaField.PersistedType<ModelType, Options>,
+> extends SchemaField<DataModel.SchemaOfClass<ModelType>, Options, AssignmentType, InitializedType, PersistedType> {
+  /**
+   * @param model   - The class of DataModel which should be embedded in this field
+   * @param options - Options which configure the behavior of the field
+   * @param context - Additional context which describes the field
+   * @throws If `model` is not a {@linkcode DataModel} subclass
+   */
+  constructor(model: ModelType, options?: Options, context?: DataField.ConstructionContext);
+
+  /**
+   * The base DataModel definition which is contained in this field.
+   */
+  model: ModelType;
+
+  /** @remarks Runs the model's `_preCleanData`/`_cleanData` hooks around {@link SchemaField.clean | `SchemaField#clean`}. */
+  override clean(value: AssignmentType, options?: DataField.CleanOptions): InitializedType;
+
+  /** @remarks If `value` has a `#toObject` method, calls it; otherwise returns `value` if a plain object, else `{}` */
+  protected override _cast(value: unknown): AssignmentType;
+
+  /**
+   * Migrate this field's candidate source data.
+   * @param sourceData - Candidate source data of the root model
+   * @param fieldData  - The value of this field within the source data
+   */
+  migrateSource(sourceData: AnyObject, fieldData: unknown): void;
+}
+
+declare namespace DataModelSchemaField {
+  /**
+   * A shorthand for the options of a DataModelSchemaField class.
+   * @template ModelType - the DataModel for the embedded data
+   */
+  type Options<ModelType extends DataModel.AnyConstructor> = DataField.Options<
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    SchemaField.AssignmentData<DataModel.SchemaOfClass<ModelType>>
+  >;
+
+  /** The type of the default options for the {@linkcode DataModelSchemaField} class. */
+  type DefaultOptions = SchemaField.DefaultOptions;
+
+  /**
+   * A helper type for the given options type merged into the default options of the DataModelSchemaField class.
+   * @template ModelType - the DataModel for the embedded data
+   * @template Opts      - the options that override the default options
+   */
+  type MergedOptions<ModelType extends DataModel.AnyConstructor, Opts extends Options<ModelType>> = SimpleMerge<
+    DefaultOptions,
+    Opts
+  >;
+
+  /**
+   * A shorthand for the assignment type of a DataModelSchemaField class.
+   * @template ModelType - the DataModel for the embedded data
+   * @template Opts      - the options that override the default options
+   *
+   * @deprecated AssignmentType is being deprecated. See {@linkcode SchemaField.AssignmentData}
+   * for more details.
+   */
+  type AssignmentType<
+    ModelType extends DataModel.AnyConstructor,
+    Opts extends Options<ModelType>,
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+  > = SchemaField.Internal.AssignmentType<DataModel.SchemaOfClass<ModelType>, MergedOptions<ModelType, Opts>>;
+
+  /**
+   * A shorthand for the initialized type of a DataModelSchemaField class.
+   * @template ModelType - the DataModel for the embedded data
+   * @template Opts      - the options that override the default options
+   */
+  // FIXME: Schema is unsure in src/foundry/common/data/data.d.mts
+  type InitializedType<
+    ModelType extends DataModel.AnyConstructor,
+    Opts extends Options<ModelType>,
+  > = DataField.DerivedInitializedType<FixedInstanceType<ModelType>, MergedOptions<ModelType, Opts>>;
+
+  /**
+   * A shorthand for the persisted type of a DataModelSchemaField class.
+   * @template ModelType - the DataModel for the embedded data
+   * @template Opts      - the options that override the default options
+   */
+  type PersistedType<
+    ModelType extends DataModel.AnyConstructor,
+    Opts extends Options<ModelType>,
+  > = DataField.DerivedInitializedType<
+    SchemaField.SourceData<DataModel.SchemaOfClass<ModelType>>,
+    MergedOptions<ModelType, Opts>
+  >;
+}
+
+/**
+ * A subclass of {@linkcode DataModelSchemaField} used for embedded data models.
  * @template ModelType       - the DataModel for the embedded data
  * @template Options         - the options of the EmbeddedDataField instance
  * @template AssignmentType  - the type of the allowed assignment values of the EmbeddedDataField
@@ -2794,25 +2906,7 @@ declare class EmbeddedDataField<
   const AssignmentType = EmbeddedDataField.AssignmentType<ModelType, Options>,
   const InitializedType = EmbeddedDataField.InitializedType<ModelType, Options>,
   const PersistedType extends AnyObject | null | undefined = EmbeddedDataField.PersistedType<ModelType, Options>,
-> extends SchemaField<DataModel.SchemaOfClass<ModelType>, Options, AssignmentType, InitializedType, PersistedType> {
-  /**
-   * @param model   - The class of DataModel which should be embedded in this field
-   * @param options - Options which configure the behavior of the field
-   * @param context - Additional context which describes the field
-   */
-  constructor(model: ModelType, options?: Options, context?: DataField.ConstructionContext);
-
-  /**
-   * The embedded DataModel definition which is contained in this field.
-   */
-  model: ModelType;
-
-  /** @remarks Passed `options.source` will be ignored, forwarded to super with `source: value` */
-  override clean(value: AssignmentType, options?: DataField.CleanOptions): InitializedType;
-
-  /** @remarks If `value` has a `#toObject` method, calls it and returns that */
-  protected override _cast(value: unknown): AssignmentType;
-
+> extends DataModelSchemaField<ModelType, Options, AssignmentType, InitializedType, PersistedType> {
   /** @remarks Forwards to super with `options.source: value` */
   override validate(
     value: AssignmentType,
@@ -2828,13 +2922,6 @@ declare class EmbeddedDataField<
   /** @remarks calls `#toObject(false)` on `value` */
   override toObject(value: InitializedType): PersistedType;
 
-  /**
-   * Migrate this field's candidate source data.
-   * @param sourceData - Candidate source data of the root model
-   * @param fieldData  - The value of this field within the source data
-   */
-  migrateSource(sourceData: AnyObject, fieldData: unknown): void;
-
   protected override _validateModel(data: AnyObject, options?: DataField.ValidateModelOptions | null): void;
 }
 
@@ -2843,23 +2930,20 @@ declare namespace EmbeddedDataField {
    * A shorthand for the options of an EmbeddedDataField class.
    * @template ModelType - the DataModel for the embedded data
    */
-  type Options<ModelType extends DataModel.AnyConstructor> = DataField.Options<
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    SchemaField.AssignmentData<DataModel.SchemaOfClass<ModelType>>
-  >;
+  type Options<ModelType extends DataModel.AnyConstructor> = DataModelSchemaField.Options<ModelType>;
 
   /** The type of the default options for the {@linkcode EmbeddedDataField} class. */
-  type DefaultOptions = SchemaField.DefaultOptions;
+  type DefaultOptions = DataModelSchemaField.DefaultOptions;
 
   /**
    * A helper type for the given options type merged into the default options of the EmbeddedDataField class.
    * @template ModelType - the DataModel for the embedded data
    * @template Opts      - the options that override the default options
    */
-  type MergedOptions<ModelType extends DataModel.AnyConstructor, Opts extends Options<ModelType>> = SimpleMerge<
-    DefaultOptions,
-    Opts
-  >;
+  type MergedOptions<
+    ModelType extends DataModel.AnyConstructor,
+    Opts extends Options<ModelType>,
+  > = DataModelSchemaField.MergedOptions<ModelType, Opts>;
 
   /**
    * A shorthand for the assignment type of an EmbeddedDataField class.
@@ -2869,22 +2953,19 @@ declare namespace EmbeddedDataField {
    * @deprecated AssignmentType is being deprecated. See {@linkcode SchemaField.AssignmentData}
    * for more details.
    */
-  type AssignmentType<
-    ModelType extends DataModel.AnyConstructor,
-    Opts extends Options<ModelType>,
+  type AssignmentType<ModelType extends DataModel.AnyConstructor, Opts extends Options<ModelType>> =
     // eslint-disable-next-line @typescript-eslint/no-deprecated
-  > = SchemaField.Internal.AssignmentType<DataModel.SchemaOfClass<ModelType>, MergedOptions<ModelType, Opts>>;
+    DataModelSchemaField.AssignmentType<ModelType, Opts>;
 
   /**
    * A shorthand for the initialized type of an EmbeddedDataField class.
    * @template ModelType - the DataModel for the embedded data
    * @template Opts      - the options that override the default options
    */
-  // FIXME: Schema is unsure in src/foundry/common/data/data.d.mts
   type InitializedType<
     ModelType extends DataModel.AnyConstructor,
     Opts extends Options<ModelType>,
-  > = DataField.DerivedInitializedType<FixedInstanceType<ModelType>, MergedOptions<ModelType, Opts>>;
+  > = DataModelSchemaField.InitializedType<ModelType, Opts>;
 
   /**
    * A shorthand for the persisted type of an EmbeddedDataField class.
@@ -2894,10 +2975,7 @@ declare namespace EmbeddedDataField {
   type PersistedType<
     ModelType extends DataModel.AnyConstructor,
     Opts extends Options<ModelType>,
-  > = DataField.DerivedInitializedType<
-    SchemaField.SourceData<DataModel.SchemaOfClass<ModelType>>,
-    MergedOptions<ModelType, Opts>
-  >;
+  > = DataModelSchemaField.PersistedType<ModelType, Opts>;
 }
 
 /**
@@ -5848,6 +5926,7 @@ export {
   BooleanField,
   ColorField,
   DataField,
+  DataModelSchemaField,
   DocumentAuthorField,
   DocumentFlagsField,
   DocumentIdField,
