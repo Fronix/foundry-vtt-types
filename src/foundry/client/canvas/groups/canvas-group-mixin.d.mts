@@ -118,13 +118,6 @@ declare function CanvasGroupMixin<
   Group extends CanvasGroupMixin.ConfiguredGroupNames | NoLayerGroup = NoLayerGroup,
 >(ContainerClass: BaseClass): CanvasGroupMixin.Mix<BaseClass, Group>;
 
-declare global {
-  /**
-   * @deprecated "`BaseCanvasMixin` is deprecated in favor of {@linkcode foundry.canvas.groups.CanvasGroupMixin}" (since v12, until v14)
-   */
-  const BaseCanvasMixin: typeof CanvasGroupMixin;
-}
-
 declare namespace CanvasGroupMixin {
   // Note(LukeAbby): This doesn't just use `Mix` because piecing together an `AnyMixed` type is
   // more subtle than typical here. Specifically

@@ -67,11 +67,6 @@ declare class EnvironmentCanvasGroup<
    */
   initialize(config?: EnvironmentCanvasGroup.Config): void;
 
-  /**
-   * @deprecated "`EnvironmentCanvasGroup#darknessPenalty` is deprecated without replacement. The darkness penalty is no longer applied on light and vision sources." (since v12, will be removed in v14)
-   */
-  get darknessPenalty(): 0;
-
   #EnvironmentCanvasGroup: true;
 }
 
@@ -259,12 +254,6 @@ declare namespace EnvironmentCanvasGroup {
      * as the `other`, with `overwrite: false`, so values here should not be `undefined` unless otherwise allowed by the Scene schema.
      */
     environment: DeepPartial<Scene.EnvironmentData>;
-
-    /**
-     * @deprecated "`config.darknessLevel` parameter into {@linkcode EnvironmentCanvasGroup.initialize | EnvironmentCanvasGroup#initialize} is deprecated.
-     * You should pass the darkness level into {@linkcode this.environment | config.environment.darknessLevel}" (since v12 until v14)
-     */
-    darknessLevel: number;
   }>;
 
   interface Config extends _Config {}

@@ -69,6 +69,7 @@ describe("CanvasVisibility tests", () => {
   test("Visibility Testing", () => {
     expectTypeOf(myVisibilityGroup.testVisibility(point)).toBeBoolean();
     expectTypeOf(myVisibilityGroup.testVisibility(elevatedPoint)).toBeBoolean();
+    expectTypeOf(myVisibilityGroup.testVisibility([point, elevatedPoint])).toBeBoolean();
     expectTypeOf(myVisibilityGroup.testVisibility(possiblyElevatedPoint, {})).toBeBoolean();
     expectTypeOf(
       myVisibilityGroup.testVisibility(possiblyElevatedPoint, {
@@ -78,13 +79,13 @@ describe("CanvasVisibility tests", () => {
     ).toBeBoolean();
 
     expectTypeOf(
-      myVisibilityGroup["_createVisibilityTestConfig"]({ x: 0, y: 0 }),
+      myVisibilityGroup["_createVisibilityTestConfig"]([{ x: 0, y: 0 }]),
     ).toEqualTypeOf<CanvasVisibility.TestConfig>();
     expectTypeOf(
-      myVisibilityGroup["_createVisibilityTestConfig"](possiblyElevatedPoint, {}),
+      myVisibilityGroup["_createVisibilityTestConfig"]([possiblyElevatedPoint], {}),
     ).toEqualTypeOf<CanvasVisibility.TestConfig>();
     expectTypeOf(
-      myVisibilityGroup["_createVisibilityTestConfig"](possiblyElevatedPoint, {
+      myVisibilityGroup["_createVisibilityTestConfig"]([possiblyElevatedPoint], {
         object: null,
         tolerance: undefined,
       }),

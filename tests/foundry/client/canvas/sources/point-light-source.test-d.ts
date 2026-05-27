@@ -89,12 +89,15 @@ const tests = [
   {
     elevation: 0,
     los: new Map([[someVisionSource, true]]),
+    // `level` is FIXME-typed `object` until the v14 `Level` document exists (Phase 7)
+    level: {},
     point: { elevation: 0, x: 50, y: 50 },
   },
 ];
-expectTypeOf(mySource.testVisibility({ object: object, tests }));
-expectTypeOf(mySource.testVisibility({ object: null, tests }));
-expectTypeOf(mySource.testVisibility({ tests }));
+// `level` is FIXME-typed `object` until the v14 `Level` document exists (Phase 7)
+expectTypeOf(mySource.testVisibility({ object: object, tests, level: {} }));
+expectTypeOf(mySource.testVisibility({ object: null, tests, level: {} }));
+expectTypeOf(mySource.testVisibility({ tests, level: {} }));
 
 expectTypeOf(mySource["_canDetectObject"]()).toBeBoolean();
 expectTypeOf(mySource["_canDetectObject"](null)).toBeBoolean();

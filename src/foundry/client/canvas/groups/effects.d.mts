@@ -3,7 +3,7 @@ import type { Canvas, sources } from "#client/canvas/_module.d.mts";
 import type { CanvasAnimation } from "#client/canvas/animation/_module.d.mts";
 import type { AbstractBaseShader } from "#client/canvas/rendering/shaders/_module.d.mts";
 import type { VisualEffectsMaskingFilter } from "#client/canvas/rendering/filters/_module.d.mts";
-import type { CanvasGroupMixin, CanvasVisibility, EnvironmentCanvasGroup } from "#client/canvas/groups/_module.d.mts";
+import type { CanvasGroupMixin } from "#client/canvas/groups/_module.d.mts";
 import type * as layers from "#client/canvas/layers/_module.d.mts";
 // Only used for, and aliased to match, foundry's links
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -246,21 +246,6 @@ declare class EffectsCanvasGroup<
   animateDarkness(target?: number, options?: EffectsCanvasGroup.AnimateDarknessOptions): CanvasAnimation.AnimateReturn;
 
   /**
-   * @deprecated "`EffectsCanvasGroup#visibility` has been deprecated and moved to {@linkcode foundry.canvas.Canvas.visibility | Canvas#visibility}." (since v12, until v14)
-   */
-  get visibility(): CanvasVisibility.Implementation;
-
-  /**
-   * @deprecated "`EffectsCanvasGroup#globalLightSource` has been deprecated and moved to {@linkcode EnvironmentCanvasGroup.Implementation.globalLightSource | EnvironmentCanvasGroup#globalLightSource}." (since v12, until v14)
-   */
-  get globalLightSource(): EnvironmentCanvasGroup.Implementation["globalLightSource"];
-
-  /**
-   * @deprecated "`EffectsCanvasGroup#updateGlobalLightSource` has been deprecated and is part of {@linkcode EnvironmentCanvasGroup.Implementation.initialize | EnvironmentCanvasGroup#initialize} workflow." (since v12, until v14)
-   */
-  updateGlobalLightSource(): void;
-
-  /**
    * @deprecated "`EffectsCanvasGroup#initializeDarknessSources` and its associated hook are now obsolete and have no replacement." (since v13, until v15)
    */
   initializeDarknessSources(): void;
@@ -299,7 +284,7 @@ declare namespace EffectsCanvasGroup {
     condition: (source: sources.PointDarknessSource.Internal.Any) => boolean;
   }>;
 
-  interface TestInsideDarknessOptions extends _TestInsideLightOptions {}
+  interface TestInsideDarknessOptions extends _TestInsideDarknessOptions {}
 
   /** @internal */
   type _AnimateDarknessOptions = InexactPartial<{

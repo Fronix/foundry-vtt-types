@@ -75,12 +75,6 @@ declare class PrimaryCanvasGroup<
   videoMeshes: Set<PrimarySpriteMesh.Any>;
 
   /**
-   * Occludable objects above this elevation are faded on hover.
-   * @defaultValue `0`
-   */
-  hoverFadeElevation: number;
-
-  /**
    * Allow API users to override the default elevation of the background layer.
    * This is a temporary solution until more formal support for scene levels is added in a future release.
    * @defaultValue `0`
@@ -98,6 +92,13 @@ declare class PrimaryCanvasGroup<
    * @remarks Only `undefined` prior to first draw
    */
   foreground: PrimarySpriteMesh | undefined;
+
+  /**
+   * The level texture meshes, sorted in ascending order.
+   * @defaultValue `[]`
+   */
+  // TODO(v14-levels): populated by the Scene Levels subsystem (Phase 7).
+  levelTextures: PrimarySpriteMesh[];
 
   /**
    * A Quadtree which partitions and organizes primary canvas objects.
@@ -219,10 +220,13 @@ declare class PrimaryCanvasGroup<
   protected _onMouseMove(currentPos: PIXI.Point, hasMouseMoved: boolean): void;
 
   /**
-   * @deprecated "`PrimaryCanvasGroup#mapElevationAlpha` is deprecated. Use {@linkcode foundry.canvas.layers.CanvasDepthMask.mapElevation | canvas.masks.depth.mapElevation(elevation)}
-   * instead." (since v12, until v14)
+   * @deprecated "`PrimaryCanvasGroup#hoverFadeElevation` has been deprecated. It no longer has any effect." (since v14, until v16)
+   * @remarks Returns `canvas.level?.elevation.base ?? 0`; the setter has no effect.
    */
-  mapElevationToDepth(elevation: number): number;
+  // TODO(v14-levels): the getter reads `canvas.level` (Scene Levels subsystem, Phase 7).
+  get hoverFadeElevation(): number;
+
+  set hoverFadeElevation(value);
 
   #PrimaryCanvasGroup: true;
 }

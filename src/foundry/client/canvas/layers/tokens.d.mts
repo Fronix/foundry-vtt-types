@@ -146,12 +146,6 @@ declare class TokenLayer extends PlaceablesLayer<"Token"> {
   protected override _onMouseWheel(event: Canvas.Event.Wheel): Promise<Token.Implementation[] | void>;
 
   /**
-   * @deprecated since v12 until v14
-   * @remarks "TokenLayer#gridPrecision is deprecated. Use TokenLayer#getSnappedPoint instead of GridLayer#getSnappedPosition and TokenLayer#gridPrecision."
-   */
-  override get gridPrecision(): 1;
-
-  /**
    * Add or remove the set of currently controlled Tokens from the active combat encounter
    * @param  state  - The desired combat state which determines if each Token is added (true) or removed (false)
    *                  (default: `true`)

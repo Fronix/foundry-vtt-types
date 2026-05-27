@@ -918,6 +918,7 @@ declare namespace Canvas {
        * - {@linkcode layers.DrawingsLayer._onDragLeftDrop | DrawingsLayer#_onDragLeftDrop}
        * - {@linkcode layers.DrawingsLayer._onDragLeftCancel | DrawingsLayer#_onDragLeftCancel}
        */
+      // eslint-disable-next-line @typescript-eslint/no-deprecated -- references the `CREATION_STATES` Brand type, not the same-named deprecated static getter.
       drawingsState: layers.PlaceablesLayer.CREATION_STATES;
 
       /**
@@ -925,6 +926,7 @@ declare namespace Canvas {
        * - {@linkcode layers.SoundsLayer._onDragLeftStart | SoundsLayer#_onDragLeftStart}
        * - {@linkcode layers.SoundsLayer._onDragLeftMove | SoundsLayer#_onDragLeftMove}
        */
+      // eslint-disable-next-line @typescript-eslint/no-deprecated -- references the `CREATION_STATES` Brand type, not the same-named deprecated static getter.
       soundState: layers.PlaceablesLayer.CREATION_STATES;
 
       /**

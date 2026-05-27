@@ -1,4 +1,5 @@
 import { expectTypeOf } from "vitest";
+import type { AnyObject } from "fvtt-types/utils";
 import type { Container, DisplayObject } from "pixi.js";
 
 import AmbientLight = foundry.canvas.placeables.AmbientLight;
@@ -49,16 +50,18 @@ if (firstHistoryEntry.type === "create") {
 expectTypeOf(layer.options.objectClass).toEqualTypeOf<AmbientLight.ImplementationClass>();
 expectTypeOf(layer.objects).toEqualTypeOf<PIXI.Container | null>();
 expectTypeOf(layer.preview).toEqualTypeOf<PIXI.Container | null>();
+expectTypeOf(layer.clipboard).toEqualTypeOf<PlaceablesLayer.Clipboard<"AmbientLight">>();
 expectTypeOf(layer.quadtree).toExtend<CanvasQuadtree<AmbientLight.Implementation> | null>();
 expectTypeOf(layer.documentCollection).toEqualTypeOf<EmbeddedCollection<CALDoc, Scene.Implementation> | null>();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.gridPrecision).toEqualTypeOf<number>();
+expectTypeOf(layer.hasPreview).toEqualTypeOf<boolean>();
+expectTypeOf(layer.paletteCreateData).toEqualTypeOf<AnyObject>();
 expectTypeOf(layer.hud).toEqualTypeOf<BasePlaceableHUD<CAL> | null>();
 expectTypeOf(layer.placeables).toEqualTypeOf<CAL[]>();
 expectTypeOf(layer.controlled).toEqualTypeOf<CAL[]>();
-expectTypeOf(layer.getDocuments()).toEqualTypeOf<
-  EmbeddedCollection<AmbientLightDocument.Implementation, Scene.Implementation> | []
->();
+expectTypeOf(layer.viewedDocuments()).toEqualTypeOf<Generator<CALDoc, void, undefined>>();
+expectTypeOf(layer.setAllRenderFlags({ refreshState: true })).toEqualTypeOf<void>();
+// eslint-disable-next-line @typescript-eslint/no-deprecated
+expectTypeOf(layer.getDocuments()).toEqualTypeOf<CALDoc[]>();
 
 expectTypeOf(layer.draw()).toEqualTypeOf<Promise<SomeLightLayer>>();
 declare const someLight: CALDoc;
@@ -124,7 +127,8 @@ expectTypeOf(
 // @ts-expect-error "new" is not a valid history type.
 layer.storeHistory("new", new AmbientLightDocument.implementation());
 
-expectTypeOf(layer.copyObjects()).toEqualTypeOf<CAL[]>();
+expectTypeOf(layer.copyObjects()).toEqualTypeOf<ReadonlyArray<CAL>>();
+expectTypeOf(layer.copyObjects({ cut: true })).toEqualTypeOf<ReadonlyArray<CAL>>();
 expectTypeOf(layer.pasteObjects({ x: 10, y: 10 })).toEqualTypeOf<Promise<CALDoc[]>>();
 expectTypeOf(layer.pasteObjects({ x: 10, y: 10 }, { hidden: true, snap: false })).toEqualTypeOf<
   Promise<AmbientLightDocument.Implementation[]>

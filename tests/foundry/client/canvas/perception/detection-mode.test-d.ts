@@ -18,15 +18,18 @@ describe("DetectionMode tests", () => {
     tokenConfig: false,
   } satisfies DetectionMode.CreateData;
 
+  // `level` is FIXME-typed `object` until the v14 `Level` document exists (Phase 7)
   const visibilityTests = [
     {
       los: new Map([[visionSource, true]]),
+      level: {},
       point: { x: 50, y: 50, elevation: 20 },
       // deprecated since v13 until v15 (use the point's elevation instead)
       elevation: 20,
     },
     {
       los: new Map([[visionSource, true]]),
+      level: {},
       point: { x: 200, y: 300, elevation: -5 },
     },
   ] satisfies CanvasVisibility.Test[];
@@ -61,18 +64,19 @@ describe("DetectionMode tests", () => {
   });
 
   test("Visibility Testing", () => {
+    // `level` on the config is FIXME-typed `object` until the v14 `Level` document exists (Phase 7)
     expectTypeOf(
       myDetectionMode.testVisibility(
         visionSource,
         { enabled: true, range: 3 },
-        { object: token, tests: visibilityTests },
+        { object: token, tests: visibilityTests, level: {} },
       ),
     ).toBeBoolean();
     expectTypeOf(
-      myDetectionMode.testVisibility(visionSource, dmData, { object: null, tests: visibilityTests }),
+      myDetectionMode.testVisibility(visionSource, dmData, { object: null, tests: visibilityTests, level: {} }),
     ).toBeBoolean();
     expectTypeOf(
-      myDetectionMode.testVisibility(visionSource, dmData, { object: undefined, tests: visibilityTests }),
+      myDetectionMode.testVisibility(visionSource, dmData, { object: undefined, tests: visibilityTests, level: {} }),
     ).toBeBoolean();
 
     // `level` is FIXME-typed `object` until the v14 `Level` document exists (Phase 7)

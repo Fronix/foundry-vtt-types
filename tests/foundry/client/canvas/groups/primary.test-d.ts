@@ -49,7 +49,7 @@ describe("PrimaryCanvasGroup tests", () => {
     expectTypeOf(myPrimaryGroup.clearColor).toEqualTypeOf<Color.RGBAColorVector>();
     expectTypeOf(myPrimaryGroup["_backgroundColor"]).toEqualTypeOf<Color.RGBColorVector | undefined>();
     expectTypeOf(myPrimaryGroup.videoMeshes).toEqualTypeOf<Set<PrimarySpriteMesh.Any>>();
-    expectTypeOf(myPrimaryGroup.hoverFadeElevation).toBeNumber();
+    expectTypeOf(myPrimaryGroup.levelTextures).toEqualTypeOf<PrimarySpriteMesh[]>();
 
     expectTypeOf(PrimaryCanvasGroup.BACKGROUND_ELEVATION).toEqualTypeOf<number>();
 
@@ -106,8 +106,8 @@ describe("PrimaryCanvasGroup tests", () => {
   });
 
   test("Deprecated", () => {
-    // deprecated since v12, until v14
+    // deprecated since v14, until v16
     // eslint-disable-next-line @typescript-eslint/no-deprecated
-    expectTypeOf(myPrimaryGroup.mapElevationToDepth(20)).toEqualTypeOf<number>();
+    expectTypeOf(myPrimaryGroup.hoverFadeElevation).toBeNumber();
   });
 });

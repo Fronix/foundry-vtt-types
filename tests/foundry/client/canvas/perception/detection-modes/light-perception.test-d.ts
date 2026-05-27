@@ -19,15 +19,18 @@ describe("DetectionModeLightPerception tests", () => {
     tokenConfig: false,
   } satisfies DetectionMode.CreateData;
 
+  // `level` is FIXME-typed `object` until the v14 `Level` document exists (Phase 7)
   const visibilityTests = [
     {
       los: new Map([[visionSource, true]]),
+      level: {},
       point: { x: 50, y: 50, elevation: 20 },
       // deprecated since v13 until v15 (use the point's elevation instead)
       elevation: 20,
     },
     {
       los: new Map([[visionSource, true]]),
+      level: {},
       point: { x: 200, y: 300, elevation: -5 },
     },
   ] satisfies CanvasVisibility.Test[];

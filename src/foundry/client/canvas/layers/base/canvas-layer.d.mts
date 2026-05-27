@@ -62,6 +62,11 @@ declare abstract class CanvasLayer extends PIXI.Container {
    * @param options - Options which configure how the layer is deconstructed
    */
   protected _tearDown(options: HandleEmptyObject<CanvasLayer.TearDownOptions>): Promise<void>;
+
+  /**
+   * Get the zIndex that should be used for ordering this layer vertically relative to others in the same Container.
+   */
+  getZIndex(): number;
 }
 
 declare namespace CanvasLayer {
@@ -75,6 +80,12 @@ declare namespace CanvasLayer {
     name: string;
 
     baseClass: typeof CanvasLayer;
+
+    /**
+     * The zIndex used for ordering this layer vertically relative to others in the same Container.
+     * @defaultValue `0`
+     */
+    zIndex: number;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type

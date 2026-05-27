@@ -67,9 +67,6 @@ expectTypeOf(
 expectTypeOf(layer["_onClickLeft"](pointerEvent)).toBeVoid();
 expectTypeOf(layer["_onMouseWheel"](someWheelEvent)).toEqualTypeOf<Promise<Token.Implementation[] | void>>();
 
-// deprecated since v12, until v14
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.gridPrecision).toEqualTypeOf<1>();
 declare const someCombat: Combat.Implementation;
 // eslint-disable-next-line @typescript-eslint/no-deprecated
 expectTypeOf(layer.toggleCombat()).toEqualTypeOf<Promise<Combatant.Implementation[]>>();

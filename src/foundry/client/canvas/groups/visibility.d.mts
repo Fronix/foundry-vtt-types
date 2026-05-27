@@ -43,6 +43,13 @@ declare class CanvasVisibility<
   vision: CanvasVisionMask.CanvasVisionContainer | undefined;
 
   /**
+   * The container for the surface exposure.
+   * @remarks Only `undefined` prior to first draw
+   */
+  // TODO(v14-levels): the surface-exposure subsystem is entangled with Scene Levels (Phase 7).
+  surfaceExposure: PIXI.Container | undefined;
+
+  /**
    * The exploration container which tracks exploration progress.
    * @remarks Only `undefined` prior to first draw
    */
@@ -156,21 +163,24 @@ declare class CanvasVisibility<
 
   /**
    * Test whether a target point on the Canvas is visible based on the current vision and LOS polygons.
-   * @param point   - The point in space to test
+   * @param points  - The point or points in space to test
    * @param options - Additional options which modify visibility testing.
    * @returns Whether the point is currently visible.
    */
-  testVisibility(point: Canvas.PossiblyElevatedPoint, options?: CanvasVisibility.TestVisibilityOptions): boolean;
+  testVisibility(
+    points: Canvas.PossiblyElevatedPoint | Canvas.PossiblyElevatedPoint[],
+    options?: CanvasVisibility.TestVisibilityOptions,
+  ): boolean;
 
   /**
    * Create the visibility test config.
-   * @param point   - The point in space to test, an object with coordinates x and y.
+   * @param points  - The points in space to test
    * @param options - Additional options which modify visibility testing.
    * @internal
-   * @remarks If a Point is passed without elevation, uses the `object`'s if it's a `Token`, otherwise defaults to `0`
+   * @remarks If a Point is passed without elevation, uses the `object`'s if it's a `Token`, otherwise defaults to the current Level's base elevation
    */
   protected _createVisibilityTestConfig(
-    point: Canvas.PossiblyElevatedPoint,
+    points: Canvas.PossiblyElevatedPoint[],
     options?: CanvasVisibility.CreateTestConfigOptions,
   ): CanvasVisibility.TestConfig;
 
@@ -282,12 +292,25 @@ declare namespace CanvasVisibility {
   }>;
 
   interface TestConfig extends _TestConfigOptional {
+    /**
+     * The Level in which the test is performed.
+     * @remarks `object instanceof Token ? canvas.scene.levels.get(object.document.level) : canvas.level`
+     */
+    // FIXME: Level // The `Level` document is authored with the Scene Levels subsystem (Phase 7).
+    level: object;
+
     /** An array of visibility tests */
     tests: CanvasVisibility.Test[];
   }
 
   interface Test {
     point: Canvas.ElevatedPoint;
+
+    /**
+     * The Level in which the test is performed.
+     */
+    // FIXME: Level // The `Level` document is authored with the Scene Levels subsystem (Phase 7).
+    level: object;
 
     /**
      * @deprecated "`CanvasVisibility.Test#elevation` has been deprecated in favor of {@linkcode Canvas.ElevatedPoint.elevation | CanvasVisibility.Test#point#elevation}." (since v13, until v15)

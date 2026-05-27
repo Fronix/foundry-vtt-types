@@ -1,4 +1,5 @@
-import type { HandleEmptyObject, Identity, NullishProps } from "#utils";
+import type { Identity, NullishProps } from "#utils";
+import type SceneControls from "#client/applications/ui/scene-controls.d.mts";
 import type { CanvasLayer } from "../_module.d.mts";
 
 import Canvas = foundry.canvas.Canvas;
@@ -6,7 +7,12 @@ import Canvas = foundry.canvas.Canvas;
 /**
  * A subclass of CanvasLayer which provides support for user interaction with its contained objects.
  */
-declare class InteractionLayer extends CanvasLayer {
+declare abstract class InteractionLayer extends CanvasLayer {
+  /**
+   * The shared palette tool.
+   */
+  static TOGGLE_PALETTE: Partial<SceneControls.Tool>;
+
   /**
    * Is this layer currently active
    */
@@ -58,12 +64,16 @@ declare class InteractionLayer extends CanvasLayer {
    */
   protected _deactivate(): void;
 
-  protected override _draw(options: HandleEmptyObject<InteractionLayer.DrawOptions>): Promise<void>;
+  /**
+   * Prepare data used by SceneControls to register tools used by this layer.
+   */
+  static prepareSceneControls(): SceneControls.Control | null;
 
   /**
-   * Get the zIndex that should be used for ordering this layer vertically relative to others in the same Container.
+   * Highlight the objects of this layer.
+   * @param active - Should the objects of this layer be highlighted?
    */
-  getZIndex(): number;
+  protected _highlightObjects(active: boolean): void;
 
   /**
    * Callback actions which occur on a single left-click event to assume control of the object
@@ -124,6 +134,12 @@ declare class InteractionLayer extends CanvasLayer {
   protected _onClickRight(event: Canvas.Event.Pointer): void;
 
   /**
+   * Handle double right mouse-click events which originate from the Canvas stage.
+   * @param event - The PIXI InteractionEvent which wraps a PointerEvent
+   */
+  protected _onClickRight2(event: Canvas.Event.Pointer): void;
+
+  /**
    * Handle mouse-wheel events which occur for this active layer.
    * @see {@linkcode MouseManager._onWheel}
    * @param event - The WheelEvent initiated on the document
@@ -131,11 +147,60 @@ declare class InteractionLayer extends CanvasLayer {
   protected _onMouseWheel(event: Canvas.Event.Wheel): void;
 
   /**
-   * Handle a DELETE keypress while this layer is active.
-   * @see {@linkcode ClientKeybindings._onDelete}
-   * @param event - The delete key press event
+   * Handle a Cycle View keypress while this layer is active.
+   * @param event - The cycle-view key press event
+   * @returns Was the event handled?
    */
-  protected _onDeleteKey(event: Canvas.Event.DeleteKey): Promise<void>;
+  protected _onCycleViewKey(event: KeyboardEvent): boolean;
+
+  /**
+   * Handle a Delete keypress while this layer is active.
+   * @param event - The delete key press event
+   * @returns Was the event handled?
+   */
+  protected _onDeleteKey(event: Canvas.Event.DeleteKey): boolean;
+
+  /**
+   * Handle a Select All keypress while this layer is active.
+   * @param event - The select-all key press event
+   * @returns Was the event handled?
+   */
+  protected _onSelectAllKey(event: KeyboardEvent): boolean;
+
+  /**
+   * Handle a Dismiss keypress while this layer is active.
+   * @param event - The dismiss key press event
+   * @returns Was the event handled?
+   */
+  protected _onDismissKey(event: KeyboardEvent): boolean;
+
+  /**
+   * Handle a Undo keypress while this layer is active.
+   * @param event - The undo key press event
+   * @returns Was the event handled?
+   */
+  protected _onUndoKey(event: KeyboardEvent): boolean;
+
+  /**
+   * Handle a Cut keypress while this layer is active.
+   * @param event - The cut key press event
+   * @returns Was the event handled?
+   */
+  protected _onCutKey(event: KeyboardEvent): boolean;
+
+  /**
+   * Handle a Copy keypress while this layer is active.
+   * @param event - The copy key press event
+   * @returns Was the event handled?
+   */
+  protected _onCopyKey(event: KeyboardEvent): boolean;
+
+  /**
+   * Handle a Paste keypress while this layer is active.
+   * @param event - The paste key press event
+   * @returns Was the event handled?
+   */
+  protected _onPasteKey(event: KeyboardEvent): boolean;
 }
 
 declare namespace InteractionLayer {
