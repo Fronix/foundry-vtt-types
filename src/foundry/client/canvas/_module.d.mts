@@ -3,11 +3,16 @@
 // While `.mts` could work, to avoid `import-x/no-unresolved` from erroring `.mjs` is used.
 /* eslint-disable import-x/extensions */
 
+export * as types from "./_types.mjs";
+
 export { default as Canvas } from "./board.mjs";
 export { default as SceneManager } from "./scene-manager.mjs";
+export { default as KTX2Parser } from "./ktx2-parser.mjs";
 export { default as TextureLoader, getTexture, loadTexture, srcExists } from "./loader.mjs";
 export { default as TextureExtractor } from "./texture-extractor.mjs";
 export { default as FramebufferSnapshot } from "./framebuffer-snapshot.mjs";
+export { default as TransitionContainer } from "./transition.mjs";
+export * as borders from "./borders.mjs";
 export * as extensions from "./extensions/_module.mjs";
 export * as sources from "./sources/_module.mjs";
 export * as workers from "./workers/_module.mjs";
