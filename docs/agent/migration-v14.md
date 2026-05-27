@@ -61,6 +61,18 @@ Files in the repo but not in v14 source (19) are almost all barrel/index files a
 
 Phases are expanded into per-file checklists when they are reached (keeping this doc legible). Closed phases' full detail is archived in [migration-v14-archive.md](migration-v14-archive.md) — see [Closed-phase detail](#closed-phase-detail-archived) below.
 
+> ### ▶ Next session — start here
+>
+> **New chat?** Yes — the previous batch is committed & CI-green; start the next one fresh to keep context small. (Only continue in the same chat if the previous batch was left mid-flight and uncommitted.)
+>
+> **Kickoff message** (paste verbatim — it's deliberately short; the new agent gets full context by reading this tracker first):
+>
+> ```
+> Continue the v14 migration (Batch 5.5b)
+> ```
+>
+> _Maintainers: overwrite this block (not append) whenever a batch/phase closes — see [Maintenance rules](#maintenance-rules)._
+
 ---
 
 ## Cross-phase deferrals (live)
@@ -212,11 +224,13 @@ Pure member-diff (no shader-API coupling, no Level entanglement). 1 new file + ~
    - the **roadmap status row** for the phase,
    - the **per-file checkboxes** (`[x]` done & committed, `[~]` partial — add a note, `[ ]` not started),
    - the **[Cross-phase deferrals](#cross-phase-deferrals-live)** table (anything you deferred or actioned),
-   - the **running notes** in the active phase's detail (commits landed, remaining items, type-system gotchas worth reusing).
+   - the **running notes** in the active phase's detail (commits landed, remaining items, type-system gotchas worth reusing),
+   - the **[▶ Next session — start here](#-next-session--start-here)** callout (just under the roadmap) — set it to the _next_ batch/phase: whether it needs a **new chat** (default yes once your work is committed & CI-green) and a **short** kickoff message to paste. Keep the message a one-liner (e.g. `Continue the v14 migration (Batch X)`); the detail lives here in the tracker, so the message must NOT restate it.
 
 ### Maintenance rules
 
 - Check a box only when a file meets all three done-bar criteria (source-diffed, CI-green, type-tested); use `[~]` with a note for partial work.
+- **Keep the [▶ Next session — start here](#-next-session--start-here) callout current**: overwrite it (never append) when a batch/phase closes. It holds exactly two things — a new-chat recommendation and a one-line kickoff message. The message stays short on purpose: the incoming agent reads this tracker first (step 1 of the protocol), so the message points, it doesn't instruct.
 - When starting a phase, expand it into a per-file checklist like the archived Phase 1/3.
 - Record the v14 source build you diffed against if it changes (currently 14.363.0).
 - Record cross-phase deferrals in **both** the [Cross-phase deferrals](#cross-phase-deferrals-live) table (with receiving phase) **and** the receiving phase's roadmap row, so neither side loses them.
