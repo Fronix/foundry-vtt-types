@@ -1,6 +1,6 @@
 import type ApplicationV2 from "../api/application.d.mts";
 import type HandlebarsApplicationMixin from "../api/handlebars-application.d.mts";
-import type { DeepPartial, Identity } from "#utils";
+import type { AnyObject, DeepPartial, Identity } from "#utils";
 
 declare module "#configuration" {
   namespace Hooks {
@@ -20,6 +20,14 @@ declare class CombatTrackerConfig<
   RenderOptions extends CombatTrackerConfig.RenderOptions = CombatTrackerConfig.RenderOptions,
 > extends HandlebarsApplicationMixin(ApplicationV2)<RenderContext, Configuration, RenderOptions> {
   static override DEFAULT_OPTIONS: CombatTrackerConfig.DefaultOptions;
+
+  static override PARTS: Record<string, HandlebarsApplicationMixin.HandlebarsTemplatePart>;
+
+  protected override _prepareContext(
+    options: DeepPartial<RenderOptions> & { isFirstRender: boolean },
+  ): Promise<RenderContext>;
+
+  protected override _onChangeForm(formConfig: ApplicationV2.FormConfiguration, event: Event): void;
 }
 
 declare namespace CombatTrackerConfig {
@@ -32,6 +40,14 @@ declare namespace CombatTrackerConfig {
    */
   interface RenderContext {
     rootId: string;
+    attributeChoices: AnyObject;
+    canConfigure: boolean;
+    combatTheme: object;
+    fields: AnyObject;
+    selectedTheme: string;
+    settings: AnyObject;
+    animationChoices: AnyObject;
+    buttons: ApplicationV2.FormFooterButton[];
   }
 
   interface Configuration<CombatTrackerConfig extends CombatTrackerConfig.Any = CombatTrackerConfig.Any>
