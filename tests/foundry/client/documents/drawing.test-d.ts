@@ -1,5 +1,9 @@
 import { expectTypeOf } from "vitest";
 
+// The client shape subclasses (not the common `foundry.data.*` bases) — imported directly because the
+// client-data barrel re-export is deferred to Phase 7 (see client/data/_module.d.mts).
+import type { RectangleShapeData, EllipseShapeData, PolygonShapeData } from "#client/data/shapes.mjs";
+
 // `validateJoint` requires that the drawing be visible.
 
 // Valid calls:
@@ -51,4 +55,5 @@ const doc = new DrawingDocument.implementation({ shape: { width: 9, height: 9 } 
 expectTypeOf(doc).toEqualTypeOf<DrawingDocument.Implementation>();
 
 expectTypeOf(doc.isAuthor).toEqualTypeOf<boolean>();
+expectTypeOf(doc._shape).toEqualTypeOf<RectangleShapeData | EllipseShapeData | PolygonShapeData>();
 expectTypeOf(doc.prepareDerivedData()).toEqualTypeOf<void>();

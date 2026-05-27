@@ -2,13 +2,25 @@ import { expectTypeOf } from "vitest";
 
 import AmbientLight = foundry.canvas.placeables.AmbientLight;
 import PlaceableObject = foundry.canvas.placeables.PlaceableObject;
-import PointDarknessSource = foundry.canvas.sources.PointDarknessSource;
-import PointLightSource = foundry.canvas.sources.PointLightSource;
+import ShapeControls = foundry.canvas.containers.ShapeControls;
+import PreciseText = foundry.canvas.containers.PreciseText;
+import BaseShapeData = foundry.data.BaseShapeData;
 
 expectTypeOf(AmbientLight.embeddedName).toEqualTypeOf<"AmbientLight">();
 expectTypeOf(AmbientLight.RENDER_FLAGS.redraw.propagate).toEqualTypeOf<
-  // undefined only from the optional chain, not underlying type
-  | Array<"refresh" | "refreshState" | "refreshVisibility" | "refreshField" | "refreshPosition" | "refreshElevation">
+  | Array<
+      | "refresh"
+      | "refreshState"
+      | "refreshVisibility"
+      | "refreshTransform"
+      | "refreshPosition"
+      | "refreshRotation"
+      | "refreshSize"
+      | "refreshField"
+      | "refreshTooltip"
+      | "refreshMeasurements"
+      | "refreshElevation"
+    >
   | undefined
 >();
 
@@ -19,6 +31,8 @@ const light = new CONFIG.AmbientLight.objectClass(doc);
 
 expectTypeOf(light.field).toEqualTypeOf<PIXI.Graphics | undefined>();
 expectTypeOf(light.lightSource);
+expectTypeOf(light.controls).toEqualTypeOf<ShapeControls.Any>();
+expectTypeOf(light.tooltip).toEqualTypeOf<PreciseText>();
 expectTypeOf(light.bounds).toEqualTypeOf<PIXI.Rectangle>();
 expectTypeOf(light.sourceId).toBeString();
 expectTypeOf(light.config).toEqualTypeOf<foundry.data.LightData>();
@@ -32,6 +46,7 @@ expectTypeOf(light.isDarknessSource).toBeBoolean();
 expectTypeOf(light["_isLightSourceDisabled"]()).toBeBoolean();
 expectTypeOf(light.emitsDarkness).toBeBoolean();
 expectTypeOf(light.emitsLight).toBeBoolean();
+expectTypeOf(light.isInteractable).toBeBoolean();
 
 // @ts-expect-error _destroy always gets passed a value, even if that value is `undefined`
 expectTypeOf(light["_destroy"]()).toBeVoid();
@@ -44,28 +59,37 @@ expectTypeOf(light["_destroy"](undefined)).toBeVoid();
 expectTypeOf(light["_draw"]()).toEqualTypeOf<Promise<void>>();
 expectTypeOf(light["_draw"]({})).toEqualTypeOf<Promise<void>>();
 
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(light.clear()).toEqualTypeOf<AmbientLight.Implementation>();
+expectTypeOf(light["_overlapsSelection"](new PIXI.Rectangle())).toBeBoolean();
 
 // @ts-expect-error an object must be passed
 expectTypeOf(light["_applyRenderFlags"]()).toBeVoid();
 expectTypeOf(light["_applyRenderFlags"]({})).toBeVoid();
 // all falsey values have no effect
-expectTypeOf(light["_applyRenderFlags"]({ refreshElevation: false, refreshPosition: undefined })).toBeVoid();
+expectTypeOf(light["_applyRenderFlags"]({ refreshField: false, refreshPosition: undefined })).toBeVoid();
 expectTypeOf(
   light["_applyRenderFlags"]({
     redraw: true,
     refresh: true,
-    refreshField: true,
-    refreshPosition: true,
     refreshState: true,
+    refreshTransform: true,
+    refreshPosition: true,
+    refreshRotation: true,
+    refreshSize: true,
+    refreshField: true,
+    refreshTooltip: true,
+    refreshMeasurements: true,
     refreshElevation: true,
   }),
 ).toBeVoid();
 
-expectTypeOf(light["_refreshField"]()).toBeVoid();
 expectTypeOf(light["_refreshPosition"]()).toBeVoid();
-expectTypeOf(light["_refreshElevation"]()).toBeVoid();
+expectTypeOf(light["_refreshRotation"]()).toBeVoid();
+expectTypeOf(light["_refreshSize"]()).toBeVoid();
+expectTypeOf(light["_refreshField"]()).toBeVoid();
+expectTypeOf(light["_refreshTooltip"]()).toBeVoid();
+expectTypeOf(light["_getTooltipText"]()).toBeString();
+expectTypeOf(light["_getTextStyle"]()).toEqualTypeOf<PIXI.TextStyle>();
+expectTypeOf(light["_getMeasuredShapes"]()).toEqualTypeOf<BaseShapeData[]>();
 expectTypeOf(light["_refreshState"]()).toBeVoid();
 
 expectTypeOf(
@@ -89,8 +113,6 @@ expectTypeOf(
   light["_onDelete"]({ action: "delete", parent: scene, modifiedTime: 7, render: true }, "XXXXXSomeIDXXXXX"),
 ).toBeVoid();
 
-expectTypeOf(light.refreshControl()).toBeVoid();
-
 expectTypeOf(light.initializeLightSource()).toBeVoid();
 expectTypeOf(light.initializeLightSource({})).toBeVoid();
 expectTypeOf(light.initializeLightSource({ deleted: true })).toBeVoid();
@@ -102,22 +124,11 @@ declare const pointerEvent: foundry.canvas.Canvas.Event.Pointer;
 expectTypeOf(light["_canHUD"](someUser, pointerEvent)).toBeBoolean();
 expectTypeOf(light["_canConfigure"](someUser, pointerEvent)).toBeBoolean();
 expectTypeOf(light["_canDragLeftStart"](someUser, pointerEvent)).toBeBoolean();
-expectTypeOf(light["_onHoverIn"](pointerEvent)).toBeVoid();
+expectTypeOf(light["_onControl"]({})).toBeVoid();
+expectTypeOf(light["_onControl"]({ releaseOthers: true })).toBeVoid();
+expectTypeOf(light["_onRelease"]({})).toBeVoid();
 expectTypeOf(light["_onClickRight"](pointerEvent)).toBeVoid();
-expectTypeOf(light["_onDragLeftMove"](pointerEvent)).toBeVoid();
-expectTypeOf(light["_onDragEnd"]()).toBeVoid();
-expectTypeOf(light["_prepareDragLeftDropUpdates"](pointerEvent)).toEqualTypeOf<PlaceableObject.DragLeftDropUpdate[]>();
-
-// deprecated since v12, until v14
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(light.updateSource()).toBeVoid();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(light.updateSource({})).toBeVoid();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(light.updateSource({ deleted: true })).toBeVoid();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(light.updateSource({ deleted: null })).toBeVoid();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(light.source).toEqualTypeOf<
-  PointLightSource.Implementation | PointDarknessSource.Implementation | undefined
+expectTypeOf(light["_updateDragPreviews"](pointerEvent)).toBeVoid();
+expectTypeOf(light["_prepareDragLeftDropUpdates"](pointerEvent)).toEqualTypeOf<
+  PlaceableObject.AnyDragLeftDropUpdate[]
 >();

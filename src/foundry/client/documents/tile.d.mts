@@ -3,6 +3,7 @@ import type { fields, TextureData } from "#common/data/_module.d.mts";
 import type { DatabaseBackend, Document } from "#common/abstract/_module.d.mts";
 import type { BaseTile } from "#common/documents/_module.d.mts";
 import type { DialogV2 } from "#client/applications/api/_module.d.mts";
+import type { RectangleShapeData } from "#client/data/shapes.mjs";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Only used for links.
 import type ClientDatabaseBackend from "#client/data/client-backend.d.mts";
@@ -1038,8 +1039,11 @@ declare class TileDocument extends BaseTile.Internal.CanvasDocument {
    */
   constructor(data: TileDocument.CreateData, context?: TileDocument.ConstructionContext);
 
-  // TODO(v14): The `shape` derived property (`RectangleShapeData`, assigned in `prepareDerivedData`)
-  // is not yet declared — it depends on `client/data/shapes.d.mts`, which is unauthored (see migration-v14 deferrals).
+  /**
+   * The rectangle shape of this Tile document.
+   * @remarks Assigned during {@link TileDocument.prepareDerivedData | `TileDocument#prepareDerivedData`}.
+   */
+  shape: RectangleShapeData;
 
   // @remarks `prepareBaseData` defines the deprecated `occlusion.mode` runtime getter (since v14).
   override prepareBaseData(): void;

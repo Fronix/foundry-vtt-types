@@ -4,10 +4,24 @@ import AmbientSound = foundry.canvas.placeables.AmbientSound;
 import PlaceableObject = foundry.canvas.placeables.PlaceableObject;
 import Sound = foundry.audio.Sound;
 import ControlIcon = foundry.canvas.containers.ControlIcon;
+import ShapeControls = foundry.canvas.containers.ShapeControls;
+import PreciseText = foundry.canvas.containers.PreciseText;
+import BaseShapeData = foundry.data.BaseShapeData;
 
 expectTypeOf(AmbientSound.embeddedName).toEqualTypeOf<"AmbientSound">();
 expectTypeOf(AmbientSound.RENDER_FLAGS.redraw.propagate).toEqualTypeOf<
-  | Array<"refresh" | "refreshField" | "refreshPosition" | "refreshState" | "refreshVisibility" | "refreshElevation">
+  | Array<
+      | "refresh"
+      | "refreshState"
+      | "refreshVisibility"
+      | "refreshTransform"
+      | "refreshPosition"
+      | "refreshSize"
+      | "refreshField"
+      | "refreshTooltip"
+      | "refreshMeasurements"
+      | "refreshElevation"
+    >
   | undefined
 >();
 
@@ -19,6 +33,8 @@ expectTypeOf(sound.controlIcon).toEqualTypeOf<ControlIcon | null>();
 expectTypeOf(sound.sound).toEqualTypeOf<Sound | null | undefined>();
 expectTypeOf(sound.source).toEqualTypeOf<foundry.canvas.sources.PointSoundSource.Implementation | undefined>();
 expectTypeOf(sound.field).toEqualTypeOf<PIXI.Graphics | undefined>();
+expectTypeOf(sound.controls).toEqualTypeOf<ShapeControls.Any>();
+expectTypeOf(sound.tooltip).toEqualTypeOf<PreciseText>();
 expectTypeOf(sound["_createSound"]()).toEqualTypeOf<Sound | null>();
 
 expectTypeOf(sound.applyEffects()).toBeVoid();
@@ -26,16 +42,19 @@ expectTypeOf(sound.applyEffects({})).toBeVoid();
 expectTypeOf(sound.applyEffects({ muffled: true })).toBeVoid();
 expectTypeOf(sound.applyEffects({ muffled: null })).toBeVoid();
 
+expectTypeOf(sound.isInteractable).toBeBoolean();
 expectTypeOf(sound.isAudible).toEqualTypeOf<boolean>();
 expectTypeOf(sound.bounds).toEqualTypeOf<PIXI.Rectangle>();
 expectTypeOf(sound.radius).toEqualTypeOf<number>();
 
-expectTypeOf(sound.sync(true, 10)).toEqualTypeOf<void>();
-expectTypeOf(sound.sync(true, 10, {})).toEqualTypeOf<void>();
-expectTypeOf(sound.sync(true, 10, { fade: 250 })).toEqualTypeOf<void>();
+expectTypeOf(sound["_overlapsSelection"](new PIXI.Rectangle())).toBeBoolean();
 
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(sound.clear()).toEqualTypeOf<AmbientSound.Implementation>();
+expectTypeOf(sound.sync(true, 10)).toEqualTypeOf<Promise<void>>();
+expectTypeOf(sound.sync(true, 10, {})).toEqualTypeOf<Promise<void>>();
+expectTypeOf(sound.sync(true, 10, { fade: 250 })).toEqualTypeOf<Promise<void>>();
+expectTypeOf(sound.sync(true, 10, { fade: 250, muffled: true })).toEqualTypeOf<Promise<void>>();
+
+expectTypeOf(sound["_clear"]()).toBeVoid();
 
 // @ts-expect-error _draw always gets passed a value
 expectTypeOf(sound["_draw"]()).toEqualTypeOf<Promise<void>>();
@@ -57,18 +76,25 @@ expectTypeOf(
   sound["_applyRenderFlags"]({
     redraw: true,
     refresh: true,
-    refreshField: true,
-    refreshPosition: true,
     refreshState: true,
+    refreshTransform: true,
+    refreshPosition: true,
+    refreshSize: true,
+    refreshField: true,
+    refreshTooltip: true,
+    refreshMeasurements: true,
     refreshElevation: true,
   }),
 ).toBeVoid();
 
 expectTypeOf(sound["_refreshField"]()).toBeVoid();
 expectTypeOf(sound["_refreshPosition"]()).toBeVoid();
+expectTypeOf(sound["_refreshSize"]()).toBeVoid();
 expectTypeOf(sound["_refreshState"]()).toBeVoid();
-expectTypeOf(sound.refreshControl()).toBeVoid();
-expectTypeOf(sound["_refreshElevation"]()).toBeVoid();
+expectTypeOf(sound["_refreshTooltip"]()).toBeVoid();
+expectTypeOf(sound["_getTooltipText"]()).toBeString();
+expectTypeOf(sound["_getTextStyle"]()).toEqualTypeOf<PIXI.TextStyle>();
+expectTypeOf(sound["_getMeasuredShapes"]()).toEqualTypeOf<BaseShapeData[]>();
 
 expectTypeOf(
   sound["_onCreate"](
@@ -102,26 +128,12 @@ declare const pointerEvent: foundry.canvas.Canvas.Event.Pointer;
 expectTypeOf(sound["_canHUD"](someUser, pointerEvent)).toBeBoolean();
 expectTypeOf(sound["_canConfigure"](someUser, pointerEvent)).toBeBoolean();
 
-expectTypeOf(sound["_onHoverIn"](pointerEvent)).toBeVoid();
-expectTypeOf(sound["_onHoverIn"](pointerEvent, {})).toBeVoid();
-expectTypeOf(sound["_onHoverIn"](pointerEvent, { hoverOutOthers: true })).toBeVoid();
-expectTypeOf(sound["_onHoverIn"](pointerEvent, { hoverOutOthers: null })).toBeVoid();
+expectTypeOf(sound["_onControl"]({})).toBeVoid();
+expectTypeOf(sound["_onControl"]({ releaseOthers: true })).toBeVoid();
+expectTypeOf(sound["_onRelease"]({})).toBeVoid();
 
 expectTypeOf(sound["_onClickRight"](pointerEvent)).toBeVoid();
-expectTypeOf(sound["_onDragLeftMove"](pointerEvent)).toBeVoid();
-expectTypeOf(sound["_onDragEnd"]()).toBeVoid();
-expectTypeOf(sound["_prepareDragLeftDropUpdates"](pointerEvent)).toEqualTypeOf<PlaceableObject.DragLeftDropUpdate[]>();
-
-// deprecated since v12, until v14
-
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(sound.updateSource()).toBeVoid();
-
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(sound.updateSource({})).toBeVoid();
-
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(sound.updateSource({ deleted: true })).toBeVoid();
-
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(sound.updateSource({ deleted: null })).toBeVoid();
+expectTypeOf(sound["_updateDragPreviews"](pointerEvent)).toBeVoid();
+expectTypeOf(sound["_prepareDragLeftDropUpdates"](pointerEvent)).toEqualTypeOf<
+  PlaceableObject.AnyDragLeftDropUpdate[]
+>();

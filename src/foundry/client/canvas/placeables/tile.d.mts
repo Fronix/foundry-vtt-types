@@ -1,11 +1,10 @@
 import type { ConfiguredObjectClassOrDefault } from "../../config.d.mts";
 import type { FixedInstanceType, HandleEmptyObject } from "#utils";
-import type { PlaceableObject, Token } from "#client/canvas/placeables/_module.d.mts";
-import type { PrimaryOccludableObjectMixin, PrimarySpriteMesh } from "#client/canvas/primary/_module.d.mts";
-import type { ResizeHandle } from "#client/canvas/containers/_module.d.mts";
+import type { PlaceableObject } from "#client/canvas/placeables/_module.d.mts";
+import type { ShapePlaceableObject } from "./mixins/shapes.mjs";
+import type { PrimarySpriteMesh } from "#client/canvas/primary/_module.d.mts";
+import type { ShapeControls } from "#client/canvas/containers/_module.d.mts";
 import { RenderFlagsMixin, RenderFlags, RenderFlag } from "#client/canvas/interaction/_module.mjs";
-
-import Canvas = foundry.canvas.Canvas;
 
 declare module "#configuration" {
   namespace Hooks {
@@ -22,7 +21,7 @@ declare module "#configuration" {
  * @see {@linkcode TileDocument}
  * @see {@linkcode TilesLayer}
  */
-declare class Tile extends PlaceableObject<TileDocument.Implementation> {
+declare class Tile extends ShapePlaceableObject<TileDocument.Implementation> {
   static override embeddedName: "Tile";
 
   static override RENDER_FLAGS: Tile.RENDER_FLAGS;
@@ -39,38 +38,39 @@ declare class Tile extends PlaceableObject<TileDocument.Implementation> {
    * @defaultValue `undefined`
    * @remarks Only `undefined` prior to first draw
    */
-  frame: Tile.FrameContainer | undefined;
+  frame: PIXI.Container | undefined;
+
+  /**
+   * The shape controls.
+   * @defaultValue `undefined`
+   * @remarks Only `undefined` prior to first draw.
+   */
+  controls: ShapeControls.Any;
 
   /**
    * The primary tile image texture
-   * @defaultValue `undefined`
-   * @remarks Only `undefined` prior to first draw or after {@link Tile._destroy | `Tile#_destroy`} is called
-   *
-   * Thereafter, `null` if no valid `texture.src` exists on this Tile's document (or the original Tile's, if this is a preview clone)
+   * @defaultValue `null`
+   * @remarks `null` if no valid `texture.src` exists on this Tile's document (or the original Tile's, if this is a preview clone)
    */
-  texture: PIXI.Texture | null | undefined;
+  texture: PIXI.Texture | null;
 
   /**
    * A Tile background which is displayed if no valid image texture is present
-   * @defaultValue `undefined`
+   * @defaultValue `null`
    */
-  bg: PIXI.Graphics | undefined;
+  bg: PIXI.Sprite | null;
 
   /**
    * A reference to the SpriteMesh which displays this Tile in the PrimaryCanvasGroup.
-   * @defaultValue `undefined`
-   * @remarks Only `undefined` prior to first draw.
-   *
-   * Thereafter, `null` if no valid `texture.src` exists on this Tile's document (or the original Tile's, if this is a preview clone)
+   * @defaultValue `null`
+   * @remarks `null` if no valid `texture.src` exists on this Tile's document (or the original Tile's, if this is a preview clone)
    */
-  mesh: PrimarySpriteMesh | null | undefined;
+  mesh: PrimarySpriteMesh | null;
 
   /**
    * Get the native aspect ratio of the base texture for the Tile sprite
    */
   get aspectRatio(): number;
-
-  override get bounds(): PIXI.Rectangle;
 
   /**
    * The HTML source element for the primary Tile texture
@@ -84,11 +84,6 @@ declare class Tile extends PlaceableObject<TileDocument.Implementation> {
    * Does this Tile depict an animated video texture?
    */
   get isVideo(): boolean;
-
-  /**
-   * Is this Tile currently visible on the Canvas?
-   */
-  get isVisible(): boolean;
 
   /**
    * Is this tile occluded?
@@ -105,15 +100,14 @@ declare class Tile extends PlaceableObject<TileDocument.Implementation> {
    */
   get volume(): number;
 
-  protected override _overlapsSelection(rectangle: PIXI.Rectangle): boolean;
-
   /**
-   * Create a preview tile with a background texture instead of an image
-   * @param data - Initial data with which to create the preview Tile
+   * Is this Tile currently visible on the Canvas?
    */
-  static createPreview(data: TileDocument.CreateData): Tile.Implementation;
+  override get isVisible(): boolean;
 
   protected override _draw(options: HandleEmptyObject<Tile.DrawOptions>): Promise<void>;
+
+  protected override _clear(): void;
 
   protected override _destroy(options: PIXI.IDestroyOptions | boolean | undefined): void;
 
@@ -134,11 +128,13 @@ declare class Tile extends PlaceableObject<TileDocument.Implementation> {
    */
   protected _refreshSize(): void;
 
+  protected override _refreshVisibility(): void;
+
   /**
    * Refresh the displayed state of the Tile.
    * Updated when the tile interaction state changes, when it is hidden, or when its elevation changes.
    */
-  protected _refreshState(): void;
+  protected override _refreshState(): void;
 
   /**
    * Refresh the appearance of the tile.
@@ -151,11 +147,6 @@ declare class Tile extends PlaceableObject<TileDocument.Implementation> {
   protected _refreshElevation(): void;
 
   /**
-   * Refresh the border frame that encloses the Tile.
-   */
-  protected _refreshFrame(): void;
-
-  /**
    * Refresh changes to the video playback state.
    */
   protected _refreshVideo(): void;
@@ -163,100 +154,13 @@ declare class Tile extends PlaceableObject<TileDocument.Implementation> {
   // _onUpdate is overridden but with no signature changes.
   // For type simplicity it is left off. This method historically has been the source of a large amount of computation from tsc.
 
-  override activateListeners(): void;
-
-  // fake override to narrow the type from super, which had to account for this class's misbehaving siblings
-  // options: not null (destructured)
-  protected override _onHoverIn(event: Canvas.Event.Pointer, options?: PlaceableObject.HoverInOptions): void;
-
-  protected override _onClickLeft(event: Canvas.Event.Pointer): void;
-
-  protected override _onDragLeftStart(event: Canvas.Event.Pointer): void;
-
-  protected override _onDragLeftMove(event: Canvas.Event.Pointer): void;
-
-  protected override _onDragLeftDrop(event: Canvas.Event.Pointer): void;
-
-  protected override _onDragLeftCancel(event: Canvas.Event.Pointer): void;
-
   /**
-   * Handle mouse-over event on a control handle
-   * @param event - The mouseover event
+   * Create a preview tile with a background texture instead of an image
+   * @param data - Initial data with which to create the preview Tile
+   * @deprecated since v14, until v16
+   * @remarks "Tile.createPreview has been deprecated without replacement."
    */
-  protected _onHandleHoverIn(event: PIXI.FederatedEvent<PointerEvent>): void;
-
-  /**
-   * Handle mouse-out event on a control handle
-   * @param event - The mouseout event
-   */
-  protected _onHandleHoverOut(event: PIXI.FederatedEvent<PointerEvent>): void;
-
-  /**
-   * Handle the beginning of a drag event on a resize handle
-   * @param event - The mousedown event
-   */
-  protected _onHandleDragStart(event: Canvas.Event.Pointer): void;
-
-  /**
-   * Handle mousemove while dragging a tile scale handler
-   * @param event - The mousemove event
-   */
-  protected _onHandleDragMove(event: Canvas.Event.Pointer): void;
-
-  /**
-   * Handle mouseup after dragging a tile scale handler
-   * @param event - The mouseup event
-   */
-  protected _onHandleDragDrop(event: Canvas.Event.Pointer): Promise<this>;
-
-  /**
-   * Handle cancellation of a drag event for one of the resizing handles
-   */
-  protected _onHandleDragCancel(event: Canvas.Event.Pointer): void;
-
-  // fake override to narrow the type from super, which had to account for this class's misbehaving siblings
-  protected override _prepareDragLeftDropUpdates(event: Canvas.Event.Pointer): PlaceableObject.DragLeftDropUpdate[];
-
-  /**
-   * Is this tile a roof?
-   * @deprecated since v12, until v14
-   * @remarks "`Tile#isRoof `has been deprecated without replacement."
-   */
-  get isRoof(): boolean;
-
-  /**
-   * @deprecated since v11, will be removed in v13
-   * @remarks "`Tile#testOcclusion` has been deprecated in favor of {@link PrimaryOccludableObjectMixin.AnyMixed.testOcclusion | `PrimaryOccludableObject#testOcclusion`}"
-   *
-   * The runtime deprecation warning erroneously points to `PrimaryCanvasObject#testOcclusion`
-   */
-  // options: not null (destructured where forwarded)
-  // eslint-disable-next-line @typescript-eslint/no-deprecated -- TestOcclusionOptions is @deprecated; retained for this legacy Tile#testOcclusion shim
-  testOcclusion(token: Token.Implementation, options?: PrimaryOccludableObjectMixin.TestOcclusionOptions): boolean;
-
-  /**
-   * @deprecated since v11, will be removed in v13
-   * @remarks "Tile#containsPixel has been deprecated in favor of {@link PrimaryOccludableObjectMixin.AnyMixed.containsPixel | `PrimaryOccludableObject#containsPixel`}"
-   *
-   * The runtime deprecation warning erroneously points to `PrimaryCanvasObject#containsPixel`
-   */
-  containsPixel(x: number, y: number, alphaThreshold?: number): boolean;
-
-  /**
-   * @deprecated since v11, will be removed in v13
-   * @remarks "`Tile#getPixelAlpha` has been deprecated in favor of {@link PrimarySpriteMesh.getPixelAlpha | `PrimarySpriteMesh#getPixelAlpha`}"
-   *
-   * The runtime deprecation warning erroneously points to `PrimaryCanvasObject#getPixelAlpha`
-   */
-  getPixelAlpha(x: number, y: number): number;
-
-  /**
-   * @deprecated since v11, will be removed in v13
-   * @remarks "`Tile#_getAlphaBounds` has been deprecated in favor of {@link PrimarySpriteMesh._getAlphaBounds | `PrimarySpriteMesh#_getAlphaBounds`}"
-   *
-   * The runtime deprecation warning doesn't point anywhere, despite forwarding the call (to `mesh?._getAlphaBounds`, thus the `| undefined`).
-   */
-  _getAlphaBounds(): PIXI.Rectangle | undefined;
+  static createPreview(data: TileDocument.CreateData): Tile.Implementation;
 }
 
 declare namespace Tile {
@@ -298,14 +202,14 @@ declare namespace Tile {
     /** @defaultValue `{ propagate: ["refreshPerception"] }` */
     refreshPosition: RenderFlag<this, "refreshPosition">;
 
-    /** @defaultValue `{ propagate: ["refreshPerception", "refreshFrame"] }` */
+    /** @defaultValue `{ propagate: ["refreshPerception"] }` */
     refreshRotation: RenderFlag<this, "refreshRotation">;
+
+    /** @defaultValue `{ propagate: ["refreshPerception"] }` */
+    refreshSize: RenderFlag<this, "refreshSize">;
 
     /** @defaultValue `{}` */
     refreshMesh: RenderFlag<this, "refreshMesh">;
-
-    /** @defaultValue `{}` */
-    refreshFrame: RenderFlag<this, "refreshFrame">;
 
     /** @defaultValue `{ propagate: ["refreshPerception"] }` */
     refreshElevation: RenderFlag<this, "refreshElevation">;
@@ -317,27 +221,13 @@ declare namespace Tile {
     refreshVideo: RenderFlag<this, "refreshVideo">;
 
     /**
-     * @defaultValue
-     * ```js
-     * {
-     *   propagate: ["refreshTransform", "refreshMesh", "refreshElevation"],
-     *   deprecated: { since: 12, until: 14, alias: true }
-     * }
-     * ```
-     * @deprecated since v12, until v14
-     * @remarks The `alias: true` should be a sibling of `deprecated`, not a child, this is a Foundry bug in 12.331
+     * @defaultValue `{ deprecated: { since: 14, until: 16 }, alias: true }`
+     * @deprecated since v14, until v16
      */
-    refreshShape: RenderFlag<this, "refreshShape">;
+    refreshFrame: RenderFlag<this, "refreshFrame">;
   }
 
   interface RenderFlags extends RenderFlagsMixin.ToBooleanFlags<RENDER_FLAGS> {}
-
-  interface FrameContainer extends PIXI.Container {
-    bounds: PIXI.Rectangle;
-    interaction: PIXI.Container;
-    border: PIXI.Graphics;
-    handle: ResizeHandle;
-  }
 
   interface DrawOptions extends PlaceableObject.DrawOptions {}
 

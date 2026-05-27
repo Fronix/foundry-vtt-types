@@ -2,6 +2,9 @@ import type { ConfiguredObjectClassOrDefault } from "../../config.d.mts";
 import type { FixedInstanceType, HandleEmptyObject, IntentionalPartial, NullishProps, RequiredProps } from "#utils";
 import type { PointLightSource, PointDarknessSource } from "#client/canvas/sources/_module.d.mts";
 import type { PlaceableObject } from "#client/canvas/placeables/_module.d.mts";
+import type { ShapePlaceableObject } from "./mixins/shapes.mjs";
+import type { PreciseText, ShapeControls } from "#client/canvas/containers/_module.d.mts";
+import type { BaseShapeData } from "#common/data/_module.mjs";
 import { RenderFlagsMixin, RenderFlags, RenderFlag } from "#client/canvas/interaction/_module.mjs";
 
 import Canvas = foundry.canvas.Canvas;
@@ -19,7 +22,7 @@ declare module "#configuration" {
  * @see {@linkcode AmbientLightDocument}
  * @see {@linkcode LightingLayer}
  */
-declare class AmbientLight extends PlaceableObject<AmbientLightDocument.Implementation> {
+declare class AmbientLight extends ShapePlaceableObject<AmbientLightDocument.Implementation> {
   /**
    * The area that is affected by this light.
    * @defaultValue `undefined`
@@ -37,6 +40,20 @@ declare class AmbientLight extends PlaceableObject<AmbientLightDocument.Implemen
    */
   lightSource: PointLightSource.Implementation | PointDarknessSource.Implementation | undefined;
 
+  /**
+   * The shape controls.
+   * @defaultValue `undefined`
+   * @remarks Only `undefined` prior to first draw.
+   */
+  controls: ShapeControls.Any;
+
+  /**
+   * The tooltip text of this AmbientLight, which contains its elevation.
+   * @defaultValue `undefined`
+   * @remarks Only `undefined` prior to first draw.
+   */
+  tooltip: PreciseText;
+
   static override embeddedName: "AmbientLight";
 
   static override RENDER_FLAGS: AmbientLight.RENDER_FLAGS;
@@ -44,8 +61,6 @@ declare class AmbientLight extends PlaceableObject<AmbientLightDocument.Implemen
   // Note: This isn't a "real" override but `renderFlags` is set corresponding to the
   // `RENDER_FLAGS` and so it has to be adjusted here.
   renderFlags: RenderFlags<AmbientLight.RENDER_FLAGS>;
-
-  override get bounds(): PIXI.Rectangle;
 
   override get sourceId(): string;
 
@@ -75,11 +90,6 @@ declare class AmbientLight extends PlaceableObject<AmbientLightDocument.Implemen
   get brightRadius(): number;
 
   /**
-   * Is this Ambient Light currently visible? By default, true only if the source actively emits light.
-   */
-  get isVisible(): boolean;
-
-  /**
    * Check if the point source is a LightSource instance
    * @remarks Checks via `instanceof` against the configured class, not simply PointLightSource
    */
@@ -106,14 +116,30 @@ declare class AmbientLight extends PlaceableObject<AmbientLightDocument.Implemen
    */
   get emitsLight(): boolean;
 
+  override get isInteractable(): boolean;
+
   protected override _destroy(options: PIXI.IDestroyOptions | boolean | undefined): void;
 
   protected override _draw(options: HandleEmptyObject<AmbientLight.DrawOptions>): Promise<void>;
 
-  // fake override; super has to account for misbehaving siblings returning void
-  override clear(): this;
+  protected override _overlapsSelection(rectangle: PIXI.Rectangle): boolean;
 
   protected override _applyRenderFlags(flags: AmbientLight.RenderFlags): void;
+
+  /**
+   * Refresh the position of the AmbientLight.
+   */
+  protected _refreshPosition(): void;
+
+  /**
+   * Refresh the rotation of the AmbientLight.
+   */
+  protected _refreshRotation(): void;
+
+  /**
+   * Refresh the size of the AmbientLight.
+   */
+  protected _refreshSize(): void;
 
   /**
    * Refresh the shape of the light field-of-effect. This is refreshed when the AmbientLight fov polygon changes.
@@ -121,24 +147,23 @@ declare class AmbientLight extends PlaceableObject<AmbientLightDocument.Implemen
   protected _refreshField(): void;
 
   /**
-   * Refresh the position of the AmbientLight. Called with the coordinates change.
+   * Refresh the tooltip.
    */
-  protected _refreshPosition(): void;
+  protected _refreshTooltip(): void;
 
   /**
-   * Refresh the elevation of the control icon.
+   * Return the text which should be displayed in the tooltip.
    */
-  protected _refreshElevation(): void;
+  protected _getTooltipText(): string;
 
   /**
-   * Refresh the state of the light. Called when the disabled state or darkness conditions change.
+   * Get the text style that should be used for the tooltip.
    */
-  protected _refreshState(): void;
+  protected _getTextStyle(): PIXI.TextStyle;
 
-  /**
-   * Refresh the display of the ControlIcon for this AmbientLight source
-   */
-  refreshControl(): void;
+  protected override _getMeasuredShapes(): BaseShapeData[];
+
+  protected override _refreshState(): void;
 
   /**
    * Update the LightSource associated with this AmbientLight object.
@@ -158,33 +183,13 @@ declare class AmbientLight extends PlaceableObject<AmbientLightDocument.Implemen
 
   protected override _canConfigure(user: User.Implementation, event?: Canvas.Event.Pointer): boolean;
 
-  protected override _canDragLeftStart(user: User.Implementation, event?: Canvas.Event.Pointer): boolean;
+  protected override _onControl(options: AmbientLight.ControlOptions): void;
 
-  // fake override to narrow the type from super, which had to account for this class's misbehaving siblings
-  // options: not null (destructured)
-  protected override _onHoverIn(event: Canvas.Event.Pointer, options?: PlaceableObject.HoverInOptions): void;
+  protected override _onRelease(options: HandleEmptyObject<AmbientLight.ReleaseOptions>): void;
 
   protected override _onClickRight(event: Canvas.Event.Pointer): void;
 
-  protected override _onDragLeftMove(event: Canvas.Event.Pointer): void;
-
-  protected override _onDragEnd(): void;
-
-  // fake override to narrow the type from super, which had to account for this class's misbehaving siblings
-  protected override _prepareDragLeftDropUpdates(event: Canvas.Event.Pointer): PlaceableObject.DragLeftDropUpdate[];
-
-  /**
-   * @deprecated since v12, until v14
-   * @remarks "`AmbientLight#updateSource` has been deprecated in favor of {@link AmbientLight.initializeLightSource | `AmbientLight#initializeLightSource`}"
-   */
-  // options: not null (destructured)
-  updateSource(options?: AmbientLight.InitializeLightSourceOptions): void;
-
-  /**
-   * @deprecated since v12, until v14
-   * @remarks "`AmbientLight#source` has been deprecated in favor of {@link AmbientLight.lightSource | `AmbientLight#lightSource`}"
-   */
-  get source(): this["lightSource"];
+  protected override _updateDragPreviews(event: Canvas.Event.Pointer): void;
 }
 
 declare namespace AmbientLight {
@@ -207,23 +212,44 @@ declare namespace AmbientLight {
   // eslint-disable-next-line no-restricted-syntax
   type ImplementationClass = ConfiguredObjectClassOrDefault<typeof AmbientLight>;
 
-  interface RENDER_FLAGS extends PlaceableObject.RENDER_FLAGS {
+  interface RENDER_FLAGS {
     /** @defaultValue `{ propagate: ["refresh"] }` */
     redraw: RenderFlag<this, "redraw">;
 
-    /** @defaultValue `{ propagate: ["refreshState", "refreshField", "refreshElevation"], alias: true }` */
+    /** @defaultValue `{ propagate: ["refreshState", "refreshTransform", "refreshField", "refreshTooltip"], alias: true }` */
     refresh: RenderFlag<this, "refresh">;
 
-    /** @defaultValue `{ propagate: ["refreshPosition"] }` */
-    refreshField: RenderFlag<this, "refreshField">;
-
-    /** @defaultValue `{}` */
-    refreshPosition: RenderFlag<this, "refreshPosition">;
-
-    /** @defaultValue `{}` */
+    /** @defaultValue `{ propagate: ["refreshVisibility"] }` */
     refreshState: RenderFlag<this, "refreshState">;
 
     /** @defaultValue `{}` */
+    refreshVisibility: RenderFlag<this, "refreshVisibility">;
+
+    /** @defaultValue `{ propagate: ["refreshPosition", "refreshRotation", "refreshSize"], alias: true }` */
+    refreshTransform: RenderFlag<this, "refreshTransform">;
+
+    /** @defaultValue `{ propagate: ["refreshMeasurements"] }` */
+    refreshPosition: RenderFlag<this, "refreshPosition">;
+
+    /** @defaultValue `{ propagate: ["refreshMeasurements"] }` */
+    refreshRotation: RenderFlag<this, "refreshRotation">;
+
+    /** @defaultValue `{ propagate: ["refreshMeasurements"] }` */
+    refreshSize: RenderFlag<this, "refreshSize">;
+
+    /** @defaultValue `{}` */
+    refreshField: RenderFlag<this, "refreshField">;
+
+    /** @defaultValue `{}` */
+    refreshTooltip: RenderFlag<this, "refreshTooltip">;
+
+    /** @defaultValue `{}` */
+    refreshMeasurements: RenderFlag<this, "refreshMeasurements">;
+
+    /**
+     * @defaultValue `{ propagate: ["refreshTooltip"], deprecated: { since: 14, until: 16 }, alias: true }`
+     * @deprecated since v14, until v16
+     */
     refreshElevation: RenderFlag<this, "refreshElevation">;
   }
 
@@ -242,7 +268,7 @@ declare namespace AmbientLight {
    */
   type _InitializeLightSourceOptions = NullishProps<{
     /**
-     * Indicate that this SoundSource has been deleted.
+     * Indicate that this light source has been deleted.
      * @defaultValue `false`
      */
     deleted: boolean;
@@ -259,7 +285,18 @@ declare namespace AmbientLight {
   type LightSourceData = foundry.data.fields.SchemaField.InitializedData<foundry.data.LightData.Schema> &
     RequiredProps<
       IntentionalPartial<PointLightSource.SourceData>,
-      "x" | "y" | "elevation" | "rotation" | "walls" | "vision" | "dim" | "bright" | "seed" | "disabled" | "preview"
+      | "x"
+      | "y"
+      | "level"
+      | "elevation"
+      | "rotation"
+      | "walls"
+      | "vision"
+      | "dim"
+      | "bright"
+      | "seed"
+      | "disabled"
+      | "preview"
     >;
 }
 

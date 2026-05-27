@@ -3,6 +3,7 @@ import type { LightData, fields } from "#common/data/_module.d.mts";
 import type { DatabaseBackend, Document } from "#common/abstract/_module.d.mts";
 import type { BaseAmbientLight } from "#common/documents/_module.d.mts";
 import type { DialogV2 } from "#client/applications/api/_module.d.mts";
+import type { CircleShapeData, ConeShapeData } from "#client/data/shapes.mjs";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Only used for links.
 import type ClientDatabaseBackend from "#client/data/client-backend.d.mts";
@@ -953,8 +954,12 @@ declare class AmbientLightDocument extends BaseAmbientLight.Internal.CanvasDocum
    */
   get isGlobal(): boolean;
 
-  // TODO(v14): The `shape` derived property (`CircleShapeData | ConeShapeData`, assigned in `prepareDerivedData`)
-  // is not yet declared — it depends on `client/data/shapes.d.mts`, which is unauthored (see migration-v14 deferrals).
+  /**
+   * The circle or cone shape of this AmbientLight document.
+   * @remarks Assigned during {@link AmbientLightDocument.prepareDerivedData | `AmbientLightDocument#prepareDerivedData`}
+   * (a {@linkcode ConeShapeData} if the light's angle is less than 360°, otherwise a {@linkcode CircleShapeData}).
+   */
+  shape: CircleShapeData | ConeShapeData;
 
   override prepareDerivedData(): void;
 

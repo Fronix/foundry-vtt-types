@@ -9,6 +9,9 @@ import type {
   RequiredProps,
 } from "#utils";
 import type { PlaceableObject } from "#client/canvas/placeables/_module.d.mts";
+import type { ShapePlaceableObject } from "./mixins/shapes.mjs";
+import type { PreciseText, ShapeControls } from "#client/canvas/containers/_module.d.mts";
+import type { BaseShapeData } from "#common/data/_module.mjs";
 import { RenderFlagsMixin, RenderFlags, RenderFlag } from "#client/canvas/interaction/_module.mjs";
 
 import Canvas = foundry.canvas.Canvas;
@@ -26,9 +29,7 @@ declare module "#configuration" {
  * @see {@linkcode AmbientSoundDocument}
  * @see {@linkcode SoundsLayer}
  */
-declare class AmbientSound extends PlaceableObject<AmbientSoundDocument.Implementation> {
-  constructor(document: AmbientSoundDocument.Implementation);
-
+declare class AmbientSound extends ShapePlaceableObject<AmbientSoundDocument.Implementation> {
   /**
    * The Sound which manages playback for this AmbientSound effect
    * @defaultValue `undefined`
@@ -56,6 +57,20 @@ declare class AmbientSound extends PlaceableObject<AmbientSoundDocument.Implemen
    */
   field: PIXI.Graphics | undefined;
 
+  /**
+   * The shape controls.
+   * @defaultValue `undefined`
+   * @remarks Only `undefined` prior to first draw.
+   */
+  controls: ShapeControls.Any;
+
+  /**
+   * The tooltip text of this AmbientSound, which contains its elevation.
+   * @defaultValue `undefined`
+   * @remarks Only `undefined` prior to first draw.
+   */
+  tooltip: PreciseText;
+
   static override embeddedName: "AmbientSound";
 
   static override RENDER_FLAGS: AmbientSound.RENDER_FLAGS;
@@ -75,34 +90,37 @@ declare class AmbientSound extends PlaceableObject<AmbientSoundDocument.Implemen
   // options: not null (destructured)
   applyEffects(options?: AmbientSound.ApplyEffectsOptions): void;
 
+  override get isInteractable(): boolean;
+
   /**
    * Is this ambient sound is currently audible based on its hidden state and the darkness level of the Scene?
    */
   get isAudible(): boolean;
-
-  override get bounds(): PIXI.Rectangle;
 
   /**
    * A convenience accessor for the sound radius in pixels
    */
   get radius(): number;
 
+  protected override _overlapsSelection(rectangle: PIXI.Rectangle): boolean;
+
   /**
    * Toggle playback of the sound depending on whether or not it is audible
    * @param isAudible - Is the sound audible?
    * @param volume    - The target playback volume
    * @param options   - Additional options which affect sound synchronization
+   * @returns A promise which resolves once sound playback is synchronized
    */
   // options: not null (destructured)
-  sync(isAudible: boolean, volume: number, options?: AmbientSound.SyncOptions): void;
+  sync(isAudible: boolean, volume: number, options?: AmbientSound.SyncOptions): Promise<void>;
 
-  override clear(): this;
+  protected override _clear(): void;
 
   protected override _draw(options: HandleEmptyObject<AmbientSound.DrawOptions>): Promise<void>;
 
   protected override _destroy(options: PIXI.IDestroyOptions | boolean | undefined): void;
 
-  protected _applyRenderFlags(flags: AmbientSound.RenderFlags): void;
+  protected override _applyRenderFlags(flags: AmbientSound.RenderFlags): void;
 
   /**
    * Refresh the shape of the sound field-of-effect. This is refreshed when the SoundSource fov polygon changes.
@@ -115,19 +133,28 @@ declare class AmbientSound extends PlaceableObject<AmbientSoundDocument.Implemen
   protected _refreshPosition(): void;
 
   /**
-   * Refresh the state of the light. Called when the disabled state or darkness conditions change.
+   * Refresh the size of the AmbientSound.
    */
-  protected _refreshState(): void;
+  protected _refreshSize(): void;
+
+  protected override _refreshState(): void;
 
   /**
-   * Refresh the display of the ControlIcon for this AmbientSound source
+   * Refresh the tooltip.
    */
-  refreshControl(): void;
+  protected _refreshTooltip(): void;
 
   /**
-   * Refresh the elevation of the control icon.
+   * Return the text which should be displayed in the tooltip.
    */
-  protected _refreshElevation(): void;
+  protected _getTooltipText(): string;
+
+  /**
+   * Get the text style that should be used for the tooltip.
+   */
+  protected _getTextStyle(): PIXI.TextStyle;
+
+  protected override _getMeasuredShapes(): BaseShapeData[];
 
   /**
    * Compute the field-of-vision for an object, determining its effective line-of-sight and field-of-vision polygons
@@ -149,26 +176,13 @@ declare class AmbientSound extends PlaceableObject<AmbientSoundDocument.Implemen
   /** @remarks Always returns `false` ("Double-right does nothing") */
   protected override _canConfigure(user: User.Implementation, event?: Canvas.Event.Pointer): boolean;
 
-  // fake override to narrow the type from super, which had to account for this class's misbehaving siblings
-  // options: not null (destructured)
-  protected override _onHoverIn(event: Canvas.Event.Pointer, options?: PlaceableObject.HoverInOptions): void;
+  protected override _onControl(options: AmbientSound.ControlOptions): void;
+
+  protected override _onRelease(options: HandleEmptyObject<AmbientSound.ReleaseOptions>): void;
 
   protected override _onClickRight(event: Canvas.Event.Pointer): void;
 
-  protected override _onDragLeftMove(event: Canvas.Event.Pointer): void;
-
-  protected override _onDragEnd(): void;
-
-  // fake override to narrow the type from super, which had to account for this class's misbehaving siblings
-  protected override _prepareDragLeftDropUpdates(event: Canvas.Event.Pointer): PlaceableObject.DragLeftDropUpdate[];
-
-  /**
-   * @deprecated since v12, until v14
-   * @remarks "`AmbientSound#updateSource` has been deprecated in favor of {@link AmbientSound.initializeSoundSource | `AmbientSound#initializeSoundSource`}"
-   *
-   * @privateRemarks The `defer` parameter exists in this signature but is not used by `#initializeSoundSource`, so we can just reuse that method's options interface
-   */
-  updateSource(options?: AmbientSound.InitializeSoundSourceOptions): void;
+  protected override _updateDragPreviews(event: Canvas.Event.Pointer): void;
 }
 
 declare namespace AmbientSound {
@@ -195,14 +209,8 @@ declare namespace AmbientSound {
     /** @defaultValue `{ propagate: ["refresh"] }` */
     redraw: RenderFlag<this, "redraw">;
 
-    /** @defaultValue `{ propagate: ["refreshState", "refreshField", "refreshElevation"], alias: true }` */
+    /** @defaultValue `{ propagate: ["refreshState", "refreshTransform", "refreshField", "refreshTooltip"], alias: true }` */
     refresh: RenderFlag<this, "refresh">;
-
-    /** @defaultValue `{ propagate: ["refreshPosition"] }` */
-    refreshField: RenderFlag<this, "refreshField">;
-
-    /** @defaultValue `{}` */
-    refreshPosition: RenderFlag<this, "refreshPosition">;
 
     /** @defaultValue `{ propagate: ["refreshVisibility"] }` */
     refreshState: RenderFlag<this, "refreshState">;
@@ -210,7 +218,28 @@ declare namespace AmbientSound {
     /** @defaultValue `{}` */
     refreshVisibility: RenderFlag<this, "refreshVisibility">;
 
+    /** @defaultValue `{ propagate: ["refreshPosition", "refreshSize"], alias: true }` */
+    refreshTransform: RenderFlag<this, "refreshTransform">;
+
+    /** @defaultValue `{ propagate: ["refreshMeasurements"] }` */
+    refreshPosition: RenderFlag<this, "refreshPosition">;
+
+    /** @defaultValue `{ propagate: ["refreshMeasurements"] }` */
+    refreshSize: RenderFlag<this, "refreshSize">;
+
     /** @defaultValue `{}` */
+    refreshField: RenderFlag<this, "refreshField">;
+
+    /** @defaultValue `{}` */
+    refreshTooltip: RenderFlag<this, "refreshTooltip">;
+
+    /** @defaultValue `{}` */
+    refreshMeasurements: RenderFlag<this, "refreshMeasurements">;
+
+    /**
+     * @defaultValue `{ propagate: ["refreshTooltip"], deprecated: { since: 14, until: 16 }, alias: true }`
+     * @deprecated since v14, until v16
+     */
     refreshElevation: RenderFlag<this, "refreshElevation">;
   }
 
@@ -267,7 +296,7 @@ declare namespace AmbientSound {
    */
   type SoundSourceData = RequiredProps<
     IntentionalPartial<foundry.canvas.sources.PointSoundSource.SourceData>,
-    "x" | "y" | "elevation" | "radius" | "walls" | "disabled"
+    "x" | "y" | "level" | "elevation" | "radius" | "walls" | "disabled"
   >;
 }
 
