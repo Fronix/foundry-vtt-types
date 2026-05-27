@@ -1,5 +1,5 @@
 import type { PrototypeToken } from "#common/data/data.mjs";
-import type { DeepPartial, Identity } from "#utils";
+import type { AnyObject, DeepPartial, Identity } from "#utils";
 import type ApplicationV2 from "../../api/application.d.mts";
 import type TokenApplicationMixin from "./mixin.d.mts";
 
@@ -13,7 +13,6 @@ declare module "#configuration" {
 
 /**
  * The Application responsible for configuring an actor's PrototypeToken
- * @remarks TODO: Stub
  */
 declare class PrototypeTokenConfig<
   RenderContext extends PrototypeTokenConfig.RenderContext = PrototypeTokenConfig.RenderContext,
@@ -22,6 +21,62 @@ declare class PrototypeTokenConfig<
 > extends TokenApplicationMixin(ApplicationV2)<RenderContext, Configuration, RenderOptions> {
   // Fake override.
   static override DEFAULT_OPTIONS: PrototypeTokenConfig.DefaultOptions;
+
+  override isPrototype: boolean;
+
+  override get title(): string;
+
+  override get token(): PrototypeToken;
+
+  /**
+   * The preview.
+   */
+  protected override _preview: PrototypeToken | null;
+
+  override get actor(): Actor.Implementation;
+
+  protected override get _fields(): foundry.data.fields.DataSchema;
+
+  /**
+   * Is this sheet visible to the user?
+   */
+  get isVisible(): boolean;
+
+  protected override _canRender(options: DeepPartial<RenderOptions>): false | void;
+
+  protected override _initializeApplicationOptions(options: DeepPartial<Configuration>): Configuration;
+
+  protected override _prepareContext(
+    options: DeepPartial<RenderOptions> & { isFirstRender: boolean },
+  ): Promise<RenderContext>;
+
+  protected override _prepareAppearanceTab(): Promise<AnyObject>;
+
+  protected override _onChangeForm(formConfig: ApplicationV2.FormConfiguration, event: Event): void;
+
+  protected override _prepareButtons(): ApplicationV2.FormFooterButton[];
+
+  protected override _onFirstRender(
+    context: DeepPartial<RenderContext>,
+    options: DeepPartial<RenderOptions>,
+  ): Promise<void>;
+
+  protected override _onRender(context: DeepPartial<RenderContext>, options: DeepPartial<RenderOptions>): Promise<void>;
+
+  protected override _onClose(options: DeepPartial<RenderOptions>): void;
+
+  /**
+   * Preview changes.
+   * @param changes - The changes to preview.
+   */
+  protected _previewChanges(changes: object): void;
+
+  /**
+   * Customize how form data is extracted into an expanded object.
+   */
+  protected _processFormData(event: SubmitEvent | null, form: HTMLFormElement, formData: object): object;
+
+  protected override _tearDown(options: DeepPartial<ApplicationV2.ClosingOptions>): void;
 }
 
 declare namespace PrototypeTokenConfig {
@@ -31,7 +86,10 @@ declare namespace PrototypeTokenConfig {
   interface RenderContext extends TokenApplicationMixin.RenderContext<PrototypeToken>, ApplicationV2.RenderContext {}
 
   interface Configuration<PrototypeTokenConfig extends PrototypeTokenConfig.Any = PrototypeTokenConfig.Any>
-    extends TokenApplicationMixin.Configuration, ApplicationV2.Configuration<PrototypeTokenConfig> {}
+    extends TokenApplicationMixin.Configuration, ApplicationV2.Configuration<PrototypeTokenConfig> {
+    /** The prototype token being edited. */
+    prototype: PrototypeToken;
+  }
 
   // Note(LukeAbby): This `& object` is so that the `DEFAULT_OPTIONS` can be overridden more easily
   // Without it then `static override DEFAULT_OPTIONS = { unrelatedProp: 123 }` would error.

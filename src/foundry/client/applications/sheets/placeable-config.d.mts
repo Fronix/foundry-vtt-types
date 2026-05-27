@@ -80,9 +80,8 @@ declare namespace PlaceableConfig {
 
   interface RenderContext<ConcreteDocument extends Document.Any>
     extends HandlebarsApplicationMixin.RenderContext, DocumentSheetV2.RenderContext<ConcreteDocument> {
-    document: ConcreteDocument;
+    // `document` and `source` are inherited from DocumentSheetV2.RenderContext.
     model: ConcreteDocument;
-    source: object;
     gridUnits: string;
     selectableLevels: { value: string; label: string }[];
     inputs: {
