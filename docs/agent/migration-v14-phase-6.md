@@ -28,7 +28,7 @@ Per the scope decision, **sheets are the high-value subset** (systems live in th
 | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
 | **1 (done)**                | `base-sheet`                                                                                                                                                                                         | ✅ **DONE** — generic fallback sheet; first Phase-6 file (uncommitted at time of writing) |
 | **2 — Journal (done)**      | `journal-entry-sheet` (1443 src — giant), `journal-entry-page-sheet` (134), `journal-entry-page-hbs-sheet` (111), `journal-entry-category-config` (146), `dialog-show` (148)                         | ✅ **DONE** — all 5 stubs filled + tests; CI green. Missing siblings → see note below     |
-| **3 — Tier A**              | `active-effect-config` (263), `scene-config` (980), `token/token-config` (159), `token/prototype-config` (383)                                                                                       | high-touch configs                                                                        |
+| **3 — Tier A**              | `active-effect-config` ✅ (263), `scene-config` (980), `token/token-config` (159 ⚠), `token/prototype-config` (383 ⚠)                                                                                | `active-effect-config` DONE. token/prototype ⚠ blocked on `PlaceableConfig` (see below)   |
 | **4 — Tier D (media/misc)** | `playlist-config`, `playlist-sound-config`, `cards-config`, `card-config`, `macro-config`, `roll-table-sheet`, `table-result-config`, `combatant-config`, `adventure-importer`, `adventure-exporter` | lower frequency                                                                           |
 | **Deferred — Tier B**       | `drawing-config`, `note-config`, `tile-config`, `wall-config`, `template-config`                                                                                                                     | placeable configs — "standalone for now" (maintainer call)                                |
 
@@ -46,6 +46,17 @@ Foundry's `sheets/journal/_module.mjs` exported two page-sheet classes that had 
 - `journal-entry-page-html-sheet` → `JournalEntryPageHTMLSheet` ✅
 
 The journal subdir is now structurally complete (all 14 source files mirrored).
+
+### Scope discovery — `PlaceableConfig` base (2026-05-28)
+
+v14 introduced **`sheets/placeable-config.mjs`** (`PlaceableConfig extends HandlebarsApplicationMixin(DocumentSheetV2)`, 179 src) as the shared base for **every placeable config**: token, prototype-token, drawing, note, tile, wall, template, ambient-light, ambient-sound, region. **The repo has no `placeable-config.d.mts`.** The current `token-config`/`prototype-config` stubs use `TokenApplicationMixin(DocumentSheetV2)` / `TokenApplicationMixin(ApplicationV2)` as placeholder bases — that's wrong; v14 is `TokenApplicationMixin(PlaceableConfig)`.
+
+Two consequences for Tier A:
+
+1. **`token/token-config` + `token/prototype-config` are blocked** on authoring `PlaceableConfig` first. They also override shared members (`token`, `actor`, `_fields`, `_prepareAppearanceTab`, `_previewChanges`, `isPrototype`) that live on **`TokenApplicationMixin`** — whose `mixin.d.mts` `TokenApplication` class is currently an **empty stub** (only a constructor). So filling token configs needs: (a) author `PlaceableConfig`, (b) fill the `TokenApplication` mixin members, (c) then the two configs.
+2. **`PlaceableConfig._prepareContext` couples to Scene Levels** (`scene.levels`, `scene.availableLevels`, `level.id/name`) — a **Phase 7 deferral**. Author the Level-coupled bits with loose (`object`) typing + `// FIXME … → P7`, mirroring the Phase 5 approach.
+
+`PlaceableConfig` is high-leverage (unblocks ~9 configs incl. the deferred Tier B) and squarely Phase 6 — author it as its own focused batch.
 
 ## Deprioritized (do only if explicitly requested)
 
