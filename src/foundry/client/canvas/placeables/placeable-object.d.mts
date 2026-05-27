@@ -64,7 +64,7 @@ declare abstract class PlaceableObject<
 
   /**
    * Allow objects to be culled when off-screen
-   * @defaultValue `false`
+   * @defaultValue `true`
    * @privateRemarks Override of `PIXI.Container` property in the constructor, only typed here for the defaultValue
    */
   override cullable: boolean;
@@ -74,6 +74,11 @@ declare abstract class PlaceableObject<
    * @remarks This is abstract in {@linkcode PlaceableObject}.
    */
   static embeddedName: string;
+
+  /**
+   * Return a reference to the configured subclass of this base PlaceableObject type.
+   */
+  static get implementation(): PlaceableObject.AnyConstructor;
 
   /**
    * The flags declared here are required for all PlaceableObject subclasses to also support.
@@ -95,6 +100,16 @@ declare abstract class PlaceableObject<
    * A convenient reference for whether the current User has full control over the document.
    */
   get isOwner(): boolean;
+
+  /**
+   * Is this placeable currently visible?
+   */
+  get isVisible(): boolean;
+
+  /**
+   * Is the placeable currently interactable?
+   */
+  get isInteractable(): boolean;
 
   /**
    * The mouse interaction state of this placeable.
@@ -127,6 +142,18 @@ declare abstract class PlaceableObject<
    * This differs from the objectId because the sourceId is the same for preview objects as for the original.
    */
   get sourceId(): string;
+
+  /**
+   * The preview type, if any.
+   */
+  get previewType(): PlaceableObject.PreviewType;
+
+  /**
+   * The preview type, if any.
+   * @remarks Foundry marked `@internal`. Set to `"api"` or `null` in the constructor depending on
+   * whether the document has an id.
+   */
+  _previewType: PlaceableObject.PreviewType;
 
   /**
    * Is this placeable object a temporary preview?
@@ -176,6 +203,14 @@ declare abstract class PlaceableObject<
   getSnappedPosition(position?: Canvas.Point | null): Canvas.Point;
 
   /**
+   * Get the origin used for pasting the copied objects.
+   * @param copies - The objects that are copied
+   * @returns The offset
+   * @remarks Foundry marked `@internal`
+   */
+  static _getCopiedObjectsOrigin(copies: PlaceableObject.Any[]): Canvas.Point;
+
+  /**
    * Get the data of the copied object pasted at the position given by the offset.
    * Called by {@linkcode foundry.canvas.layers.PlaceablesLayer#pasteObjects} for each copied object.
    * @param offset - The offset relative from the current position to the destination
@@ -197,11 +232,22 @@ declare abstract class PlaceableObject<
   protected _applyRenderFlags(flags: PlaceableObject.RenderFlags): void;
 
   /**
-   * Clear the display of the existing object
-   * @returns The cleared object
-   * @remarks {@link Tile.clear | `Tile`} and {@link Token.clear | `Token`} return void
+   * Refresh the visibility of the placeable.
    */
-  clear(): this | void;
+  protected _refreshVisibility(): void;
+
+  /**
+   * Refresh the displayed state of the placeable.
+   * Used to update aspects of the placeable which change based on the user interaction state.
+   */
+  protected _refreshState(): void;
+
+  /**
+   * Clear the display of the existing object on redraw.
+   * This function is called in {@link PlaceableObject.draw | `PlaceableObject#draw`} before the
+   * {@link PlaceableObject._draw | `PlaceableObject#_draw`} call.
+   */
+  protected _clear(): void;
 
   // options: not null (PIXI signature)
   override destroy(options?: PIXI.IDestroyOptions | boolean): void;
@@ -350,11 +396,32 @@ declare abstract class PlaceableObject<
    * Obtain a shifted position for the Placeable Object
    * @param dx - The number of grid units to shift along the X-axis
    * @param dy - The number of grid units to shift along the Y-axis
+   * @param dz - The number of grid units to shift along the Z-axis
    * @returns The shifted target coordinates
    * @remarks Despite the parameter descriptions saying 'number of grid units', they're only checked for sign.
    * @privateRemarks Foundry types this correctly, but describes it wrong, logged
    */
-  protected _getShiftedPosition(dx: -1 | 0 | 1, dy: -1 | 0 | 1): Canvas.Point;
+  protected _getShiftedPosition(dx: -1 | 0 | 1, dy: -1 | 0 | 1, dz: -1 | 0 | 1): Canvas.ElevatedPoint;
+
+  /**
+   * Obtain the shifted position.
+   * @param dx       - The number of grid units to shift along the X-axis
+   * @param dy       - The number of grid units to shift along the Y-axis
+   * @param dz       - The number of grid units to shift along the Z-axis
+   * @param position - The unsnapped position
+   * @param snapped  - The snapped position
+   * @param grid     - The grid
+   * @returns The shifted target coordinates
+   * @remarks Foundry marked `@internal`
+   */
+  protected static _getShiftedPosition(
+    dx: -1 | 0 | 1,
+    dy: -1 | 0 | 1,
+    dz: -1 | 0 | 1,
+    position: Canvas.ElevatedPoint,
+    snapped: Canvas.ElevatedPoint,
+    grid: foundry.grid.BaseGrid,
+  ): Canvas.ElevatedPoint;
 
   /**
    * Activate interactivity for the Placeable Object
@@ -427,11 +494,17 @@ declare abstract class PlaceableObject<
 
   /**
    * Does the User have permission to left-click drag this Placeable Object?
-   * @param user  - The User performing the action.
-   * @param event - The event object.
+   * @param user    - The User performing the action.
+   * @param event   - The event object.
+   * @param options - Options, used internally
    * @returns The returned status
    */
-  protected _canDragLeftStart(user: User.Implementation, event?: Canvas.Event.Pointer): boolean;
+  // options: not null (destructured)
+  protected _canDragLeftStart(
+    user: User.Implementation,
+    event?: Canvas.Event.Pointer,
+    options?: PlaceableObject.CanDragLeftStartOptions,
+  ): boolean;
 
   /**
    * Does the User have permission to hover on this Placeable Object?
@@ -471,9 +544,11 @@ declare abstract class PlaceableObject<
   /**
    * Actions that should be taken for this Placeable Object when a mouseout event occurs
    * @see `MouseInteractionManager##handlePointerOut`
-   * @param event - The triggering canvas interaction event
+   * @param event   - The triggering canvas interaction event
+   * @param options - Options which customize event handling
    */
-  protected _onHoverOut(event: Canvas.Event.Pointer): void;
+  // options: not null (destructured)
+  protected _onHoverOut(event: Canvas.Event.Pointer, options?: PlaceableObject.HoverOutOptions): void;
 
   /**
    * Should the placeable propagate left click downstream?
@@ -535,6 +610,12 @@ declare abstract class PlaceableObject<
   protected _onDragLeftStart(event: Canvas.Event.Pointer): void;
 
   /**
+   * Initialize the left-drag operation.
+   * @param event - The triggering canvas interaction event
+   */
+  protected _initializeDragLeft(event: Canvas.Event.Pointer): void;
+
+  /**
    * Begin a drag operation from the perspective of the preview clone.
    * Modify the appearance of both the clone (this) and the original (_original) object.
    */
@@ -576,11 +657,23 @@ declare abstract class PlaceableObject<
   protected _onDragLeftCancel(event: Canvas.Event.Pointer): void;
 
   /**
+   * Finalize the left-drag operation.
+   * @param event - The triggering mouse click event
+   */
+  protected _finalizeDragLeft(event: Canvas.Event.Pointer): void;
+
+  /**
    * Callback actions which occur on a right mouse-drag operation.
    * @see `MouseInteractionManager##handleDragStart`
    * @param event - The triggering mouse click event
    */
   protected _onDragRightStart(event: Canvas.Event.Pointer): void;
+
+  /**
+   * Initialize the right-drag operation.
+   * @param event - The triggering canvas interaction event
+   */
+  protected _initializeDragRight(event: Canvas.Event.Pointer): void;
 
   /**
    * Callback actions which occur on a right mouse-drag operation.
@@ -604,12 +697,25 @@ declare abstract class PlaceableObject<
   protected _onDragRightCancel(event: Canvas.Event.Pointer): void;
 
   /**
+   * Finalize the right-drag operation.
+   * @param event - The triggering mouse click event
+   */
+  protected _finalizeDragRight(event: Canvas.Event.Pointer): void;
+
+  /**
    * Callback action which occurs on a long press.
    * @see `MouseInteractionManager##handleLongPress`
    * @param event  - The triggering canvas interaction event
    * @param origin - The local canvas coordinates of the mousepress.
    */
   protected _onLongPress(event: Canvas.Event.Pointer, origin: PIXI.Point): void;
+
+  /**
+   * @deprecated since v14 (no replacement; no longer performs any action)
+   * @remarks Returns `this`. "PlaceableObject#clear has been deprecated without replacement.
+   * It no longer performs any action."
+   */
+  clear(): this;
 }
 
 declare namespace PlaceableObject {
@@ -631,8 +737,11 @@ declare namespace PlaceableObject {
     /** @defaultValue `{ propagate: ["refreshState"], alias: true }` */
     refresh: RenderFlag<this, "refresh">;
 
-    /** @defaultValue `{}` */
+    /** @defaultValue `{ propagate: ["refreshVisibility"] }` */
     refreshState: RenderFlag<this, "refreshState">;
+
+    /** @defaultValue `{}` */
+    refreshVisibility: RenderFlag<this, "refreshVisibility">;
   }
 
   // Note(LukeAbby): Switch back to `GetKeyWithShape` once `TilesLayer` etc. is assignable to `PlaceablesLayer.Any`.
@@ -703,6 +812,9 @@ declare namespace PlaceableObject {
     }>;
   interface UpdateRotationOptions extends __UpdateRotationOptions {}
 
+  /** @remarks The preview type of a {@linkcode PlaceableObject}, or `null` if it is not a preview. */
+  type PreviewType = "dragging" | "controls" | "wheel" | "creation" | "config" | "api" | null;
+
   /** @internal */
   type _HoverInOptions = NullishProps<{
     /**
@@ -710,9 +822,37 @@ declare namespace PlaceableObject {
      * @defaultValue `false`
      */
     hoverOutOthers: boolean;
+
+    /**
+     * Highlight corresponding entry in the sidebar legend.
+     * @defaultValue `true`
+     */
+    updateLegend: boolean;
   }>;
 
   interface HoverInOptions extends _HoverInOptions {}
+
+  /** @internal */
+  type _HoverOutOptions = NullishProps<{
+    /**
+     * Highlight corresponding entry in the sidebar legend.
+     * @defaultValue `true`
+     */
+    updateLegend: boolean;
+  }>;
+
+  interface HoverOutOptions extends _HoverOutOptions {}
+
+  /** @internal */
+  type _CanDragLeftStartOptions = NullishProps<{
+    /**
+     * @defaultValue `true`
+     * @remarks If `true`, emits a notification when the drag is disallowed.
+     */
+    notify: boolean;
+  }>;
+
+  interface CanDragLeftStartOptions extends _CanDragLeftStartOptions {}
 
   /**
    * @remarks {@link PlaceableObject.can | `PlaceableObject#can`} calls `#titleCase()` on this
@@ -761,6 +901,12 @@ declare namespace PlaceableObject {
      * @defaultValue `true`
      */
     snap?: boolean | undefined;
+
+    /**
+     * Is cut operation?
+     * @defaultValue `false`
+     */
+    cut?: boolean | undefined;
   }
 
   type PasteObjectReturn<CanvasDocument extends PlaceableObject.AnyCanvasDocument> = Document.SourceForName<

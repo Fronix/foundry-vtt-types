@@ -8,7 +8,7 @@ import RegionPolygonTree = foundry.data.regionShapes.RegionPolygonTree;
 
 expectTypeOf(Region.embeddedName).toEqualTypeOf<"Region">();
 expectTypeOf(Region.RENDER_FLAGS.redraw.propagate).toEqualTypeOf<
-  Array<"refresh" | "refreshState" | "refreshBorder"> | undefined
+  Array<"refresh" | "refreshState" | "refreshVisibility" | "refreshBorder"> | undefined
 >();
 expectTypeOf(Region.CLIPPER_SCALING_FACTOR).toEqualTypeOf<100>();
 expectTypeOf(Region.MOVEMENT_SEGMENT_TYPES).toEqualTypeOf<Region.MovementSegmentTypes>();
@@ -37,6 +37,7 @@ expectTypeOf(region.getSnappedPosition()).toBeNever();
 expectTypeOf(region["_draw"]()).toEqualTypeOf<Promise<void>>();
 expectTypeOf(region["_draw"]({})).toEqualTypeOf<Promise<void>>();
 
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 expectTypeOf(region.clear()).toEqualTypeOf<Region.Implementation>();
 
 // @ts-expect-error an object must be passed

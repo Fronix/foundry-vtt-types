@@ -101,9 +101,6 @@ declare class Region extends PlaceableObject<RegionDocument.Implementation> {
 
   protected override _draw(options: HandleEmptyObject<Region.DrawOptions>): Promise<void>;
 
-  // fake override; super has to account for misbehaving siblings returning void
-  override clear(): this;
-
   protected override _applyRenderFlags(flags: Region.RenderFlags): void;
 
   /** Refresh the state of the Region. */
@@ -186,8 +183,11 @@ declare namespace Region {
     /** @defaultValue `{ propagate: ["refreshState", "refreshBorder"], alias: true }` */
     refresh: RenderFlag<this, "refresh">;
 
-    /** @defaultValue `{}` */
+    /** @defaultValue `{ propagate: ["refreshVisibility"] }` */
     refreshState: RenderFlag<this, "refreshState">;
+
+    /** @defaultValue `{}` */
+    refreshVisibility: RenderFlag<this, "refreshVisibility">;
 
     /** @defaultValue `{}` */
     refreshBorder: RenderFlag<this, "refreshBorder">;

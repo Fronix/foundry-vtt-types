@@ -12,6 +12,7 @@ expectTypeOf(Drawing.RENDER_FLAGS.redraw.propagate).toEqualTypeOf<
   | Array<
       | "refresh"
       | "refreshState"
+      | "refreshVisibility"
       | "refreshTransform"
       | "refreshPosition"
       | "refreshRotation"
@@ -82,6 +83,7 @@ expectTypeOf(drawing["_getFillStyle"]()).toEqualTypeOf<Drawing.FillStyleData>();
 expectTypeOf(drawing["_getTextStyle"]()).toEqualTypeOf<PIXI.TextStyle>();
 
 expectTypeOf(drawing.clone()).toEqualTypeOf<Drawing.Implementation>();
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 expectTypeOf(drawing.clear()).toEqualTypeOf<Drawing.Implementation>();
 
 // @ts-expect-error an object must be passed

@@ -141,9 +141,6 @@ declare class Drawing extends PlaceableObject<DrawingDocument.Implementation> {
 
   override clone(): this;
 
-  // fake override; super has to account for misbehaving siblings returning void
-  override clear(): this;
-
   protected override _applyRenderFlags(flags: Drawing.RenderFlags): void;
 
   /**
@@ -321,8 +318,11 @@ declare namespace Drawing {
     /** @defaultValue `{ propagate: ["refreshState", "refreshTransform", "refreshText", "refreshElevation"], alias: true }` */
     refresh: RenderFlag<this, "refresh">;
 
-    /** @defaultValue `{}` */
+    /** @defaultValue `{ propagate: ["refreshVisibility"] }` */
     refreshState: RenderFlag<this, "refreshState">;
+
+    /** @defaultValue `{}` */
+    refreshVisibility: RenderFlag<this, "refreshVisibility">;
 
     /** @defaultValue `{ propagate: ["refreshPosition", "refreshRotation", "refreshSize"], alias: true }` */
     refreshTransform: RenderFlag<this, "refreshTransform">;

@@ -7,7 +7,8 @@ import ControlIcon = foundry.canvas.containers.ControlIcon;
 
 expectTypeOf(AmbientSound.embeddedName).toEqualTypeOf<"AmbientSound">();
 expectTypeOf(AmbientSound.RENDER_FLAGS.redraw.propagate).toEqualTypeOf<
-  Array<"refresh" | "refreshField" | "refreshPosition" | "refreshState" | "refreshElevation"> | undefined
+  | Array<"refresh" | "refreshField" | "refreshPosition" | "refreshState" | "refreshVisibility" | "refreshElevation">
+  | undefined
 >();
 
 declare const doc: AmbientSoundDocument.Stored;
@@ -33,6 +34,7 @@ expectTypeOf(sound.sync(true, 10)).toEqualTypeOf<void>();
 expectTypeOf(sound.sync(true, 10, {})).toEqualTypeOf<void>();
 expectTypeOf(sound.sync(true, 10, { fade: 250 })).toEqualTypeOf<void>();
 
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 expectTypeOf(sound.clear()).toEqualTypeOf<AmbientSound.Implementation>();
 
 // @ts-expect-error _draw always gets passed a value

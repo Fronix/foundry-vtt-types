@@ -13,6 +13,7 @@ expectTypeOf(MeasuredTemplate.RENDER_FLAGS.redraw.propagate).toEqualTypeOf<
   | Array<
       | "refresh"
       | "refreshState"
+      | "refreshVisibility"
       | "refreshPosition"
       | "refreshShape"
       | "refreshTemplate"
@@ -52,6 +53,7 @@ expectTypeOf(template["_destroy"]({ baseTexture: true, children: true, texture: 
 expectTypeOf(template["_destroy"](true)).toBeVoid();
 expectTypeOf(template["_destroy"](undefined)).toBeVoid();
 
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 expectTypeOf(template.clear()).toEqualTypeOf<MeasuredTemplate.Implementation>();
 
 // @ts-expect-error an object must be passed

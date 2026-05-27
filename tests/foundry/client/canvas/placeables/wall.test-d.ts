@@ -7,7 +7,15 @@ import Ray = foundry.canvas.geometry.Ray;
 
 expectTypeOf(Wall.embeddedName).toEqualTypeOf<"Wall">();
 expectTypeOf(Wall.RENDER_FLAGS.redraw.propagate).toEqualTypeOf<
-  | Array<"refresh" | "refreshState" | "refreshLine" | "refreshEndpoints" | "refreshDirection" | "refreshHighlight">
+  | Array<
+      | "refresh"
+      | "refreshState"
+      | "refreshVisibility"
+      | "refreshLine"
+      | "refreshEndpoints"
+      | "refreshDirection"
+      | "refreshHighlight"
+    >
   | undefined
 >();
 
@@ -43,6 +51,7 @@ expectTypeOf(wall.toRay()).toEqualTypeOf<Ray>();
 expectTypeOf(wall["_draw"]()).toEqualTypeOf<Promise<void>>();
 expectTypeOf(wall["_draw"]({})).toEqualTypeOf<Promise<void>>();
 
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 expectTypeOf(wall.clear()).toEqualTypeOf<Wall.Implementation>();
 expectTypeOf(wall.createDoorControl()).toEqualTypeOf<DoorControl.Implementation>();
 expectTypeOf(wall.clearDoorControl()).toBeVoid();

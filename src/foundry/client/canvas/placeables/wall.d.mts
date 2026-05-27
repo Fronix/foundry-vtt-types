@@ -326,8 +326,11 @@ declare namespace Wall {
     /** @defaultValue `{ propagate: ["refreshState", "refreshLine"], alias: true }` */
     refresh: RenderFlag<this, "refresh">;
 
-    /** @defaultValue `{ propagate: ["refreshEndpoints", "refreshHighlight"] }` */
+    /** @defaultValue `{ propagate: ["refreshVisibility", "refreshEndpoints", "refreshHighlight"] }` */
     refreshState: RenderFlag<this, "refreshState">;
+
+    /** @defaultValue `{}` */
+    refreshVisibility: RenderFlag<this, "refreshVisibility">;
 
     /** @defaultValue `{ propagate: ["refreshEndpoints", "refreshHighlight", "refreshDirection"] }` */
     refreshLine: RenderFlag<this, "refreshLine">;

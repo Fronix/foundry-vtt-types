@@ -13,6 +13,7 @@ expectTypeOf(Tile.RENDER_FLAGS.redraw.propagate).toEqualTypeOf<
   | Array<
       | "refresh"
       | "refreshState"
+      | "refreshVisibility"
       | "refreshTransform"
       | "refreshPosition"
       | "refreshRotation"
@@ -47,7 +48,8 @@ expectTypeOf(tile.volume).toBeNumber();
 expectTypeOf(tile["_draw"]()).toEqualTypeOf<Promise<void>>();
 expectTypeOf(tile["_draw"]({})).toEqualTypeOf<Promise<void>>();
 
-expectTypeOf(tile.clear()).toBeVoid();
+// eslint-disable-next-line @typescript-eslint/no-deprecated
+expectTypeOf(tile.clear()).toEqualTypeOf<Tile.Implementation>();
 
 // @ts-expect-error _destroy always gets passed a value, even if that value is `undefined`
 expectTypeOf(tile["_destroy"]()).toBeVoid();

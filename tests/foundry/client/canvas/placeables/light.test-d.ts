@@ -8,7 +8,8 @@ import PointLightSource = foundry.canvas.sources.PointLightSource;
 expectTypeOf(AmbientLight.embeddedName).toEqualTypeOf<"AmbientLight">();
 expectTypeOf(AmbientLight.RENDER_FLAGS.redraw.propagate).toEqualTypeOf<
   // undefined only from the optional chain, not underlying type
-  Array<"refresh" | "refreshState" | "refreshField" | "refreshPosition" | "refreshElevation"> | undefined
+  | Array<"refresh" | "refreshState" | "refreshVisibility" | "refreshField" | "refreshPosition" | "refreshElevation">
+  | undefined
 >();
 
 declare const doc: AmbientLightDocument.Stored;
@@ -43,6 +44,7 @@ expectTypeOf(light["_destroy"](undefined)).toBeVoid();
 expectTypeOf(light["_draw"]()).toEqualTypeOf<Promise<void>>();
 expectTypeOf(light["_draw"]({})).toEqualTypeOf<Promise<void>>();
 
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 expectTypeOf(light.clear()).toEqualTypeOf<AmbientLight.Implementation>();
 
 // @ts-expect-error an object must be passed

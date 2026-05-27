@@ -365,8 +365,6 @@ declare class Token extends PlaceableObject<TokenDocument.Implementation> {
    */
   protected _renderDetectionFilter(renderer: PIXI.Renderer): void;
 
-  override clear(): void;
-
   protected override _destroy(options: PIXI.IDestroyOptions | boolean | undefined): void;
 
   protected override _draw(options: HandleEmptyObject<Token.DrawOptions> | undefined): Promise<void>;
@@ -765,7 +763,7 @@ declare class Token extends PlaceableObject<TokenDocument.Implementation> {
    */
   getLightRadius(units: number): number;
 
-  protected override _getShiftedPosition(dx: number, dy: number): Canvas.Point;
+  protected override _getShiftedPosition(dx: -1 | 0 | 1, dy: -1 | 0 | 1, dz: -1 | 0 | 1): Canvas.ElevatedPoint;
 
   // options: not null (destructured)
   protected override _updateRotation(options?: PlaceableObject.UpdateRotationOptions): number;

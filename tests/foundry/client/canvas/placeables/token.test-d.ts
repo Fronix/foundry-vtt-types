@@ -125,7 +125,8 @@ expectTypeOf(token["_getVisionSourceData"]()).toEqualTypeOf<Token.VisionSourceDa
 expectTypeOf(token["_isVisionSource"]()).toBeBoolean();
 expectTypeOf(token["_renderDetectionFilter"](new PIXI.Renderer())).toBeVoid();
 
-expectTypeOf(token.clear()).toBeVoid();
+// eslint-disable-next-line @typescript-eslint/no-deprecated
+expectTypeOf(token.clear()).toEqualTypeOf<Token.Implementation>();
 
 // @ts-expect-error _destroy always gets passed a value, even if that value is `undefined`
 expectTypeOf(token["_destroy"]()).toBeVoid();
@@ -449,7 +450,7 @@ expectTypeOf(token.setTarget(false, { user: null, groupSelection: null, releaseO
 
 expectTypeOf(token.externalRadius).toBeNumber();
 expectTypeOf(token.getLightRadius(5)).toBeNumber();
-expectTypeOf(token["_getShiftedPosition"](20, -10)).toEqualTypeOf<Canvas.Point>();
+expectTypeOf(token["_getShiftedPosition"](1, -1, 0)).toEqualTypeOf<Canvas.ElevatedPoint>();
 
 expectTypeOf(token["_updateRotation"]()).toBeNumber();
 expectTypeOf(token["_updateRotation"]({})).toBeNumber();

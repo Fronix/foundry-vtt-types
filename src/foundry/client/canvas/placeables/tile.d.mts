@@ -115,8 +115,6 @@ declare class Tile extends PlaceableObject<TileDocument.Implementation> {
 
   protected override _draw(options: HandleEmptyObject<Tile.DrawOptions>): Promise<void>;
 
-  override clear(): void;
-
   protected override _destroy(options: PIXI.IDestroyOptions | boolean | undefined): void;
 
   protected override _applyRenderFlags(flags: Tile.RenderFlags): void;
@@ -288,8 +286,11 @@ declare namespace Tile {
     /** @defaultValue `{ propagate: ["refreshState", "refreshTransform", "refreshMesh", "refreshElevation", "refreshVideo"], alias: true }` */
     refresh: RenderFlag<this, "refresh">;
 
-    /** @defaultValue `{ propagate: ["refreshPerception"] }` */
+    /** @defaultValue `{ propagate: ["refreshVisibility", "refreshPerception"] }` */
     refreshState: RenderFlag<this, "refreshState">;
+
+    /** @defaultValue `{}` */
+    refreshVisibility: RenderFlag<this, "refreshVisibility">;
 
     /** @defaultValue `{ propagate: ["refreshPosition", "refreshRotation", "refreshSize"], alias: true }` */
     refreshTransform: RenderFlag<this, "refreshTransform">;

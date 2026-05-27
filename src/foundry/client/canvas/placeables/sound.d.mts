@@ -204,8 +204,11 @@ declare namespace AmbientSound {
     /** @defaultValue `{}` */
     refreshPosition: RenderFlag<this, "refreshPosition">;
 
-    /** @defaultValue `{}` */
+    /** @defaultValue `{ propagate: ["refreshVisibility"] }` */
     refreshState: RenderFlag<this, "refreshState">;
+
+    /** @defaultValue `{}` */
+    refreshVisibility: RenderFlag<this, "refreshVisibility">;
 
     /** @defaultValue `{}` */
     refreshElevation: RenderFlag<this, "refreshElevation">;
