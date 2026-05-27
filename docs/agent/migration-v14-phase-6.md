@@ -38,14 +38,14 @@ Per the scope decision, **sheets are the high-value subset** (systems live in th
 
 Drop the `@remarks TODO: Stub`; declare the v14 members in source order — typically `static override DEFAULT_OPTIONS: DocumentSheetV2.DefaultOptions`, `static override PARTS: Record<string, HandlebarsApplicationMixin.HandlebarsTemplatePart>`, the `_prepareContext` override, plus a `#private: true` duck-typing guard; the `RenderContext`/`Configuration`/`RenderOptions` namespaces capture the type surface. Add/extend a `.test-d.ts` mirror.
 
-### Journal cluster — missing files (drift discovered 2026-05-28)
+### Journal cluster — missing files ✅ DONE (2026-05-28)
 
-Foundry's `sheets/journal/_module.mjs` exports two page-sheet classes that have **no file in the repo** yet (and aren't in the repo barrel):
+Foundry's `sheets/journal/_module.mjs` exported two page-sheet classes that had **no file in the repo**. Both now added + barreled (source order), CI-green:
 
-- `journal-entry-page-code-mirror-sheet.mjs` (131 src) → `JournalEntryPageCodeMirrorSheet`
-- `journal-entry-page-html-sheet.mjs` (68 src) → `JournalEntryPageHTMLSheet`
+- `journal-entry-page-code-mirror-sheet` → `JournalEntryPageCodeMirrorSheet` ✅
+- `journal-entry-page-html-sheet` → `JournalEntryPageHTMLSheet` ✅
 
-Add these two files + their barrel entries to fully close the journal subdir. (The other 7 page-type sheets already exist and are developed.)
+The journal subdir is now structurally complete (all 14 source files mirrored).
 
 ## Deprioritized (do only if explicitly requested)
 
