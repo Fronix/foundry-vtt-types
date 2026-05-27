@@ -56,6 +56,23 @@ declare class SceneManager {
   get scene(): Scene.Implementation;
 
   /**
+   * Configure which level of the Scene should be initially viewed for a managed Scene.
+   * This initial level could be user-specific.
+   * @remarks Returns a `Level` document ID. The Scene Levels subsystem (Phase 7) gives this semantic meaning.
+   */
+  protected _determineInitialLevel(): string | void;
+
+  /**
+   * Configure which levels of the Scene are available to the current user.
+   * @param defaultLevels - The levels that are available to the current user by default.
+   * @returns Return a Set of Level documents to override the default token-ownership logic, or return
+   *          nothing to fall back to the default behavior.
+   * @remarks FIXME(v14-levels): `defaultLevels` and the return are `Set<Level>` (`foundry.documents.Level`);
+   * typed loosely as `Set<object>` until the Scene Levels subsystem authors the `Level` document (Phase 7).
+   */
+  protected _getAvailableLevels(defaultLevels: Set<object>): Set<object> | void;
+
+  /**
    * Additional behaviors to perform when the Canvas is first initialized for the Scene.
    */
   protected _onInit(): Promise<void>;
@@ -72,8 +89,9 @@ declare class SceneManager {
 
   /**
    * Additional behaviors to perform when the Scene is deactivated.
+   * @param options - Options which configure how the canvas is deconstructed.
    */
-  protected _onTearDown(): Promise<void>;
+  protected _onTearDown(options: foundry.canvas.Canvas.TearDownOptions): Promise<void>;
 
   /**
    * Register additional hook functions are only used while this Scene is active and is automatically deactivated.
@@ -84,7 +102,7 @@ declare class SceneManager {
   /**
    * Register additional hook functions are only used while this Scene is active and is automatically deactivated.
    */
-  registerHooks(hookName: string, handler: AnyFunction): void;
+  registerHook(hookName: string, handler: AnyFunction): void;
 
   /**
    * Deactivate Hook functions that were added specifically for this Scene.

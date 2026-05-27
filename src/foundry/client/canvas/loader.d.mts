@@ -18,18 +18,9 @@ declare class TextureLoader {
   static CACHE_TTL: number;
 
   /**
-   * Initialize the basis/ktx2 transcoder for PIXI.Assets
-   * @remarks Foundry provides an `@license` attributing the `pixi-basis-ktx2` package to Kristof Van Der Haeghen.
-   * The full text of the MIT license is omitted here.
+   * Initialize the Basis transcoder for PIXI.Assets.
    */
   static initializeBasisTranscoder(): TextureLoader.InitializeBasisTranscoderReturn;
-
-  /**
-   * Check if a source has a text file extension.
-   * @param src - The source.
-   * @returns If the source has a text extension or not.
-   */
-  static hasTextExtension(src: string): boolean;
 
   /**
    * Use the texture to create a cached mapping of pixel alpha and cache it.
@@ -67,15 +58,6 @@ declare class TextureLoader {
   loadTexture(src: string): Promise<TextureLoader.LoadTextureReturn>;
 
   /**
-   * Use the Fetch API to retrieve a resource and return a Blob instance for it.
-   * @param src     - The resource URL
-   * @param options - Options to configure the loading behaviour.
-   * @returns A Blob containing the loaded data
-   * @remarks As of v13, simply forwards to {@linkcode foundry.utils.fetchResource}; Foundry comments "TODO \@deprecated in v14"
-   */
-  static fetchResource(src: string, options?: TextureLoader.FetchResourceOptions): Promise<Blob>;
-
-  /**
    * Add an image or a sprite sheet url to the assets cache. Include an approximate memory size in the stored data.
    * @param src - The source URL
    * @param tex - The readied texture
@@ -95,14 +77,6 @@ declare class TextureLoader {
   expireCache(options?: TextureLoader.ExpireCacheOptions): Promise<void>;
 
   /**
-   * Return a URL with a cache-busting query parameter appended.
-   * @param src - The source URL being attempted
-   * @returns The new URL, or false on a failure.
-   * @remarks As of v13, simply forwards to {@linkcode foundry.utils.getCacheBustURL}; Foundry comments "TODO \@deprecated in v14"
-   */
-  static getCacheBustURL(src: string): string | false;
-
-  /**
    * A public getter to expose the total approximate memory usage.
    * @returns The total usage in bytes.
    */
@@ -120,12 +94,32 @@ declare class TextureLoader {
    */
   static unpinSource(src: string): void;
 
+  // Deprecations
+
   /**
-   * @deprecated "`TextureLoader.textureBufferDataMap` is deprecated without replacement.
-   * Use {@linkcode TextureLoader.getTextureAlphaData} to create a texture data map and
-   * cache it automatically, or create your own caching system" (since v12, will be removed in v14)
+   * Check if a source has a text file extension.
+   * @param src - The source.
+   * @returns If the source has a text extension or not.
+   * @deprecated "TextureLoader.hasTextExtension has been deprecated without replacement." (since v14, until v16)
    */
-  static get textureBufferDataMap(): Map<unknown, unknown>;
+  static hasTextExtension(src: string): boolean;
+
+  /**
+   * Use the Fetch API to retrieve a resource and return a Blob instance for it.
+   * @param src     - The resource URL
+   * @param options - Options to configure the loading behaviour.
+   * @returns A Blob containing the loaded data
+   * @deprecated "TextureLoader.fetchResource is deprecated. Please use {@linkcode foundry.utils.fetchResource} instead." (since v14, until v16)
+   */
+  static fetchResource(src: string, options?: TextureLoader.FetchResourceOptions): Promise<Blob>;
+
+  /**
+   * Return a URL with a cache-busting query parameter appended.
+   * @param src - The source URL being attempted
+   * @returns The new URL, or false on a failure.
+   * @deprecated "TextureLoader.getCacheBustURL is deprecated. Please use {@linkcode foundry.utils.getCacheBustURL} instead." (since v14, until v16)
+   */
+  static getCacheBustURL(src: string): string | false;
 
   static #TextureLoader: true;
 }
@@ -134,15 +128,11 @@ declare namespace TextureLoader {
   interface Any extends AnyTextureLoader {}
   interface AnyConstructor extends Identity<typeof AnyTextureLoader> {}
 
-  /** @remarks This is effectively [[void, void], [void, void], [void, void]] */
-  type InitializeBasisTranscoderReturn = Promise<
-    | [
-        Awaited<ReturnType<typeof TranscoderWorker.loadTranscoder>>,
-        Awaited<ReturnType<typeof PixiBasisKTX2.KTX2Parser.loadTranscoder>>,
-        Awaited<ReturnType<typeof PixiBasisKTX2.BasisParser.loadTranscoder>>,
-      ]
-    | void
-  >;
+  /**
+   * @remarks v14 returns only the single transcoder promise from `PIXI.TranscoderWorker.loadTranscoder`,
+   * or `undefined` when the transcoder was already initialized.
+   */
+  type InitializeBasisTranscoderReturn = Promise<Awaited<ReturnType<typeof TranscoderWorker.loadTranscoder>> | void>;
 
   /** @remarks Differs from {@linkcode loadTexture.Return} in that it includes `PIXI.BaseTexture` in place of `PIXI.Texture` */
   type LoadTextureReturn = PIXI.BaseTexture | PIXI.Spritesheet | null;
@@ -269,7 +259,7 @@ declare namespace TextureLoader {
  * Test whether a file source exists by performing a HEAD request against it
  * @param src - The source URL or path to test
  * @returns Does the file exist at the provided url?
- * @remarks As of v13, simply forwards to {@linkcode foundry.utils.srcExists}; Foundry comments "TODO \@deprecated in v14"
+ * @deprecated "foundry.canvas.srcExists is deprecated. Please use {@linkcode foundry.utils.srcExists} instead." (since v14, until v16)
  */
 export declare function srcExists(src: string): Promise<boolean>;
 

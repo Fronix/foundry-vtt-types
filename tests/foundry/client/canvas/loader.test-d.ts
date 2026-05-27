@@ -4,6 +4,7 @@ import TextureLoader = foundry.canvas.TextureLoader;
 
 const { srcExists, getTexture, loadTexture } = foundry.canvas;
 
+// eslint-disable-next-line @typescript-eslint/no-deprecated -- `srcExists` is `@deprecated since v14`; still exercised for surface coverage.
 expectTypeOf(srcExists("path/to/texture")).toEqualTypeOf<Promise<boolean>>();
 
 expectTypeOf(getTexture("path/to/texture")).toEqualTypeOf<PIXI.Texture | PIXI.Spritesheet | null>();
@@ -21,6 +22,7 @@ expectTypeOf(TextureLoader.loadSceneTextures(someScene, { expireCache: false, ma
   Promise<void>
 >();
 expectTypeOf(TextureLoader.getTextureAlphaData(someTex, 0.8)).toEqualTypeOf<TextureLoader.TextureAlphaData | void>();
+// eslint-disable-next-line @typescript-eslint/no-deprecated -- `fetchResource` is `@deprecated since v14`; still exercised for surface coverage.
 expectTypeOf(TextureLoader.fetchResource("some/url.jpg", { bustCache: true })).toEqualTypeOf<Promise<Blob>>();
 expectTypeOf(TextureLoader.loader).toEqualTypeOf<TextureLoader>();
 

@@ -6,6 +6,7 @@ import EnvironmentCanvasGroup = foundry.canvas.groups.EnvironmentCanvasGroup;
 import HiddenCanvasGroup = foundry.canvas.groups.HiddenCanvasGroup;
 import LightingLayer = foundry.canvas.layers.LightingLayer;
 import NotesLayer = foundry.canvas.layers.NotesLayer;
+import RegionLayer = foundry.canvas.layers.RegionLayer;
 import TemplateLayer = foundry.canvas.layers.TemplateLayer;
 import TilesLayer = foundry.canvas.layers.TilesLayer;
 import TokenLayer = foundry.canvas.layers.TokenLayer;
@@ -21,6 +22,7 @@ expectTypeOf(myCanvas.getLayerByEmbeddedName("AmbientLight")).toEqualTypeOf<Ligh
 expectTypeOf(myCanvas.getLayerByEmbeddedName("AmbientSound")).toEqualTypeOf<SoundsLayer | null>();
 expectTypeOf(myCanvas.getLayerByEmbeddedName("Drawing")).toEqualTypeOf<DrawingsLayer | null>();
 expectTypeOf(myCanvas.getLayerByEmbeddedName("Note")).toEqualTypeOf<NotesLayer | null>();
+expectTypeOf(myCanvas.getLayerByEmbeddedName("Region")).toEqualTypeOf<RegionLayer | null>();
 expectTypeOf(myCanvas.getLayerByEmbeddedName("MeasuredTemplate")).toEqualTypeOf<TemplateLayer | null>();
 expectTypeOf(myCanvas.getLayerByEmbeddedName("Tile")).toEqualTypeOf<TilesLayer | null>();
 expectTypeOf(myCanvas.getLayerByEmbeddedName("Token")).toEqualTypeOf<TokenLayer | null>();

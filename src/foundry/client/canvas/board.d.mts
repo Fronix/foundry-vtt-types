@@ -50,6 +50,22 @@ declare class Canvas extends _InternalCanvas {
   constructor();
 
   /**
+   * The priority levels used to order {@linkcode Canvas.registerMouseMoveHandler | registered} mouse move handlers.
+   * @defaultValue
+   * ```typescript
+   * Object.freeze({ HIGH: 75, MEDIUM: 50, LOW: 25 })
+   * ```
+   */
+  static MOUSE_MOVE_HANDLER_PRIORITIES: Readonly<{ HIGH: 75; MEDIUM: 50; LOW: 25 }>;
+
+  /**
+   * An incrementing frame counter.
+   * @defaultValue `0`
+   * @internal
+   */
+  _frameId: number;
+
+  /**
    * A set of blur filter instances which are modified by the zoom level and the "soft shadows" setting
    * @defaultValue `[]`
    */
@@ -97,17 +113,11 @@ declare class Canvas extends _InternalCanvas {
    * Record framerate performance data
    */
   fps: {
-    /** @defaultValue `0` */
-    average: number;
-
     /** @defaultValue `[]` */
     values: number[];
 
     /** @defaultValue `0` */
-    render: number;
-
-    /** @defaultValue `document.getElementById("fps")` */
-    element: HTMLElement;
+    renderTime: number;
   };
 
   /**
@@ -139,6 +149,11 @@ declare class Canvas extends _InternalCanvas {
   screenDimensions: [x: number, y: number];
 
   /**
+   * A FramebufferSnapshot instance which captures the rendered canvas for scene transitions.
+   */
+  readonly snapshot: foundry.canvas.FramebufferSnapshot;
+
+  /**
    * A flag to indicate whether a new Scene is currently being drawn.
    * @defaultValue `false`
    */
@@ -149,6 +164,13 @@ declare class Canvas extends _InternalCanvas {
    * @defaultValue `null`
    */
   initializing: Promise<void> | null;
+
+  /**
+   * Options which configure how the active Scene is viewed (initial level, controlled tokens, transition).
+   * @defaultValue `{}`
+   * @internal
+   */
+  _viewOptions: Canvas.SceneViewOptions;
 
   /**
    * The singleton PIXI.Application instance rendered on the Canvas.
@@ -163,14 +185,15 @@ declare class Canvas extends _InternalCanvas {
   readonly stage: PIXI.Container | undefined;
 
   /**
+   * The root container.
+   * @defaultValue `undefined`
+   */
+  readonly root: PIXI.Container | undefined;
+
+  /**
    * The rendered canvas group which render the environment canvas group and the interface canvas group.
    */
   rendered: groups.RenderedCanvasGroup;
-
-  /**
-   * A singleton CanvasEdges instance.
-   */
-  edges: foundry.canvas.geometry.edges.CanvasEdges;
 
   /**
    * The singleton FogManager instance.
@@ -222,6 +245,12 @@ declare class Canvas extends _InternalCanvas {
   readonly overlay: groups.OverlayCanvasGroup;
 
   /**
+   * A TransitionContainer used to animate transitions between scenes.
+   * @defaultValue `undefined`
+   */
+  readonly transition: foundry.canvas.TransitionContainer | undefined;
+
+  /**
    * The singleton HeadsUpDisplay container which overlays HTML rendering on top of this Canvas.
    * @defaultValue `undefined`
    */
@@ -233,10 +262,24 @@ declare class Canvas extends _InternalCanvas {
   mousePosition: PIXI.Point;
 
   /**
-   * Track the last automatic pan time to throttle
-   * @defaultValue `0`
+   * The previous position of the mouse on stage.
    */
-  protected _panTime: number;
+  previousMousePosition: PIXI.Point;
+
+  /**
+   * Is the mouse position visible?
+   */
+  get mousePositionVisible(): boolean;
+
+  /**
+   * @internal
+   */
+  _mousePositionVisible: boolean;
+
+  /**
+   * Is the mouse position explored?
+   */
+  get mousePositionExplored(): boolean;
 
   /**
    * Force snapping to grid vertices?
@@ -253,6 +296,19 @@ declare class Canvas extends _InternalCanvas {
    * A reference to the currently displayed Scene document, or null if the Canvas is currently blank.
    */
   get scene(): Scene.Stored | null;
+
+  /**
+   * A reference to the currently displayed Level document, or null if the Canvas is currently blank.
+   * @remarks FIXME(v14-levels): returns a `Level` document (`foundry.documents.Level`); typed loosely as
+   * `object` until the Scene Levels subsystem authors the `Level` document (Phase 7).
+   */
+  get level(): object | null;
+
+  /**
+   * A reference to the edges of the currently displayed Level document.
+   * @remarks v14: this is now a getter deriving from `this.level?.edges`, returning `null` on a blank canvas.
+   */
+  get edges(): foundry.canvas.geometry.edges.CanvasEdges | null;
 
   /**
    * A SceneManager instance which adds behaviors to this Scene, or null if there is no manager.
@@ -347,8 +403,6 @@ declare class Canvas extends _InternalCanvas {
    */
   #createApplication(canvas: HTMLCanvasElement, config: ConstructorParameters<typeof PIXI.Application>[0]): void;
 
-  readonly snapshot?: foundry.canvas.FramebufferSnapshot;
-
   /**
    * Remap premultiplied blend modes/non premultiplied blend modes to fix PIXI bug with custom BM.
    */
@@ -408,8 +462,9 @@ declare class Canvas extends _InternalCanvas {
 
   /**
    * When re-drawing the canvas, first tear down or discontinue some existing processes
+   * @param options - Options which configure how the canvas is deconstructed.
    */
-  tearDown(): Promise<void>;
+  tearDown(options?: Canvas.TearDownOptions): Promise<void>;
 
   /**
    * Create a SceneManager instance used for this Scene, if any.
@@ -474,6 +529,18 @@ declare class Canvas extends _InternalCanvas {
   ): T extends keyof CollectionNameToLayerMap ? Exclude<CollectionNameToLayerMap[T], undefined> : undefined;
 
   /**
+   * Infer the Level for a given elevation. The inferred Level is always a visible one.
+   * Returns the viewed Level if there's no Level with the given elevation in range, or null if there's
+   * no viewed Level.
+   * @param elevation - The elevation
+   * @param options   - Additional options
+   * @remarks FIXME(v14-levels): returns a `Level` document (`foundry.documents.Level`) and `options.levels`
+   * is a `Set<string>` of Level IDs; the return is typed loosely as `object | null` until the Scene Levels
+   * subsystem authors the `Level` document (Phase 7).
+   */
+  inferLevelFromElevation(elevation: number, options?: Canvas.InferLevelFromElevationOptions): object | null;
+
+  /**
    * Activate framerate tracking by adding an HTML element to the display and refreshing it every frame.
    */
   activateFPSMeter(): void;
@@ -491,7 +558,7 @@ declare class Canvas extends _InternalCanvas {
   /**
    * Pan the canvas to a certain \{x,y\} coordinate and a certain zoom level
    */
-  pan({ x, y, scale }?: Canvas.ViewPosition): void;
+  pan({ x, y, scale }?: Omit<Canvas.ViewPosition, "level">): void;
 
   /**
    * Animate panning the canvas to a certain destination coordinate and zoom scale
@@ -503,7 +570,7 @@ declare class Canvas extends _InternalCanvas {
    * @returns A Promise which resolves once the animation has been completed
    */
   animatePan(
-    view: Canvas.ViewPosition & {
+    view: Omit<Canvas.ViewPosition, "level"> & {
       /**
        * The total duration of the animation in milliseconds; used if speed is not set
        * @defaultValue `250`
@@ -523,7 +590,7 @@ declare class Canvas extends _InternalCanvas {
    * @param initial - A desired initial position from which to begin the animation
    * @returns A Promise which resolves once the animation has been completed
    */
-  recenter(initial?: Canvas.ViewPosition): ReturnType<this["animatePan"]>;
+  recenter(initial?: Omit<Canvas.ViewPosition, "level">): ReturnType<this["animatePan"]>;
 
   /**
    * Highlight objects on any layers which are visible
@@ -540,6 +607,14 @@ declare class Canvas extends _InternalCanvas {
    * @param options - Additional options to configure how the ping is drawn.
    */
   ping(origin: Canvas.Point, options?: Ping.ConstructorOptions): Promise<boolean>;
+
+  /**
+   * Get the constrained zoom scale parameter which is allowed by the maxZoom parameter
+   * @param position - The unconstrained camera position.
+   * @returns The constrained position.
+   * @internal
+   */
+  protected _constrainView(position: Omit<Canvas.ViewPosition, "level">): Omit<Canvas.ViewPosition, "level">;
 
   /**
    * Create a BlurFilter instance and register it to the array for updates when the zoom level changes.
@@ -600,6 +675,20 @@ declare class Canvas extends _InternalCanvas {
   static getRenderTexture(options?: Canvas.GetRenderTextureOptions): PIXI.RenderTexture;
 
   /**
+   * Register a new onMouseMove handler with an optional priority.
+   * @param handler  - The function to call on mouse move.
+   * @param priority - Optional priority. Higher values are called earlier. (default: `0`)
+   * @param context  - The context in which the handler should be executed. (default: `this`)
+   * @param strict   - To know if the handler should be called on real pointer move only (not simulated). (default: `false`)
+   */
+  registerMouseMoveHandler(
+    handler: (...args: never) => void,
+    priority?: number,
+    context?: object,
+    strict?: boolean,
+  ): void;
+
+  /**
    * Handle right-mouse start drag events occurring on the Canvas.
    */
   protected _onDragRightStart(event: Canvas.Event.Pointer): void;
@@ -627,10 +716,8 @@ declare class Canvas extends _InternalCanvas {
 
   /**
    * Handle window resizing with the dimensions of the window viewport change
-   * @param event - The Window resize event
-   *                (default: `null`)
    */
-  protected _onResize(event?: UIEvent | null): false | void;
+  protected _onResize(): false | void;
 
   /**
    * Handle mousewheel events which adjust the scale of the canvas
@@ -642,32 +729,6 @@ declare class Canvas extends _InternalCanvas {
    * Track objects which have pending render flags.
    */
   readonly pendingRenderFlags: Canvas.PendingRenderFlags;
-
-  /**
-   * @deprecated since v11, will be removed in v13
-   * @remarks "Canvas#addPendingOperation is deprecated without replacement in v11.
-   * The callback that you have passed as a pending operation has been executed immediately.
-   * We recommend switching your code to use a debounce operation or RenderFlags to de-duplicate overlapping requests."
-   */
-  addPendingOperation<S, A>(name: string, fn: (this: S, args: A) => void, scope: S, args: A): void;
-
-  /**
-   * @deprecated since v11, will be removed in v13
-   * @remarks "Canvas#triggerPendingOperations is deprecated without replacement in v11 and performs no action."
-   */
-  triggerPendingOperations(): void;
-
-  /**
-   * @deprecated since v11, will be removed in v13
-   * @remarks `"Canvas#pendingOperations is deprecated without replacement in v11."`
-   */
-  get pendingOperations(): [];
-
-  /**
-   * @deprecated since v12, will be removed in v14
-   * @remarks `"Canvas#colorManager is deprecated and replaced by Canvas#environment"`
-   */
-  get colorManager(): this["environment"];
 }
 
 declare namespace Canvas {
@@ -677,6 +738,14 @@ declare namespace Canvas {
 
     /** The scene rectangle. */
     sceneRect: PIXI.Rectangle;
+
+    /** The minimum, maximum, and default canvas scale. */
+    scale: { min: number; max: number; default: number };
+
+    /**
+     * The scaling factor for canvas UI elements. Based on the normalized grid size (100px).
+     */
+    uiScale: number;
   }
 
   /** @internal */
@@ -695,9 +764,54 @@ declare namespace Canvas {
      * The zoom level up to CONFIG.Canvas.maxZoom which becomes stage.scale.x and y
      */
     scale: number;
+
+    /**
+     * The last-viewed level ID for the scene.
+     */
+    level: string;
   }>;
 
   interface ViewPosition extends _ViewPosition {}
+
+  /** Options for {@linkcode Canvas.tearDown} and {@linkcode foundry.canvas.SceneManager._onTearDown}. */
+  interface TearDownOptions {
+    /** The Scene about to be drawn, or null if the canvas is going blank. */
+    nextScene?: Scene.Implementation | null | undefined;
+
+    /**
+     * The Level about to be drawn, or null if the canvas is going blank.
+     * @remarks FIXME(v14-levels): a `Level` document (`foundry.documents.Level`); typed loosely as `object`
+     * until the Scene Levels subsystem authors the `Level` document (Phase 7).
+     */
+    nextLevel?: object | null | undefined;
+  }
+
+  /** @internal */
+  type _SceneViewOptions = InexactPartial<{
+    /** The ID of the Level to view */
+    level: string;
+
+    /** The IDs of initially controlled tokens */
+    controlledTokens: string[];
+
+    /** The transition animation to use when viewing the scene */
+    transition: {
+      /** The type of the transition animation */
+      type?: string | undefined;
+
+      /** The duration of the transition animation */
+      duration?: number | undefined;
+    };
+  }>;
+
+  /** Options which configure how the active Scene is viewed. */
+  interface SceneViewOptions extends _SceneViewOptions {}
+
+  /** Options for {@linkcode Canvas.inferLevelFromElevation}. */
+  interface InferLevelFromElevationOptions {
+    /** Restrict to these Levels (empty means all Levels) */
+    levels?: Set<string> | undefined;
+  }
 
   interface DropPosition {
     x: number;
@@ -752,14 +866,8 @@ declare namespace Canvas {
   }
 
   interface PerformanceSettings {
-    /** The performance mode in CONST.CANVAS_PERFORMANCE_MODES */
+    /** A performance mode in CONST.CANVAS_PERFORMANCE_MODES */
     mode: CANVAS_PERFORMANCE_MODES;
-
-    /** Blur filter configuration */
-    blur: {
-      enabled: boolean;
-      illumination: boolean;
-    };
 
     /** Whether to use mipmaps, "ON" or "OFF" */
     mipmap: "ON" | "OFF";
@@ -773,26 +881,8 @@ declare namespace Canvas {
     /** Maximum framerate which should be the render target */
     fps: number;
 
-    /** Whether to display token movement animation */
-    tokenAnimation: boolean;
-
-    /** Whether to display light source animation */
-    lightAnimation: boolean;
-
     /** Whether to render soft edges for light sources */
     lightSoftEdges: boolean;
-
-    /** Texture configuration */
-    textures: {
-      enabled: boolean;
-
-      maxSize: number;
-
-      p2Steps: number;
-
-      /** @defaultValue `2` */
-      p2StepsMax: number;
-    };
   }
 
   interface SupportedComponents {
@@ -804,6 +894,24 @@ declare namespace Canvas {
 
     /** Is the OffscreenCanvas supported? */
     offscreenCanvas: boolean;
+
+    /** The maximum number of vertex uniform vectors. */
+    maxVertexVectors: number;
+
+    /** The maximum number of fragment uniform vectors. */
+    maxFragmentVectors: number;
+
+    /** The maximum number of vertex attributes. */
+    maxVertexAttributes: number;
+
+    /** The maximum number of varying vectors. */
+    maxVaryingVectors: number;
+
+    /** The maximum number of texture image units. */
+    maxTextureUnits: number;
+
+    /** The maximum number of vertex texture image units. */
+    maxVertexTextureUnits: number;
   }
 
   interface GetRenderTextureOptions {
@@ -1018,18 +1126,24 @@ interface EmbeddedEntityNameToLayerMap {
   AmbientLight: Canvas["lighting"];
   AmbientSound: Canvas["sounds"];
   Drawing: Canvas["drawings"];
-  Note: Canvas["notes"];
+
+  /** @deprecated since v14 */
   MeasuredTemplate: Canvas["templates"];
+  Note: Canvas["notes"];
+  Region: Canvas["regions"];
   Tile: Canvas["tiles"];
   Token: Canvas["tokens"];
   Wall: Canvas["walls"];
 }
 
 interface CollectionNameToLayerMap {
-  lights: Canvas["lighting"];
-  sounds: Canvas["sounds"];
   drawings: Canvas["drawings"];
+  lights: Canvas["lighting"];
   notes: Canvas["notes"];
+  regions: Canvas["regions"];
+  sounds: Canvas["sounds"];
+
+  /** @deprecated since v14 */
   templates: Canvas["templates"];
   tiles: Canvas["tiles"];
   tokens: Canvas["tokens"];

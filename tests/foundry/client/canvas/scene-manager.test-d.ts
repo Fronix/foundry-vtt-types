@@ -5,13 +5,15 @@ declare const someScene: Scene.Implementation;
 const mySM = new SceneManager(someScene);
 
 expectTypeOf(mySM.scene).toEqualTypeOf<Scene.Implementation>();
+expectTypeOf(mySM["_determineInitialLevel"]()).toEqualTypeOf<string | void>();
+expectTypeOf(mySM["_getAvailableLevels"](new Set())).toEqualTypeOf<Set<object> | void>();
 expectTypeOf(mySM["_onInit"]()).toEqualTypeOf<Promise<void>>();
 expectTypeOf(mySM["_onDraw"]()).toEqualTypeOf<Promise<void>>();
 expectTypeOf(mySM["_onReady"]()).toEqualTypeOf<Promise<void>>();
-expectTypeOf(mySM["_onTearDown"]()).toEqualTypeOf<Promise<void>>();
+expectTypeOf(mySM["_onTearDown"]({})).toEqualTypeOf<Promise<void>>();
 expectTypeOf(mySM["_registerHooks"]()).toBeVoid();
 expectTypeOf(mySM["_deactivateHooks"]()).toBeVoid();
 
-expectTypeOf(mySM.registerHooks("foo", () => "foo!")).toBeVoid();
-expectTypeOf(mySM.registerHooks("foo", (pt: number) => pt * 2)).toBeVoid();
-expectTypeOf(mySM.registerHooks("foo", (name: string) => name.length > 4)).toBeVoid();
+expectTypeOf(mySM.registerHook("foo", () => "foo!")).toBeVoid();
+expectTypeOf(mySM.registerHook("foo", (pt: number) => pt * 2)).toBeVoid();
+expectTypeOf(mySM.registerHook("foo", (name: string) => name.length > 4)).toBeVoid();
