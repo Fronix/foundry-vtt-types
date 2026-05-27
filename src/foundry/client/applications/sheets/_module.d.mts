@@ -20,6 +20,7 @@ export { default as FolderConfig } from "./folder-config.mjs";
 export { default as ItemSheetV2, default as ItemSheet } from "./item-sheet.mjs";
 export { default as MacroConfig } from "./macro-config.mjs";
 export { default as NoteConfig } from "./note-config.mjs";
+export { default as PlaceableConfig } from "./placeable-config.mjs";
 export { default as PlaylistConfig } from "./playlist-config.mjs";
 export { default as PlaylistSoundConfig } from "./playlist-sound-config.mjs";
 export { default as RegionBehaviorConfig } from "./region-behavior-config.mjs";
