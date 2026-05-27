@@ -1,7 +1,10 @@
-import type { IntentionalPartial, InexactPartial, NullishProps, HandleEmptyObject, Identity } from "#utils";
+import type { AnyObject, IntentionalPartial, InexactPartial, NullishProps, HandleEmptyObject, Identity } from "#utils";
 import type { Canvas } from "#client/canvas/_module.d.mts";
 import type { PlaceablesLayer } from "./_module.d.mts";
+import type ShapeLayerMixin from "./mixins/shapes.d.mts";
+import type { ShapeLayerPlaceablesLayer } from "./mixins/shapes.d.mts";
 import type { AmbientSound } from "#client/canvas/placeables/_module.d.mts";
+import type SceneControls from "#client/applications/ui/scene-controls.d.mts";
 
 declare module "#configuration" {
   namespace Hooks {
@@ -14,7 +17,7 @@ declare module "#configuration" {
 /**
  * This Canvas Layer provides a container for AmbientSound objects.
  */
-declare class SoundsLayer extends PlaceablesLayer<"AmbientSound"> {
+declare class SoundsLayer extends ShapeLayerPlaceablesLayer<"AmbientSound"> {
   /**
    * @privateRemarks This is not overridden in foundry but reflects the real behavior.
    */
@@ -39,17 +42,20 @@ declare class SoundsLayer extends PlaceablesLayer<"AmbientSound"> {
 
   /**
    * @defaultValue
-   * ```
+   * ```js
    * foundry.utils.mergeObject(super.layerOptions, {
-   *  name: "sounds",
-   *  zIndex: 900
+   *   name: "sounds",
+   *   controllableObjects: true,
+   *   zIndex: 900,
+   *   confirmBeforeCreation: true
    * })
    * ```
    */
-
   static override get layerOptions(): SoundsLayer.LayerOptions;
 
   static override documentName: "AmbientSound";
+
+  // FIXME: AmbientSoundPalette // `static paletteClass = AmbientSoundPalette` is added with the `applications/sheets/palette/` files in Batch 5.6g.
 
   override get hookName(): "SoundsLayer";
 
@@ -69,15 +75,14 @@ declare class SoundsLayer extends PlaceablesLayer<"AmbientSound"> {
    * Sync audio for the positions of tokens which are capable of hearing.
    * @param options - Additional options forwarded to AmbientSound synchronization
    *                  (defaultValue: `{}`)
-   * @remarks Probably meant to be treated as always `void`; the `number` return is from an `Array#push` call, not anything meaningful
    */
-  refresh(options?: SoundsLayer.RefreshOptions): number | void;
+  refresh(options?: SoundsLayer.RefreshOptions): void;
 
   /**
-   * Preview ambient audio for a given mouse cursor position
-   * @param position - The cursor position to preview
+   * Preview ambient audio for a given position
+   * @param position - The position to preview
    */
-  previewSound(position: Canvas.Point): void;
+  previewSound(position: Canvas.Point | Canvas.ElevatedPoint): void;
 
   /**
    * Terminate playback of all ambient audio sources
@@ -86,9 +91,8 @@ declare class SoundsLayer extends PlaceablesLayer<"AmbientSound"> {
 
   /**
    * Get an array of listener positions for Tokens which are able to hear environmental sound.
-   * @remarks Returns an array of `token.center`s, so actual `PIXI.Point`s for once
    */
-  getListenerPositions(): PIXI.Point[];
+  getListenerPositions(): Canvas.ElevatedPoint[];
 
   /**
    * Sync the playing state and volume of all AmbientSound objects based on the position of listener points
@@ -96,7 +100,7 @@ declare class SoundsLayer extends PlaceablesLayer<"AmbientSound"> {
    * @param options   - Additional options forwarded to AmbientSound synchronization
    *                    (defaultValue: `{}`)
    */
-  protected _syncPositions(listeners: PIXI.Point[], options?: SoundsLayer.SyncPositionsOptions | null): void;
+  protected _syncPositions(listeners: Canvas.ElevatedPoint[], options?: SoundsLayer.SyncPositionsOptions | null): void;
 
   /**
    * Configure playback by assigning the muffled state and final playback volume for the sound.
@@ -166,18 +170,16 @@ declare class SoundsLayer extends PlaceablesLayer<"AmbientSound"> {
    */
   emitAtPosition(...args: Parameters<this["playAtPosition"]>): ReturnType<this["playAtPosition"]>;
 
+  static override prepareSceneControls(): SceneControls.Control;
+
   /**
    * Handle mouse cursor movements which may cause ambient audio previews to occur
    */
-  protected _onMouseMove(): void;
+  protected _onMouseMove(currentPos: PIXI.Point): void;
 
-  protected override _onDragLeftStart(event: Canvas.Event.Pointer): void;
+  protected override _createDragShapeData(event: Canvas.Event.Pointer): AnyObject;
 
-  protected override _onDragLeftMove(event: Canvas.Event.Pointer): void;
-
-  protected override _onDragLeftDrop(event: Canvas.Event.Pointer): void;
-
-  protected override _onDragLeftCancel(event: Canvas.Event.Pointer): void;
+  protected override _updateDragPreview(event: Canvas.Event.Pointer): void;
 
   /**
    * Handle PlaylistSound document drop data.
@@ -195,9 +197,11 @@ declare namespace SoundsLayer {
 
   interface TearDownOptions extends PlaceablesLayer.TearDownOptions {}
 
-  interface LayerOptions extends PlaceablesLayer.LayerOptions<AmbientSound.ImplementationClass> {
+  interface LayerOptions extends ShapeLayerMixin.LayerOptions<AmbientSound.ImplementationClass> {
     name: "sounds";
+    controllableObjects: true;
     zIndex: 900;
+    confirmBeforeCreation: true;
   }
 
   interface DropData extends Canvas.DropPosition {
@@ -281,9 +285,10 @@ declare namespace SoundsLayer {
      * The coordinates of the closest listener or undefined if there is none
      * @remarks If falsey, `volume` is set to `0`
      *
-     * One of the rare times Foundry actually wants a `PIXI.Point`, as it calls `listener#equals(source)`
+     * As of v14, `_configurePlayback` compares `listener.x`/`.y`/`.elevation` against the source, so this is an
+     * {@link Canvas.ElevatedPoint | `ElevatedPoint`}.
      */
-    listener: PIXI.Point;
+    listener: Canvas.ElevatedPoint;
   }>;
 
   /** @privateRemarks The only place this is used outside of variables entirely internal to function bodies in Foundry code is as a parameter for `#_configurePlayback` */

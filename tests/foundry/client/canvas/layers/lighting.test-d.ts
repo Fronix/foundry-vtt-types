@@ -1,4 +1,5 @@
 import { expectTypeOf } from "vitest";
+import type { AnyObject } from "fvtt-types/utils";
 
 import LightingLayer = foundry.canvas.layers.LightingLayer;
 import AmbientLight = foundry.canvas.placeables.AmbientLight;
@@ -22,15 +23,19 @@ expectTypeOf(layer["_tearDown"]({})).toEqualTypeOf<Promise<void>>();
 
 expectTypeOf(layer.refreshFields()).toBeVoid();
 expectTypeOf(layer["_activate"]()).toBeVoid();
+expectTypeOf(LightingLayer.prepareSceneControls()).toEqualTypeOf<foundry.applications.ui.SceneControls.Control>();
 
 declare const someUser: User.Implementation;
 declare const pointerEvent: foundry.canvas.Canvas.Event.Pointer;
 declare const wheelEvent: foundry.canvas.Canvas.Event.Wheel;
 declare const darknessChangeEvent: foundry.canvas.Canvas.Event.DarknessChange;
+// `_canDragLeftStart` / the `_onDragLeft*` family come from the shared `ShapeLayerMixin`.
 expectTypeOf(layer["_canDragLeftStart"](someUser, pointerEvent)).toBeBoolean();
 expectTypeOf(layer["_onDragLeftStart"](pointerEvent)).toBeVoid();
 expectTypeOf(layer["_onDragLeftMove"](pointerEvent)).toBeVoid();
 expectTypeOf(layer["_onDragLeftCancel"](pointerEvent)).toBeVoid();
-// v14 removed `LightingLayer#_onMouseWheel`; the base `PlaceablesLayer#_onMouseWheel` is inherited.
+expectTypeOf(layer["_createDragShapeData"](pointerEvent)).toEqualTypeOf<AnyObject>();
+expectTypeOf(layer["_updateDragPreview"](pointerEvent)).toBeVoid();
+expectTypeOf(layer["_updateMouseWheelPreview"]()).toBeVoid();
 expectTypeOf(layer["_onMouseWheel"](wheelEvent)).toEqualTypeOf<Promise<AmbientLight.Implementation[] | void>>();
 expectTypeOf(layer["_onDarknessChange"](darknessChangeEvent)).toBeVoid();

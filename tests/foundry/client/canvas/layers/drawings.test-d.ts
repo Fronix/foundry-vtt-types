@@ -10,7 +10,8 @@ expectTypeOf(DrawingsLayer.instance).toEqualTypeOf<DrawingsLayer | undefined>();
 expectTypeOf(DrawingsLayer.layerOptions).toEqualTypeOf<DrawingsLayer.LayerOptions>();
 expectTypeOf(DrawingsLayer.layerOptions.name).toEqualTypeOf<"drawings">();
 expectTypeOf(DrawingsLayer.layerOptions.objectClass).toEqualTypeOf<Drawing.ImplementationClass>();
-expectTypeOf(DrawingsLayer.DEFAULT_CONFIG_SETTING).toEqualTypeOf<"defaultDrawingConfig">();
+expectTypeOf(DrawingsLayer.layerOptions.discardClosingPoint).toEqualTypeOf<false>();
+expectTypeOf(DrawingsLayer.prepareSceneControls()).toEqualTypeOf<foundry.applications.ui.SceneControls.Control>();
 
 const layer = new DrawingsLayer();
 
@@ -24,8 +25,8 @@ expectTypeOf(layer.hookName).toEqualTypeOf<"DrawingsLayer">();
 
 declare const somePoint: PIXI.IPointData;
 expectTypeOf(layer.getSnappedPoint(somePoint)).toEqualTypeOf<Canvas.Point>();
-expectTypeOf(layer.configureDefault()).toEqualTypeOf<void>();
 
+expectTypeOf(layer["_getCopyableObjects"]({ cut: false })).toEqualTypeOf<Drawing.Implementation[]>();
 expectTypeOf(layer["_deactivate"]()).toBeVoid();
 expectTypeOf(layer["_draw"]({})).toEqualTypeOf<Promise<void>>();
 
@@ -39,10 +40,8 @@ expectTypeOf(layer["_onDragLeftMove"](pointerEvent)).toBeVoid();
 expectTypeOf(layer["_onDragLeftDrop"](pointerEvent)).toBeVoid();
 expectTypeOf(layer["_onDragLeftCancel"](pointerEvent)).toBeVoid();
 expectTypeOf(layer["_onClickRight"](pointerEvent)).toBeVoid();
-
-// deprecated since v12 until v14
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.gridPrecision).toEqualTypeOf<16 | 8 | 0>();
+expectTypeOf(layer["_createDragPreviewData"](pointerEvent)).toEqualTypeOf<DrawingDocument.CreateData>();
+expectTypeOf(layer["_updateMouseWheelPreview"]()).toBeVoid();
 
 Hooks.on("pasteDrawing", (objects, data, options) => {
   expectTypeOf(objects).toEqualTypeOf<Drawing.Implementation[]>();

@@ -1,7 +1,10 @@
-import type { HandleEmptyObject, Identity } from "#utils";
+import type { AnyObject, HandleEmptyObject, Identity } from "#utils";
 import type { Canvas } from "#client/canvas/_module.d.mts";
 import type { PlaceablesLayer } from "./_module.d.mts";
+import type ShapeLayerMixin from "./mixins/shapes.d.mts";
+import type { ShapeLayerPlaceablesLayer } from "./mixins/shapes.d.mts";
 import type { AmbientLight } from "#client/canvas/placeables/_module.d.mts";
+import type SceneControls from "#client/applications/ui/scene-controls.d.mts";
 
 declare module "#configuration" {
   namespace Hooks {
@@ -14,13 +17,15 @@ declare module "#configuration" {
 /**
  * The Lighting Layer which ambient light sources as part of the CanvasEffectsGroup.
  */
-declare class LightingLayer extends PlaceablesLayer<"AmbientLight"> {
+declare class LightingLayer extends ShapeLayerPlaceablesLayer<"AmbientLight"> {
   /**
    * @privateRemarks This is not overridden in foundry but reflects the real behavior.
    */
   static get instance(): Canvas["lighting"];
 
   static override documentName: "AmbientLight";
+
+  // FIXME: AmbientLightPalette // `static paletteClass = AmbientLightPalette` is added with the `applications/sheets/palette/` files in Batch 5.6g.
 
   /**
    * @privateRemarks This is not overridden in foundry but reflects the real behavior.
@@ -29,11 +34,12 @@ declare class LightingLayer extends PlaceablesLayer<"AmbientLight"> {
 
   /**
    * @defaultValue
-   * ```
+   * ```js
    * foundry.utils.mergeObject(super.layerOptions, {
-   *  name: "lighting",
-   *  rotatableObjects: true,
-   *  zIndex: 900
+   *   name: "lighting",
+   *   controllableObjects: true,
+   *   rotatableObjects: true,
+   *   zIndex: 900
    * })
    * ```
    */
@@ -52,17 +58,15 @@ declare class LightingLayer extends PlaceablesLayer<"AmbientLight"> {
 
   protected override _activate(): void;
 
-  protected override _canDragLeftStart(user: User.Implementation, event: Canvas.Event.Pointer): boolean;
+  static override prepareSceneControls(): SceneControls.Control;
 
-  protected override _onDragLeftStart(event: Canvas.Event.Pointer): void;
+  protected override _createDragShapeData(event: Canvas.Event.Pointer): AnyObject;
 
-  protected override _onDragLeftMove(event: Canvas.Event.Pointer): void;
+  protected override _updateDragPreview(event: Canvas.Event.Pointer): void;
+
+  protected override _updateMouseWheelPreview(): void;
 
   protected override _onDragLeftCancel(event: Canvas.Event.Pointer): void;
-
-  // Note: v14 removed `LightingLayer#_onMouseWheel` (the v13 override is gone from source); the base
-  // `PlaceablesLayer#_onMouseWheel` is inherited. Removed here as a prerequisite for `AmbientLightShapeControls`
-  // (Batch 5.6e) — `LightingLayer` must satisfy `PlaceablesLayer.Any`. Full v14 member-diff of this layer is Phase 5.6f.
 
   /**
    * Actions to take when the darkness level of the Scene is changed
@@ -79,8 +83,9 @@ declare namespace LightingLayer {
 
   interface TearDownOptions extends PlaceablesLayer.TearDownOptions {}
 
-  interface LayerOptions extends PlaceablesLayer.LayerOptions<AmbientLight.ImplementationClass> {
+  interface LayerOptions extends ShapeLayerMixin.LayerOptions<AmbientLight.ImplementationClass> {
     name: "lighting";
+    controllableObjects: true;
     rotatableObjects: true;
     zIndex: 900;
   }

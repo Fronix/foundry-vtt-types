@@ -1,7 +1,10 @@
 import type { HandleEmptyObject, Identity } from "#utils";
 import type { Canvas } from "#client/canvas/_module.d.mts";
-import type { CanvasLayer, PlaceablesLayer } from "./_module.d.mts";
+import type { PlaceablesLayer } from "./_module.d.mts";
+import type ShapeLayerMixin from "./mixins/shapes.d.mts";
+import type { ShapeLayerPlaceablesLayer } from "./mixins/shapes.d.mts";
 import type { Drawing } from "#client/canvas/placeables/_module.d.mts";
+import type SceneControls from "#client/applications/ui/scene-controls.d.mts";
 
 declare module "#configuration" {
   namespace Hooks {
@@ -13,8 +16,9 @@ declare module "#configuration" {
 
 /**
  * The DrawingsLayer subclass of PlaceablesLayer.
+ * This layer implements a container for drawings.
  */
-declare class DrawingsLayer extends PlaceablesLayer<"Drawing"> {
+declare class DrawingsLayer extends ShapeLayerPlaceablesLayer<"Drawing"> {
   /**
    * @privateRemarks This is not overridden in foundry but reflects the real behavior.
    */
@@ -27,12 +31,14 @@ declare class DrawingsLayer extends PlaceablesLayer<"Drawing"> {
 
   /**
    * @defaultValue
-   * ```
-   * mergeObject(super.layerOptions, {
-   *   name: "drawings"
+   * ```js
+   * foundry.utils.mergeObject(super.layerOptions, {
+   *   name: "drawings",
    *   controllableObjects: true,
    *   rotatableObjects: true,
-   *   zIndex: 500
+   *   zIndex: 500,
+   *   allowedEmptyShapes: ["polygon"],
+   *   discardClosingPoint: false
    * })
    * ```
    */
@@ -40,10 +46,7 @@ declare class DrawingsLayer extends PlaceablesLayer<"Drawing"> {
 
   static override documentName: "Drawing";
 
-  /**
-   * The named game setting which persists default drawing configuration for the User
-   */
-  static DEFAULT_CONFIG_SETTING: "defaultDrawingConfig";
+  // FIXME: DrawingPalette // `static paletteClass = DrawingPalette` is added with the `applications/sheets/palette/` files in Batch 5.6g.
 
   /**
    * The collection of drawing objects which are rendered in the interface.
@@ -54,12 +57,7 @@ declare class DrawingsLayer extends PlaceablesLayer<"Drawing"> {
 
   override get hookName(): "DrawingsLayer";
 
-  override getSnappedPoint(point: Canvas.Point): Canvas.Point;
-
-  /**
-   * Render a configuration sheet to configure the default Drawing settings
-   */
-  configureDefault(): void;
+  protected override _getCopyableObjects(options: PlaceablesLayer.GetCopyableObjectsOptions): Drawing.Implementation[];
 
   protected override _deactivate(): void;
 
@@ -74,46 +72,38 @@ declare class DrawingsLayer extends PlaceablesLayer<"Drawing"> {
    */
   _getNewDrawingData(origin: Canvas.Point): DrawingDocument.CreateData;
 
-  protected override _onClickLeft(event: Canvas.Event.Pointer): void;
+  static override prepareSceneControls(): SceneControls.Control;
 
-  protected override _onClickLeft2(event: Canvas.Event.Pointer): void;
-
-  /**
-   * @throws A `DataModelValidationError` if document creation fails
-   */
   protected override _onDragLeftStart(event: Canvas.Event.Pointer): void;
 
-  protected override _onDragLeftMove(event: Canvas.Event.Pointer): void;
+  protected override _createDragPreviewData(event: Canvas.Event.Pointer): DrawingDocument.CreateData;
 
-  /**
-   * Handling of mouse-up events which conclude a new object creation after dragging
-   * @private
-   */
-  protected _onDragLeftDrop(event: Canvas.Event.Pointer): void;
+  protected override _createDragShapeData(event: Canvas.Event.Pointer): DrawingsLayer.DragShapeData;
 
-  protected override _onDragLeftCancel(event: Canvas.Event.Pointer): void;
+  protected override _updateDragPreview(event: Canvas.Event.Pointer): void;
 
-  protected override _onClickRight(event: Canvas.Event.Pointer): void;
-
-  /**
-   * Use an adaptive precision depending on the size of the grid
-   * @deprecated since v12 until v14
-   */
-  get gridPrecision(): 0 | 8 | 16;
+  protected override _updateMouseWheelPreview(): void;
 }
 
 declare namespace DrawingsLayer {
   interface Any extends AnyDrawingsLayer {}
   interface AnyConstructor extends Identity<typeof AnyDrawingsLayer> {}
 
-  interface DrawOptions extends CanvasLayer.DrawOptions {}
+  interface DrawOptions extends PlaceablesLayer.DrawOptions {}
 
-  interface LayerOptions extends PlaceablesLayer.LayerOptions<Drawing.ImplementationClass> {
+  interface LayerOptions extends ShapeLayerMixin.LayerOptions<Drawing.ImplementationClass> {
     name: "drawings";
     controllableObjects: true;
     rotatableObjects: true;
     zIndex: 500;
+    discardClosingPoint: false;
   }
+
+  /** The shape data produced by {@link DrawingsLayer._createDragShapeData | `DrawingsLayer#_createDragShapeData`}. */
+  type DragShapeData =
+    | { type: "rectangle"; x: 0; y: 0; width: 0; height: 0; anchorX: 0.5; anchorY: 0.5 }
+    | { type: "ellipse"; x: 0; y: 0; radiusX: 0; radiusY: 0 }
+    | { type: "polygon"; points: [0, 0, 0, 0] };
 }
 
 export default DrawingsLayer;

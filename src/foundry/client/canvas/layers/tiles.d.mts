@@ -1,7 +1,10 @@
-import type { HandleEmptyObject, Identity } from "#utils";
+import type { AnyObject, HandleEmptyObject, Identity } from "#utils";
 import type { Canvas } from "#client/canvas/_module.d.mts";
-import type { CanvasDepthMask, PlaceablesLayer } from "./_module.d.mts";
+import type { PlaceablesLayer } from "./_module.d.mts";
+import type ShapeLayerMixin from "./mixins/shapes.d.mts";
+import type { ShapeLayerPlaceablesLayer } from "./mixins/shapes.d.mts";
 import type { Tile } from "#client/canvas/placeables/_module.d.mts";
+import type SceneControls from "#client/applications/ui/scene-controls.d.mts";
 
 declare module "#configuration" {
   namespace Hooks {
@@ -14,7 +17,7 @@ declare module "#configuration" {
 /**
  * A PlaceablesLayer designed for rendering the visual Scene for a specific vertical cross-section.
  */
-declare class TilesLayer extends PlaceablesLayer<"Tile"> {
+declare class TilesLayer extends ShapeLayerPlaceablesLayer<"Tile"> {
   /**
    * @privateRemarks This is not overridden in foundry but reflects the real behavior.
    */
@@ -22,16 +25,19 @@ declare class TilesLayer extends PlaceablesLayer<"Tile"> {
 
   static override documentName: "Tile";
 
+  // FIXME: TilePalette // `static paletteClass = TilePalette` is added with the `applications/sheets/palette/` files in Batch 5.6g.
+
   override options: TilesLayer.LayerOptions;
 
   /**
    * @defaultValue
    * ```js
    * foundry.utils.mergeObject(super.layerOptions, {
-   *    name: "tiles",
-   *    zIndex: 300,
-   *    controllableObjects: true,
-   *    rotatableObjects: true,
+   *   name: "tiles",
+   *   zIndex: 300,
+   *   controllableObjects: true,
+   *   rotatableObjects: true,
+   *   confirmBeforeCreation: true
    * })
    * ```
    */
@@ -46,23 +52,17 @@ declare class TilesLayer extends PlaceablesLayer<"Tile"> {
    */
   get tiles(): Tile.Implementation[];
 
-  /**
-   * @remarks Only produces foreground or non-forground tiles, depending on the state
-   * of the foregound layer toggle control
-   */
-  override controllableObjects(): Generator<Tile.Implementation, void, undefined>;
-
-  override getSnappedPoint(point: Canvas.Point): Canvas.Point;
-
   protected override _tearDown(options: HandleEmptyObject<TilesLayer.TearDownOptions>): Promise<void>;
 
-  protected override _onDragLeftStart(event: Canvas.Event.Pointer): void;
+  static override prepareSceneControls(): SceneControls.Control;
 
-  protected override _onDragLeftMove(event: Canvas.Event.Pointer): void;
+  protected override _createDragPreviewData(event: Canvas.Event.Pointer): AnyObject;
 
-  protected override _onDragLeftDrop(event: Canvas.Event.Pointer): void;
+  protected override _createDragShapeData(event: Canvas.Event.Pointer): AnyObject;
 
-  protected override _onDragLeftCancel(event: Canvas.Event.Pointer): void;
+  protected override _updateDragPreview(event: Canvas.Event.Pointer): void;
+
+  protected override _updateMouseWheelPreview(): void;
 
   /**
    * Handle drop events for Tile data on the Tiles Layer
@@ -82,26 +82,6 @@ declare class TilesLayer extends PlaceablesLayer<"Tile"> {
    * @returns The prepared data to create
    */
   protected _getDropData(event: DragEvent, data: TilesLayer.DropData): Promise<TileDocument.CreateData>;
-
-  /**
-   * Get an array of overhead Tile objects which are roofs
-   * @deprecated since v12 until v14
-   * @remarks "TilesLayer#roofs has been deprecated without replacement."
-   */
-  get roofs(): Tile.Implementation[];
-
-  /**
-   * @deprecated since v11, will be removed in v13
-   * @remarks "TilesLayer#textureDataMap has moved to TextureLoader.textureBufferDataMap"
-   */
-  get textureDataMap(): Map<unknown, unknown>;
-
-  /**
-   * A convenience reference to the tile occlusion mask on the primary canvas group.
-   * @deprecated since v11 until v13
-   * @remarks "TilesLayer#depthMask is deprecated without replacement. Use canvas.masks.depth instead"
-   */
-  get depthMask(): CanvasDepthMask.Any;
 }
 
 declare namespace TilesLayer {
@@ -110,11 +90,12 @@ declare namespace TilesLayer {
 
   interface TearDownOptions extends PlaceablesLayer.TearDownOptions {}
 
-  interface LayerOptions extends PlaceablesLayer.LayerOptions<Tile.ImplementationClass> {
+  interface LayerOptions extends ShapeLayerMixin.LayerOptions<Tile.ImplementationClass> {
     name: "tiles";
     zIndex: 300;
     controllableObjects: true;
     rotatableObjects: true;
+    confirmBeforeCreation: true;
   }
 
   /** @internal  */

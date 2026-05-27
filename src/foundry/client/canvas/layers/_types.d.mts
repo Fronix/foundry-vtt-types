@@ -25,5 +25,4 @@ type CanvasVisionContainerDarkness = foundry.canvas.layers.CanvasVisionMask.Canv
 
 type CanvasVisionContainer = foundry.canvas.layers.CanvasVisionMask.CanvasVisionContainer;
 
-// TODO(v14, Batch 5.6): v14 adds a `RegionPlacementOptions` typedef here; its reference is added
-// alongside `RegionLayer` (a `ShapeLayerMixin` layer verified in Batch 5.6).
+type RegionPlacementOptions = foundry.canvas.layers.RegionLayer.PlacementOptions;

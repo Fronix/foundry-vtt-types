@@ -1,7 +1,9 @@
 import { expectTypeOf } from "vitest";
+import type { AnyObject } from "fvtt-types/utils";
 
 import SoundsLayer = foundry.canvas.layers.SoundsLayer;
 import AmbientSound = foundry.canvas.placeables.AmbientSound;
+import Canvas = foundry.canvas.Canvas;
 
 expectTypeOf(SoundsLayer.documentName).toEqualTypeOf<"AmbientSound">();
 expectTypeOf(SoundsLayer.instance).toEqualTypeOf<SoundsLayer | undefined>();
@@ -25,22 +27,23 @@ expectTypeOf(layer["_activate"]()).toBeVoid();
 
 expectTypeOf(layer.initializeSources()).toBeVoid();
 
-expectTypeOf(layer.refresh()).toEqualTypeOf<number | void>();
-expectTypeOf(layer.refresh({ fade: null })).toEqualTypeOf<number | void>();
-expectTypeOf(layer.refresh({ fade: 500 })).toEqualTypeOf<number | void>();
+expectTypeOf(layer.refresh()).toBeVoid();
+expectTypeOf(layer.refresh({ fade: null })).toBeVoid();
+expectTypeOf(layer.refresh({ fade: 500 })).toBeVoid();
 
 expectTypeOf(layer.previewSound({ x: 500, y: 500 })).toBeVoid();
 expectTypeOf(layer.stopAll()).toBeVoid();
-expectTypeOf(layer.getListenerPositions()).toEqualTypeOf<PIXI.Point[]>();
+expectTypeOf(layer.getListenerPositions()).toEqualTypeOf<Canvas.ElevatedPoint[]>();
 declare const somePoint: PIXI.Point;
-expectTypeOf(layer["_syncPositions"]([somePoint])).toBeVoid();
-expectTypeOf(layer["_syncPositions"]([somePoint], {})).toBeVoid();
-expectTypeOf(layer["_syncPositions"]([somePoint], { fade: 100 })).toBeVoid();
+declare const someElevatedPoint: Canvas.ElevatedPoint;
+expectTypeOf(layer["_syncPositions"]([someElevatedPoint])).toBeVoid();
+expectTypeOf(layer["_syncPositions"]([someElevatedPoint], {})).toBeVoid();
+expectTypeOf(layer["_syncPositions"]([someElevatedPoint], { fade: 100 })).toBeVoid();
 declare const somePSS: foundry.canvas.sources.PointSoundSource;
 expectTypeOf(
   layer["_configurePlayback"]({
     source: somePSS, // only actually required property
-    listener: somePoint, // not technically required but will cause 0 volume/playback failure if omitted
+    listener: someElevatedPoint, // not technically required but will cause 0 volume/playback failure if omitted
     walls: false,
     // all other parts of the AmbientSoundPlaybackConfig are unused in this, the one place its used as a parameter
   }),
@@ -97,7 +100,10 @@ declare const darknessEvent: foundry.canvas.Canvas.Event.DarknessChange;
 declare const pointerEvent: foundry.canvas.Canvas.Event.Pointer;
 declare const someDragEvent: DragEvent;
 expectTypeOf(layer["_onDarknessChange"](darknessEvent)).toBeVoid();
-expectTypeOf(layer["_onMouseMove"]()).toBeVoid();
+expectTypeOf(SoundsLayer.prepareSceneControls()).toEqualTypeOf<foundry.applications.ui.SceneControls.Control>();
+expectTypeOf(layer["_onMouseMove"](somePoint)).toBeVoid();
+expectTypeOf(layer["_createDragShapeData"](pointerEvent)).toEqualTypeOf<AnyObject>();
+expectTypeOf(layer["_updateDragPreview"](pointerEvent)).toBeVoid();
 expectTypeOf(layer["_onDragLeftStart"](pointerEvent)).toBeVoid();
 expectTypeOf(layer["_onDragLeftMove"](pointerEvent)).toBeVoid();
 expectTypeOf(layer["_onDragLeftDrop"](pointerEvent)).toBeVoid();
