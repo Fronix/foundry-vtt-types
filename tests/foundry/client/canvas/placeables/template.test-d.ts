@@ -23,10 +23,12 @@ expectTypeOf(MeasuredTemplate.RENDER_FLAGS.redraw.propagate).toEqualTypeOf<
     >
   | undefined
 >();
+/* eslint-disable @typescript-eslint/no-deprecated -- deprecated since v14, until v16 */
 expectTypeOf(MeasuredTemplate.getCircleShape(5)).toEqualTypeOf<PIXI.Circle | PIXI.Polygon>();
 expectTypeOf(MeasuredTemplate.getConeShape(5, 270, 60)).toEqualTypeOf<PIXI.Polygon>();
 expectTypeOf(MeasuredTemplate.getRectShape(5, 90)).toEqualTypeOf<PIXI.Rectangle>();
 expectTypeOf(MeasuredTemplate.getRayShape(5, 180, 2)).toEqualTypeOf<PIXI.Polygon>();
+/* eslint-enable @typescript-eslint/no-deprecated */
 
 declare const doc: MeasuredTemplateDocument.Stored;
 const template = new CONFIG.MeasuredTemplate.objectClass(doc);
@@ -66,6 +68,7 @@ expectTypeOf(
     redraw: true,
     refresh: true,
     refreshState: true,
+    refreshVisibility: true,
     refreshPosition: true,
     refreshShape: true,
     refreshTemplate: true,
@@ -75,6 +78,7 @@ expectTypeOf(
   }),
 ).toBeVoid();
 
+expectTypeOf(template["_refreshVisibility"]()).toBeVoid();
 expectTypeOf(template["_refreshState"]()).toBeVoid();
 expectTypeOf(template["_refreshElevation"]()).toBeVoid();
 expectTypeOf(template["_getTargetAlpha"]()).toBeNumber();
@@ -87,6 +91,7 @@ expectTypeOf(template["_refreshRulerText"]()).toBeVoid();
 expectTypeOf(template.highlightGrid()).toBeVoid();
 expectTypeOf(template["_getGridHighlightShape"]()).toEqualTypeOf<PIXI.Circle | PIXI.Rectangle | PIXI.Polygon>();
 expectTypeOf(template["_getGridHighlightPositions"]()).toEqualTypeOf<Canvas.Point[]>();
+expectTypeOf(template.testPoint({ x: 10, y: 20 })).toBeBoolean();
 
 expectTypeOf(template.rotate(52, 3)).toEqualTypeOf<Promise<MeasuredTemplate.Implementation>>();
 
@@ -128,7 +133,7 @@ expectTypeOf(template["_prepareDragLeftDropUpdates"](pointerEvent)).toEqualTypeO
   PlaceableObject.DragLeftDropUpdate[]
 >();
 
-// deprecated since v12, until v14
+// deprecated since v12, until v16
 
 // eslint-disable-next-line @typescript-eslint/no-deprecated
 expectTypeOf(template.borderColor).toBeNumber();

@@ -1,6 +1,7 @@
 import { expectTypeOf } from "vitest";
 
 import Wall = foundry.canvas.placeables.Wall;
+import PlaceableObject = foundry.canvas.placeables.PlaceableObject;
 import DoorControl = foundry.canvas.containers.DoorControl;
 import Canvas = foundry.canvas.Canvas;
 import Ray = foundry.canvas.geometry.Ray;
@@ -37,13 +38,15 @@ expectTypeOf(wall.isOpen).toBeBoolean();
 expectTypeOf(wall.midpoint).toEqualTypeOf<Canvas.PointTuple>();
 expectTypeOf(wall.center).toEqualTypeOf<PIXI.Point>();
 expectTypeOf(wall.direction).toEqualTypeOf<number | null>();
+expectTypeOf(wall.doorMeshes).toEqualTypeOf<Set<foundry.canvas.containers.DoorMesh>>();
 // @ts-expect-error "`Wall#getSnappedPosition` is not supported: WallDocument does not have a (x, y) position"
 expectTypeOf(wall.getSnappedPosition()).toBeNever();
 
-expectTypeOf(wall.initializeEdge()).toBeVoid();
-expectTypeOf(wall.initializeEdge({})).toBeVoid();
-expectTypeOf(wall.initializeEdge({ deleted: true })).toBeVoid();
-expectTypeOf(wall.initializeEdge({ deleted: null })).toBeVoid();
+declare const offset: Canvas.Point;
+expectTypeOf(wall._pasteObject(offset)).toEqualTypeOf<PlaceableObject.PasteObjectReturn<WallDocument.Implementation>>();
+expectTypeOf(wall._pasteObject(offset, { hidden: true, snap: false })).toEqualTypeOf<
+  PlaceableObject.PasteObjectReturn<WallDocument.Implementation>
+>();
 
 expectTypeOf(wall.toRay()).toEqualTypeOf<Ray>();
 
@@ -53,8 +56,12 @@ expectTypeOf(wall["_draw"]({})).toEqualTypeOf<Promise<void>>();
 
 // eslint-disable-next-line @typescript-eslint/no-deprecated
 expectTypeOf(wall.clear()).toEqualTypeOf<Wall.Implementation>();
+expectTypeOf(wall["_clear"]()).toBeVoid();
 expectTypeOf(wall.createDoorControl()).toEqualTypeOf<DoorControl.Implementation>();
 expectTypeOf(wall.clearDoorControl()).toBeVoid();
+expectTypeOf(wall.hasDoorMesh).toBeBoolean();
+expectTypeOf(wall.createDoorMeshes()).toEqualTypeOf<Promise<void>>();
+expectTypeOf(wall.destroyDoorMeshes()).toBeVoid();
 
 expectTypeOf(wall.control()).toBeBoolean();
 expectTypeOf(wall.control({})).toBeBoolean();
@@ -121,26 +128,10 @@ expectTypeOf(wall["_onDragLeftMove"](pointerEvent)).toBeVoid();
 
 expectTypeOf(wall["_prepareDragLeftDropUpdates"](pointerEvent)).toEqualTypeOf<Wall.DragLeftDropUpdate[] | null>();
 
-// deprecated since v12, until v14
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(wall.roof).toBeNull();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(wall.hasActiveRoof).toBeBoolean();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(wall.identifyInteriorState()).toBeVoid();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(wall.orientPoint({ x: 50, y: 79 })).toEqualTypeOf<CONST.EDGE_DIRECTIONS>();
-
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(wall.applyThreshold("light", wall.center)).toBeBoolean();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(wall.applyThreshold("light", wall.center, 200)).toBeBoolean();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(wall.applyThreshold("light", wall.center, null)).toBeBoolean();
-
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(wall.vertices).toEqualTypeOf<foundry.canvas.geometry.edges.Edge>();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(wall.A).toEqualTypeOf<PIXI.Point>();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(wall.B).toEqualTypeOf<PIXI.Point>();
+// deprecated since v14
+/* eslint-disable @typescript-eslint/no-deprecated */
+expectTypeOf(wall.initializeEdge()).toBeVoid();
+expectTypeOf(wall.initializeEdge({})).toBeVoid();
+expectTypeOf(wall.initializeEdge({ deleted: true })).toBeVoid();
+expectTypeOf(wall.initializeEdge({ deleted: null })).toBeVoid();
+/* eslint-enable @typescript-eslint/no-deprecated */

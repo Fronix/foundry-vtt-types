@@ -53,11 +53,20 @@ declare class Note extends PlaceableObject<NoteDocument.Implementation> {
   get page(): JournalEntryPage.Stored | undefined;
 
   /**
+   * A convenient reference for whether the current User is the author of the Note document.
+   */
+  get isAuthor(): boolean;
+
+  /**
    * Determine whether the Note is visible to the current user based on their perspective of the Scene.
    * Visibility depends on permission to the underlying journal entry, as well as the perspective of controlled Tokens.
    * If Token Vision is required, the user must have a token with vision over the note to see it.
    */
-  get isVisible(): boolean;
+  override get isVisible(): boolean;
+
+  override get isInteractable(): boolean;
+
+  protected override _overlapsSelection(rectangle: PIXI.Rectangle): boolean;
 
   protected override _draw(options: HandleEmptyObject<Note.DrawOptions>): Promise<void>;
 
@@ -69,7 +78,7 @@ declare class Note extends PlaceableObject<NoteDocument.Implementation> {
   /**
    * Draw the tooltip.
    */
-  protected _drawTooltip(): PIXI.Text;
+  protected _drawTooltip(): PreciseText;
 
   /**
    * Refresh the tooltip.
@@ -80,9 +89,6 @@ declare class Note extends PlaceableObject<NoteDocument.Implementation> {
    * Define a PIXI TextStyle object which is used for the tooltip displayed for this Note
    */
   protected _getTextStyle(): PIXI.TextStyle;
-
-  // fake override; super has to account for misbehaving siblings returning void
-  override clear(): this;
 
   protected override _applyRenderFlags(flags: Note.RenderFlags): void;
 
@@ -102,6 +108,11 @@ declare class Note extends PlaceableObject<NoteDocument.Implementation> {
   protected _refreshPosition(): void;
 
   /**
+   * Refresh the size of the Note.
+   */
+  protected _refreshSize(): void;
+
+  /**
    * Refresh the elevation of the control icon.
    */
   protected _refreshElevation(): void;
@@ -114,8 +125,6 @@ declare class Note extends PlaceableObject<NoteDocument.Implementation> {
 
   protected override _canView(user: User.Implementation): boolean;
 
-  protected override _canConfigure(user: User.Implementation): boolean;
-
   // fake override to narrow the type from super, which had to account for this class's misbehaving siblings
   // options: not null (destructured)
   protected override _onHoverIn(event: Canvas.Event.Pointer, options?: PlaceableObject.HoverInOptions): void;
@@ -124,20 +133,6 @@ declare class Note extends PlaceableObject<NoteDocument.Implementation> {
 
   // fake override to narrow the type from super, which had to account for this class's misbehaving siblings
   protected override _prepareDragLeftDropUpdates(event: Canvas.Event.Pointer): PlaceableObject.DragLeftDropUpdate[];
-
-  /**
-   * The text label used to annotate this Note
-   * @deprecated since v12, until v14
-   * @remarks "`Note#text` has been deprecated. Use {@link NoteDocument.label | `Note#document#label`} instead."
-   */
-  get text(): string;
-
-  /**
-   * The Map Note icon size
-   * @deprecated since v12, until v14
-   * @remarks "`Note#size` has been deprecated. Use {@link NoteDocument.iconSize | `Note#document#iconSize`} instead."
-   */
-  get size(): number;
 }
 
 declare namespace Note {
@@ -164,7 +159,7 @@ declare namespace Note {
     /** @defaultValue `{ propagate: ["refresh"] }` */
     redraw: RenderFlag<this, "redraw">;
 
-    /** @defaultValue `{ propagate: ["refreshState", "refreshPosition", "refreshTooltip", "refreshElevation"], alias: true }` */
+    /** @defaultValue `{ propagate: ["refreshState", "refreshTransform", "refreshTooltip", "refreshElevation"], alias: true }` */
     refresh: RenderFlag<this, "refresh">;
 
     /** @defaultValue `{ propagate: ["refreshVisibility"] }` */
@@ -173,20 +168,20 @@ declare namespace Note {
     /** @defaultValue `{}` */
     refreshVisibility: RenderFlag<this, "refreshVisibility">;
 
+    /** @defaultValue `{ propagate: ["refreshPosition", "refreshSize"], alias: true }` */
+    refreshTransform: RenderFlag<this, "refreshTransform">;
+
     /** @defaultValue `{}` */
     refreshPosition: RenderFlag<this, "refreshPosition">;
+
+    /** @defaultValue `{}` */
+    refreshSize: RenderFlag<this, "refreshSize">;
 
     /** @defaultValue `{}` */
     refreshTooltip: RenderFlag<this, "refreshTooltip">;
 
     /** @defaultValue `{ propagate: ["refreshVisibility"] }` */
     refreshElevation: RenderFlag<this, "refreshElevation">;
-
-    /**
-     * @defaultValue `{ propagate: ["refreshTooltip"], deprecated: { since: 12, until: 14 }, alias: true }`
-     * @deprecated since v12, until v14
-     */
-    refreshText: RenderFlag<this, "refreshText">;
   }
 
   interface RenderFlags extends RenderFlagsMixin.ToBooleanFlags<RENDER_FLAGS> {}

@@ -1,5 +1,7 @@
 import type { AbstractBaseShader } from "#client/canvas/rendering/shaders/_module.d.mts";
 import type { Region } from "#client/canvas/placeables/_module.d.mts";
+import type { Canvas } from "#client/canvas/_module.d.mts";
+import type RegionGeometry from "./geometry.d.mts";
 
 /** A mesh of a {@linkcode Region} */
 declare class RegionMesh extends PIXI.Container {
@@ -13,6 +15,13 @@ declare class RegionMesh extends PIXI.Container {
 
   /** The Region of this RegionMesh */
   get region(): Region.Implementation;
+
+  /**
+   * The geometry of this RegionMesh.
+   * @throws If set to a {@linkcode RegionGeometry} that doesn't belong to this RegionMesh's Region.
+   */
+  get geometry(): RegionGeometry | PIXI.Geometry;
+  set geometry(value);
 
   /** The shader bound to this RegionMesh */
   get shader(): AbstractBaseShader;
@@ -56,9 +65,8 @@ declare class RegionMesh extends PIXI.Container {
 
   /**
    * Tests if a point is inside this RegionMesh.
-   * @privateRemarks The rare instance of Foundry using the PIXI interface in *their* types
    */
-  containsPoint(point: PIXI.IPointData): boolean;
+  containsPoint(point: Canvas.Point): boolean;
 
   override destroy(options?: PIXI.IDestroyOptions | boolean): void;
 }

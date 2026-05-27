@@ -1,6 +1,7 @@
 import { expectTypeOf } from "vitest";
 
 import RegionMesh = foundry.canvas.placeables.regions.RegionMesh;
+import RegionGeometry = foundry.canvas.placeables.regions.RegionGeometry;
 import Region = foundry.canvas.placeables.Region;
 import AbstractBaseShader = foundry.canvas.rendering.shaders.AbstractBaseShader;
 import PulseColorationShader = foundry.canvas.rendering.shaders.PulseColorationShader;
@@ -11,6 +12,10 @@ declare const someRegion: Region.Implementation;
 const myRM = new RegionMesh(someRegion, RegionShader);
 
 expectTypeOf(myRM.region).toEqualTypeOf<Region.Implementation>();
+expectTypeOf(myRM.geometry).toEqualTypeOf<RegionGeometry | PIXI.Geometry>();
+declare const someGeometry: RegionGeometry;
+myRM.geometry = someGeometry;
+myRM.geometry = new PIXI.Geometry();
 expectTypeOf(myRM.shader).toEqualTypeOf<AbstractBaseShader>();
 
 expectTypeOf(myRM.blendMode).toExtend<PIXI.BLEND_MODES>();
