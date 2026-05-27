@@ -15,7 +15,7 @@ import type { CanvasAnimation } from "#client/canvas/animation/_module.d.mts";
 import type { PreciseText } from "#client/canvas/containers/_module.mjs";
 import type { TextureTransitionFilter } from "#client/canvas/rendering/filters/_module.d.mts";
 import type { PointSourcePolygon } from "#client/canvas/geometry/_module.d.mts";
-import type { TokenRing } from "#client/canvas/placeables/tokens/_module.d.mts";
+import type { BaseTokenRuler, TokenRing, TokenTurnMarker } from "#client/canvas/placeables/tokens/_module.d.mts";
 import type { PrimarySpriteMesh } from "#client/canvas/primary/_module.d.mts";
 import { RenderFlagsMixin, RenderFlags, RenderFlag } from "#client/canvas/interaction/_module.mjs";
 
@@ -72,6 +72,13 @@ declare class Token extends PlaceableObject<TokenDocument.Implementation> {
   border: PIXI.Graphics | undefined;
 
   /**
+   * The effects icons of temporary ActiveEffects that are applied to the Actor of this Token.
+   * @defaultValue `undefined`
+   * @remarks Only `undefined` prior to first draw
+   */
+  effects: PIXI.Container | undefined;
+
+  /**
    * The attribute bars of this Token.
    * @defaultValue `undefined`
    * @remarks Only `undefined` prior to first draw
@@ -86,11 +93,25 @@ declare class Token extends PlaceableObject<TokenDocument.Implementation> {
   tooltip: PreciseText | undefined;
 
   /**
-   * The target marker, which indicates that this Token is targeted by this User or others.
+   * The indicator for "this token is not in the viewed level".
    * @defaultValue `undefined`
    * @remarks Only `undefined` prior to first draw
    */
-  target: PIXI.Graphics | undefined;
+  levelIndicator: PIXI.Sprite | undefined;
+
+  /**
+   * The target arrows marker, which indicates that this Token is targeted by this User.
+   * @defaultValue `undefined`
+   * @remarks Only `undefined` prior to first draw
+   */
+  targetArrows: PIXI.Graphics | undefined;
+
+  /**
+   * The target pips marker, which indicates that this Token is targeted by other User(s).
+   * @defaultValue `undefined`
+   * @remarks Only `undefined` prior to first draw
+   */
+  targetPips: PIXI.Graphics | undefined;
 
   /**
    * The nameplate of this Token, which displays its name.
@@ -98,6 +119,22 @@ declare class Token extends PlaceableObject<TokenDocument.Implementation> {
    * @remarks Only `undefined` prior to first draw
    */
   nameplate: PreciseText | undefined;
+
+  /**
+   * The ruler of this Token.
+   * @defaultValue `undefined`
+   * @remarks Only `undefined` prior to first draw; set to the result of {@link Token._initializeRuler | `Token#_initializeRuler`}
+   * (an instance of {@linkcode CONFIG.Token.rulerClass}, or `null` if none is configured) on first draw.
+   */
+  ruler: BaseTokenRuler | null | undefined;
+
+  /**
+   * The ruler data.
+   * @defaultValue `{}`
+   * @remarks Foundry marked `@protected`
+   * @privateRemarks FIXME: `Token.PlannedMovement` is a `unknown` stub — the token-movement subsystem is deferred to Phase 7.
+   */
+  protected _plannedMovement: Record<string, Token.PlannedMovement>;
 
   /**
    * Track the set of User documents which are currently targeting this Token
@@ -143,6 +180,13 @@ declare class Token extends PlaceableObject<TokenDocument.Implementation> {
   vision: sources.PointVisionSource.Implementation | undefined;
 
   /**
+   * Vision version incremented each time vision (and light) are updated.
+   * @defaultValue `0`
+   * @remarks Foundry marked `@internal`
+   */
+  _visionSourceVersion: number;
+
+  /**
    * A reference to the LightSource object which defines this light source area of effect
    * @defaultValue `undefined`
    * @remarks `undefined` prior to first draw or after {@link Token._destroy | `Token#_destroy`} is called, or
@@ -153,9 +197,52 @@ declare class Token extends PlaceableObject<TokenDocument.Implementation> {
   light: sources.PointLightSource.Implementation | sources.PointDarknessSource.Implementation | undefined;
 
   /**
+   * The Turn Marker of this Token.
+   * Only a subset of Token objects have a turn marker at any given time.
+   * @defaultValue `null`
+   */
+  turnMarker: TokenTurnMarker | null;
+
+  /**
    * The current animations of this Token.
    */
   get animationContexts(): Map<string, Token.AnimationContext>;
+
+  /**
+   * The general animation name used for this Token.
+   * @defaultValue
+   * ```js
+   * `${this.objectId}.animate`
+   * ```
+   */
+  get animationName(): string;
+
+  /**
+   * The animation name used to animate this Token's movement.
+   * @defaultValue
+   * ```js
+   * `${this.objectId}.animateMovement`
+   * ```
+   */
+  get movementAnimationName(): string;
+
+  /**
+   * The promise of the current movement animation chain of this Token
+   * or null if there isn't a movement animation in progress.
+   */
+  get movementAnimationPromise(): Promise<void> | null;
+
+  /**
+   * Should the ruler of this Token be visible?
+   */
+  get showRuler(): boolean;
+
+  /**
+   * Prevent keyboard movement of this Token?
+   * @defaultValue `false`
+   * @remarks Foundry marked `@internal`
+   */
+  _preventKeyboardMovement: boolean;
 
   /**
    * A TokenRing instance which is used if this Token applies a dynamic ring.
@@ -203,12 +290,6 @@ declare class Token extends PlaceableObject<TokenDocument.Implementation> {
   get center(): PIXI.Point;
 
   /**
-   * The Token's central position, adjusted in each direction by one or zero pixels to offset it relative to walls.
-   */
-  // offsets: not null (destructured)
-  getMovementAdjustedPoint(point: Canvas.Point, offsets?: Token.GetMovementAdjustedPointOffsets): Canvas.Point;
-
-  /**
    * The HTML source element for the primary Tile texture
    * @privateRemarks Foundry types this as `HTMLImageElement | HTMLVideoElement`, but this just
    * returns `this.texture?.baseTexture.resource.source`, which could be any of `PIXI.ImageSource`,
@@ -239,6 +320,11 @@ declare class Token extends PlaceableObject<TokenDocument.Implementation> {
   get isTargeted(): boolean;
 
   /**
+   * Is this Token currently being dragged?
+   */
+  get isDragged(): boolean;
+
+  /**
    * Return a reference to the detection modes array.
    */
   get detectionModes(): TokenDocument.Implementation["detectionModes"];
@@ -254,14 +340,7 @@ declare class Token extends PlaceableObject<TokenDocument.Implementation> {
    */
   get isVisible(): boolean;
 
-  /**
-   * The animation name used for Token movement
-   * @defaultValue
-   * ```js
-   * `${this.objectId}.animate`
-   * ```
-   */
-  get animationName(): string;
+  override get isInteractable(): boolean;
 
   /**
    * Test whether the Token has sight (or blindness) at any radius
@@ -360,6 +439,11 @@ declare class Token extends PlaceableObject<TokenDocument.Implementation> {
   protected _isVisionSource(): boolean;
 
   /**
+   * Test whether this Token should contribute to shared Fog of War exploration.
+   */
+  protected _isFogExplorationSource(): boolean;
+
+  /**
    * Render the bound mesh detection filter.
    * Note: this method does not verify that the detection filter exists.
    */
@@ -368,6 +452,19 @@ declare class Token extends PlaceableObject<TokenDocument.Implementation> {
   protected override _destroy(options: PIXI.IDestroyOptions | boolean | undefined): void;
 
   protected override _draw(options: HandleEmptyObject<Token.DrawOptions> | undefined): Promise<void>;
+
+  /**
+   * Create the BaseTokenRuler instance for this Token, if any.
+   * This function is called when the Token is drawn for the first time.
+   * @returns An instance of {@linkcode CONFIG.Token.rulerClass}, or `null` if none is configured.
+   */
+  protected _initializeRuler(): BaseTokenRuler | null;
+
+  /**
+   * Create an unattached VisionSource instance used for shared fog exploration.
+   * @remarks Foundry marked `@internal`
+   */
+  protected _createSharedFogVisionSource(): sources.PointVisionSource.Implementation;
 
   protected override _applyRenderFlags(flags: Token.RenderFlags): void;
 
@@ -448,18 +545,21 @@ declare class Token extends PlaceableObject<TokenDocument.Implementation> {
   /**
    * Refresh the target indicators for the Token.
    * Draw both target arrows for the primary User and indicator pips for other Users targeting the same Token.
-   * @param reticule - Additional parameters to configure how the targeting reticule is drawn.
-   * @remarks Forwards `reticule` to {@link Token._drawTarget | `Token#_drawTarget`}
+   * @remarks Calls {@link Token._drawTargetArrows | `Token#_drawTargetArrows`} and {@link Token._drawTargetPips | `Token#_drawTargetPips`}
    */
-  // reticule: not null (destructured in _drawTarget)
-  protected _refreshTarget(reticule?: Token.ReticuleOptions): void;
+  protected _refreshTarget(): void;
 
   /**
    * Draw the targeting arrows around this token.
    * @param reticule - Additional parameters to configure how the targeting reticule is drawn.
    */
   // reticule: not null (destructured)
-  protected _drawTarget(reticule?: Token.ReticuleOptions): void;
+  protected _drawTargetArrows(reticule?: Token.ReticuleOptions): void;
+
+  /**
+   * Draw the targeting pips around this token.
+   */
+  protected _drawTargetPips(): void;
 
   /**
    * Refresh the display of Token attribute bars, rendering its latest resource data.
@@ -521,6 +621,16 @@ declare class Token extends PlaceableObject<TokenDocument.Implementation> {
    * Refresh the display of status effects, adjusting their position for the token width and height.
    */
   protected _refreshEffects(): void;
+
+  /**
+   * Refresh presentation of the Token's combat turn marker, if any.
+   */
+  protected _refreshTurnMarker(): void;
+
+  /**
+   * Refresh the display of the ruler.
+   */
+  protected _refreshRuler(): void;
 
   /**
    * Helper method to determine whether a token attribute is viewable under a certain mode
@@ -614,12 +724,6 @@ declare class Token extends PlaceableObject<TokenDocument.Implementation> {
   ): PointSourcePolygon.TestCollision<Coalesce<Mode, "any">>;
 
   /**
-   * Get the width and height of the Token in pixels.
-   * @returns The size in pixels
-   */
-  getSize(): Token.Size;
-
-  /**
    * Get the shape of this Token.
    * @privateRemarks Foundry types this as possibly returning a `PIXI.Circle`, but it never does in practice in v12.
    * Not reported as this has changed in v13.
@@ -694,52 +798,6 @@ declare class Token extends PlaceableObject<TokenDocument.Implementation> {
     waypoints: Token.FindMovementPathWaypoint[],
     options?: Token.FindMovementPathOptions,
   ): Token.FindMovementPathJob;
-
-  /**
-   * Test whether the Token is inside the Region.
-   * This function determines the state of {@link TokenDocument.regions | `TokenDocument#regions`} and {@link RegionDocument.tokens | `RegionDocument#tokens`}.
-   *
-   * Implementations of this function are restricted in the following ways:
-   *   - If the bounds (given by {@link Token.getSize | `Token#getSize`}) of the Token do not intersect the Region, then the Token is not
-   *     contained within the Region.
-   *   - If the Token is inside the Region a particular elevation, then the Token is inside the Region at any elevation
-   *     within the elevation range of the Region.
-   *
-   * If this function is overridden, then {@link Token.segmentizeRegionMovement | `Token#segmentizeRegionMovement`} must be overridden too.
-   * @param region   - The region.
-   * @param position - The (x, y) and/or elevation to use instead of the current values.
-   * @returns Is the Token inside the Region?
-   * @remarks `position` can be `{x, y}`, `{elevation}`, both, or neither. If either part is omitted, uses the document's value(s)
-   */
-  testInsideRegion(region: Region.Implementation, position?: Token.TestablePosition | null): boolean;
-
-  /**
-   * Split the Token movement through the waypoints into its segments.
-   *
-   * Implementations of this function are restricted in the following ways:
-   *   - The segments must go through the waypoints.
-   *   - The *from* position matches the *to* position of the succeeding segment.
-   *   - The Token must be contained (w.r.t. {@link Token.testInsideRegion | `Token#testInsideRegion`}) within the Region
-   *     at the *from* and *to* of MOVE segments.
-   *   - The Token must be contained (w.r.t. {@link Token.testInsideRegion | `Token#testInsideRegion`}) within the Region
-   *     at the *to* position of ENTER segments.
-   *   - The Token must be contained (w.r.t. {@link Token.testInsideRegion | `Token#testInsideRegion`}) within the Region
-   *     at the *from* position of EXIT segments.
-   *   - The Token must not be contained (w.r.t. {@link Token.testInsideRegion | `Token#testInsideRegion`}) within the Region
-   *     at the *from* position of ENTER segments.
-   *   - The Token must not be contained (w.r.t. {@link Token.testInsideRegion | `Token#testInsideRegion`}) within the Region
-   *     at the *to* position of EXIT segments.
-   * @param region    - The region.
-   * @param waypoints - The waypoints of movement.
-   * @param options   - Additional options
-   * @returns The movement split into its segments.
-   */
-  // options: not null (destructured)
-  segmentizeRegionMovement(
-    region: Region.Implementation,
-    waypoints: Region.MovementWaypoint[],
-    options?: Region.SegmentizeMovementOptions,
-  ): Region.MovementSegment[];
 
   /**
    * Set this Token as an active target for the current game User
@@ -821,7 +879,8 @@ declare class Token extends PlaceableObject<TokenDocument.Implementation> {
   // options: not null (destructured)
   protected override _onHoverIn(event: Canvas.Event.Pointer, options?: PlaceableObject.HoverInOptions): void;
 
-  protected override _onHoverOut(event: Canvas.Event.Pointer): void;
+  // options: not null (destructured in super)
+  protected override _onHoverOut(event: Canvas.Event.Pointer, options?: PlaceableObject.HoverOutOptions): void;
 
   protected override _onClickLeft(event: Canvas.Event.Pointer): void;
 
@@ -840,75 +899,47 @@ declare class Token extends PlaceableObject<TokenDocument.Implementation> {
   protected override _onDragEnd(): void;
 
   /**
-   * @deprecated since v11, will be removed in v13
-   * @remarks "`Token#updatePosition` has been deprecated without replacement as it is no longer required."
+   * Test whether the Token is inside the Region.
+   * @deprecated since v13, until v15
+   * @remarks "`Token#testInsideRegion` is deprecated in favor of {@link TokenDocument.testInsideRegion | `TokenDocument#testInsideRegion`}."
    */
-  updatePosition(): void;
+  testInsideRegion(region: Region.Implementation, position?: Token.TestablePosition | null): boolean;
 
   /**
-   * @deprecated since v11, will be removed in v13
-   * @remarks "`Token#refreshHUD` is deprecated in favor of {@link RenderFlags.set | `token.renderFlags.set()`}"
+   * Split the Token movement through the waypoints into its segments.
+   * @deprecated since v13, until v15
+   * @remarks "`Token#segmentizeRegionMovement` is deprecated in favor of {@link TokenDocument.segmentizeRegionMovementPath | `TokenDocument#segmentizeRegionMovementPath`}."
    */
-  // options: not null (destructured)
-  refreshHUD(options?: Token.RefreshHUDOptions): void;
+  // options: not null (property access)
+  segmentizeRegionMovement(
+    region: Region.Implementation,
+    waypoints: Region.MovementWaypoint[],
+    options?: Region.SegmentizeMovementOptions,
+  ): Region.MovementSegment[];
 
   /**
-   * Update the light and vision source objects associated with this Token
-   * @param options - Options which configure how perception sources are updated
-   * @deprecated since v12, until v14
-   * @remarks "`Token#updateSource` has been deprecated in favor of {@link Token.initializeSources | `Token#initializeSources`}"
+   * Get the width and height of the Token in pixels.
+   * @deprecated since v13, until v15
+   * @remarks "`Token#getSize` is deprecated in favor of {@link TokenDocument.getSize | `TokenDocument#getSize`}."
    */
-  // options: not null (destructured)
-  updateSource(options?: Token.InitializeSourcesOptions): void;
+  getSize(): Token.Size;
 
   /**
-   * Get the center-point coordinate for a given grid position
-   * @param x - The grid x-coordinate that represents the top-left of the Token
-   * @param y - The grid y-coordinate that represents the top-left of the Token
-   * @returns The coordinate pair which represents the Token's center at position (x, y)
-   * @deprecated since v12, until v14
-   * @remarks "`Token#getCenter(x, y)` has been deprecated in favor of {@link Token.getCenterPoint | `Token#getCenterPoint(Point)`}."
-   */
-  getCenter(x: number, y: number): Canvas.Point;
-
-  /**
-   * A convenient reference for whether the current User has full control over the Token document.
-   * @deprecated since v12, until v14
-   * @remarks "`Token#owner` has been deprecated. Use {@link Token.isOwner | `Token#isOwner`} instead."
-   */
-  get owner(): boolean;
-
-  /**
-   * @deprecated since v12, until v14
-   * @remarks "`Token#toggleCombat` is deprecated in favor of {@link TokenDocument.toggleCombatant | `TokenDocument#toggleCombatant`},
-   * {@link TokenDocument.createCombatants | `TokenDocument.implementation.createCombatants`}, and
-   * {@link TokenDocument.deleteCombatants | `TokenDocument.implementation.deleteCombatants`}"
+   * The target marker, which indicates that this Token is targeted by this User or others.
+   * @deprecated since v13, until v15
+   * @remarks "`Token#target` is deprecated and has been split into two new graphics object: `targetArrows` and `targetPips`. `targetArrows` is returned by the deprecated `target` property."
    *
-   * The `combat` parameter is unused. Creates Combatants for every Token controlled, plus the Token this was called on if it wasn't already controlled
+   * Returns {@link Token.targetArrows | `Token#targetArrows`}.
    */
-  toggleCombat(combat?: Combat.Implementation): Promise<Combatant.Stored[]>;
+  get target(): PIXI.Graphics | undefined;
 
   /**
-   * @deprecated since v12, until v14
-   * @remarks "`Token#toggleEffect` is deprecated in favor of {@link Actor.toggleStatusEffect | `Actor#toggleStatusEffect`}"
+   * The Token's central position, adjusted in each direction by one or zero pixels to offset it relative to walls.
+   * @deprecated since v14, until v16
+   * @remarks "`Token#getMovementAdjustedPoint` is deprecated with no replacement. Movement-based adjustment of center points is no longer required. Use the unadjusted point instead, rounding the x and y coordinates as needed."
    */
-  // options: not null (destructured)
-  toggleEffect(
-    effect: CONFIG.StatusEffect,
-    options?: Actor.ToggleStatusEffectOptions,
-  ): Promise<ActiveEffect.Stored | boolean | undefined>;
-
-  /**
-   * @deprecated since v12, until v14
-   * @remarks "`Token#toggleVisibility` is deprecated without replacement in favor of updating the {@link TokenDocument.hidden | `hidden` field of the `TokenDocument`} directly."
-   */
-  toggleVisibility(): Promise<TokenDocument.Stored[]>;
-
-  /**
-   * @deprecated since v12 Stable 4, until v14
-   * @remarks "`Token#_recoverFromPreview` is deprecated without replacement in favor of recovering from preview directly into {@link TokenConfig._resetPreview | `TokenConfig#_resetPreview`}."
-   */
-  protected _recoverFromPreview(): void;
+  // offsets: not null (destructured)
+  getMovementAdjustedPoint(point: Canvas.Point, offsets?: Token.GetMovementAdjustedPointOffsets): Canvas.Point;
 }
 
 declare namespace Token {
@@ -946,7 +977,7 @@ declare namespace Token {
     /** @defaultValue `{}` */
     redrawEffects: RenderFlag<this, "redrawEffects">;
 
-    /** @defaultValue `{ propagate: ["refreshState", "refreshTransform", "refreshMesh", "refreshNameplate", "refreshElevation", "refreshRingVisuals"], alias: true }` */
+    /** @defaultValue `{ propagate: ["refreshState", "refreshTransform", "refreshMesh", "refreshNameplate", "refreshElevation", "refreshRingVisuals", "refreshRuler", "refreshTurnMarker"], alias: true }` */
     refresh: RenderFlag<this, "refresh">;
 
     /** @defaultValue `{ propagate: ["refreshVisibility", "refreshTarget"] }` */
@@ -970,7 +1001,7 @@ declare namespace Token {
     /** @defaultValue `{ propagate: ["refreshTooltip"] }` */
     refreshElevation: RenderFlag<this, "refreshElevation">;
 
-    /** @defaultValue `{}` */
+    /** @defaultValue `{ propagate: ["refreshShader"] }` */
     refreshMesh: RenderFlag<this, "refreshMesh">;
 
     /** @defaultValue `{}` */
@@ -999,6 +1030,12 @@ declare namespace Token {
 
     /** @defaultValue `{}` */
     refreshRingVisuals: RenderFlag<this, "refreshRingVisuals">;
+
+    /** @defaultValue `{}` */
+    refreshRuler: RenderFlag<this, "refreshRuler">;
+
+    /** @defaultValue `{}` */
+    refreshTurnMarker: RenderFlag<this, "refreshTurnMarker">;
   }
 
   interface RenderFlags extends RenderFlagsMixin.ToBooleanFlags<RENDER_FLAGS> {}

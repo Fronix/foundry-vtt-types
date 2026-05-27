@@ -34,6 +34,8 @@ expectTypeOf(Token.RENDER_FLAGS.redraw.propagate).toEqualTypeOf<
       | "refreshTarget"
       | "refreshTooltip"
       | "refreshRingVisuals"
+      | "refreshRuler"
+      | "refreshTurnMarker"
     >
   | undefined
 >();
@@ -45,10 +47,15 @@ expectTypeOf(token.controlIcon).toBeNull();
 expectTypeOf(token.shape).toEqualTypeOf<PIXI.Rectangle | PIXI.Polygon | undefined>();
 expectTypeOf(token.detectionFilter).toEqualTypeOf<PIXI.Filter | null>();
 expectTypeOf(token.border).toEqualTypeOf<PIXI.Graphics | undefined>();
+expectTypeOf(token.effects).toEqualTypeOf<PIXI.Container | undefined>();
 expectTypeOf(token.bars).toEqualTypeOf<Token.Bars | undefined>();
 expectTypeOf(token.tooltip).toEqualTypeOf<PreciseText | undefined>();
-expectTypeOf(token.target).toEqualTypeOf<PIXI.Graphics | undefined>();
+expectTypeOf(token.levelIndicator).toEqualTypeOf<PIXI.Sprite | undefined>();
+expectTypeOf(token.targetArrows).toEqualTypeOf<PIXI.Graphics | undefined>();
+expectTypeOf(token.targetPips).toEqualTypeOf<PIXI.Graphics | undefined>();
 expectTypeOf(token.nameplate).toEqualTypeOf<PreciseText | undefined>();
+expectTypeOf(token.ruler).toEqualTypeOf<foundry.canvas.placeables.tokens.BaseTokenRuler | null | undefined>();
+expectTypeOf(token["_plannedMovement"]).toEqualTypeOf<Record<string, Token.PlannedMovement>>();
 expectTypeOf(token.targeted).toEqualTypeOf<Set<User.Stored>>();
 expectTypeOf(token.mesh).toEqualTypeOf<PrimarySpriteMesh | undefined>();
 
@@ -56,13 +63,20 @@ expectTypeOf(token.voidMesh).toEqualTypeOf<PIXI.Container | undefined>();
 expectTypeOf(token.detectionFilterMesh).toEqualTypeOf<PIXI.Container | undefined>();
 expectTypeOf(token.texture).toEqualTypeOf<PIXI.Texture | undefined>();
 expectTypeOf(token.vision).toEqualTypeOf<foundry.canvas.sources.PointVisionSource.Implementation | undefined>();
+expectTypeOf(token._visionSourceVersion).toBeNumber();
 expectTypeOf(token.light).toEqualTypeOf<
   | foundry.canvas.sources.PointLightSource.Implementation
   | foundry.canvas.sources.PointDarknessSource.Implementation
   | undefined
 >();
+expectTypeOf(token.turnMarker).toEqualTypeOf<foundry.canvas.placeables.tokens.TokenTurnMarker | null>();
 
 expectTypeOf(token.animationContexts).toEqualTypeOf<Map<string, Token.AnimationContext>>();
+expectTypeOf(token.animationName).toBeString();
+expectTypeOf(token.movementAnimationName).toBeString();
+expectTypeOf(token.movementAnimationPromise).toEqualTypeOf<Promise<void> | null>();
+expectTypeOf(token.showRuler).toBeBoolean();
+expectTypeOf(token._preventKeyboardMovement).toBeBoolean();
 expectTypeOf(token.ring).toEqualTypeOf<TokenRing.Implementation | null | undefined>();
 expectTypeOf(token.hasDynamicRing).toBeBoolean();
 // TODO: see if we can fix the 'possibly infinite' here
@@ -74,15 +88,6 @@ expectTypeOf(token.w).toBeNumber();
 expectTypeOf(token.h).toBeNumber();
 expectTypeOf(token.center).toEqualTypeOf<PIXI.Point>();
 
-expectTypeOf(token.getMovementAdjustedPoint({ x: 20, y: 30 })).toEqualTypeOf<Canvas.Point>();
-expectTypeOf(token.getMovementAdjustedPoint({ x: 20, y: 30 }, {})).toEqualTypeOf<Canvas.Point>();
-expectTypeOf(
-  token.getMovementAdjustedPoint({ x: 20, y: 30 }, { offsetX: 50, offsetY: 50 }),
-).toEqualTypeOf<Canvas.Point>();
-expectTypeOf(
-  token.getMovementAdjustedPoint({ x: 20, y: 30 }, { offsetX: null, offsetY: null }),
-).toEqualTypeOf<Canvas.Point>();
-
 expectTypeOf(token.sourceId).toBeString();
 expectTypeOf(token.sourceElement).toEqualTypeOf<PIXI.ImageSource | undefined>();
 expectTypeOf(token.isVideo).toBeBoolean();
@@ -90,9 +95,10 @@ expectTypeOf(token.inCombat).toBeBoolean();
 // TODO: see if we can fix the 'possibly infinite' here
 expectTypeOf(token.combatant).toEqualTypeOf<Combatant.Stored>();
 expectTypeOf(token.isTargeted).toBeBoolean();
+expectTypeOf(token.isDragged).toBeBoolean();
 expectTypeOf(token.detectionModes).toEqualTypeOf<Record<string, { enabled: boolean; range: number | null }>>();
 expectTypeOf(token.isVisible).toBeBoolean();
-expectTypeOf(token.animationName).toBeString();
+expectTypeOf(token.isInteractable).toBeBoolean();
 expectTypeOf(token.hasSight).toBeBoolean();
 expectTypeOf(token["_isLightSource"]()).toBeBoolean();
 expectTypeOf(token.emitsLight).toBeBoolean();
@@ -123,6 +129,10 @@ expectTypeOf(token.initializeVisionSource({ deleted: null })).toBeVoid();
 expectTypeOf(token["_getVisionBlindedStates"]()).toEqualTypeOf<Token.BlindedStates>();
 expectTypeOf(token["_getVisionSourceData"]()).toEqualTypeOf<Token.VisionSourceData>();
 expectTypeOf(token["_isVisionSource"]()).toBeBoolean();
+expectTypeOf(token["_isFogExplorationSource"]()).toBeBoolean();
+expectTypeOf(
+  token["_createSharedFogVisionSource"](),
+).toEqualTypeOf<foundry.canvas.sources.PointVisionSource.Implementation>();
 expectTypeOf(token["_renderDetectionFilter"](new PIXI.Renderer())).toBeVoid();
 
 // eslint-disable-next-line @typescript-eslint/no-deprecated
@@ -138,6 +148,8 @@ expectTypeOf(token["_destroy"](undefined)).toBeVoid();
 // @ts-expect-error _draw always gets passed a value
 expectTypeOf(token["_draw"]()).toEqualTypeOf<Promise<void>>();
 expectTypeOf(token["_draw"]({})).toEqualTypeOf<Promise<void>>();
+
+expectTypeOf(token["_initializeRuler"]()).toEqualTypeOf<foundry.canvas.placeables.tokens.BaseTokenRuler | null>();
 
 // @ts-expect-error an object must be passed
 expectTypeOf(token["_applyRenderFlags"]()).toBeVoid();
@@ -166,6 +178,8 @@ expectTypeOf(
     refreshTarget: true,
     refreshTooltip: true,
     refreshRingVisuals: true,
+    refreshRuler: true,
+    refreshTurnMarker: true,
   }),
 ).toBeVoid();
 
@@ -185,34 +199,11 @@ expectTypeOf(token["_refreshBorder"]()).toBeVoid();
 expectTypeOf(token["_getBorderColor"]()).toBeNumber();
 
 expectTypeOf(token["_refreshTarget"]()).toBeVoid();
-expectTypeOf(token["_refreshTarget"]({})).toBeVoid();
-expectTypeOf(
-  token["_refreshTarget"]({
-    alpha: 0.5,
-    border: {
-      color: Color.from("#787878"),
-      width: 4,
-    },
-    color: Color.from("#987654"),
-    margin: 2,
-    size: 0.23,
-  }),
-).toBeVoid();
-expectTypeOf(
-  token["_refreshTarget"]({
-    alpha: undefined,
-    border: { color: undefined, width: undefined },
-    color: null,
-    margin: null,
-    size: undefined,
-  }),
-).toBeVoid();
-expectTypeOf(token["_refreshTarget"]({ border: undefined })).toBeVoid();
 
-expectTypeOf(token["_drawTarget"]()).toBeVoid();
-expectTypeOf(token["_drawTarget"]({})).toBeVoid();
+expectTypeOf(token["_drawTargetArrows"]()).toBeVoid();
+expectTypeOf(token["_drawTargetArrows"]({})).toBeVoid();
 expectTypeOf(
-  token["_drawTarget"]({
+  token["_drawTargetArrows"]({
     alpha: 0.5,
     border: {
       color: Color.from("#787878"),
@@ -224,7 +215,7 @@ expectTypeOf(
   }),
 ).toBeVoid();
 expectTypeOf(
-  token["_drawTarget"]({
+  token["_drawTargetArrows"]({
     alpha: undefined,
     border: { color: undefined, width: undefined },
     color: null,
@@ -232,7 +223,9 @@ expectTypeOf(
     size: undefined,
   }),
 ).toBeVoid();
-expectTypeOf(token["_drawTarget"]({ border: undefined })).toBeVoid();
+expectTypeOf(token["_drawTargetArrows"]({ border: undefined })).toBeVoid();
+
+expectTypeOf(token["_drawTargetPips"]()).toBeVoid();
 
 expectTypeOf(token.drawBars()).toBeVoid();
 expectTypeOf(token["_drawBar"](1, token.bars!.bar1, doc.getBarAttribute("foo")!)).toBeBoolean();
@@ -261,6 +254,8 @@ expectTypeOf(token["_drawOverlay"]("path/to/effect/texture.jpg", null)).toEqualT
 >();
 
 expectTypeOf(token["_refreshEffects"]()).toBeVoid();
+expectTypeOf(token["_refreshTurnMarker"]()).toBeVoid();
+expectTypeOf(token["_refreshRuler"]()).toBeVoid();
 expectTypeOf(token["_canViewMode"](CONST.TOKEN_DISPLAY_MODES.OWNER)).toBeBoolean();
 
 expectTypeOf(token.getRingColors()).toEqualTypeOf<Token.RingColors>();
@@ -405,6 +400,7 @@ expectTypeOf(
   }),
 ).toEqualTypeOf<foundry.canvas.geometry.edges.PolygonVertex | null>(); // actual return for `"closest"
 
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 expectTypeOf(token.getSize()).toEqualTypeOf<{ width: number; height: number }>();
 expectTypeOf(token.getShape()).toEqualTypeOf<PIXI.Rectangle | PIXI.Polygon>();
 
@@ -419,6 +415,7 @@ expectTypeOf(token.getSnappedPosition(doc)).toEqualTypeOf<Canvas.Point>();
 expectTypeOf(token.getSnappedPosition(null)).toEqualTypeOf<Canvas.Point>();
 
 declare const someRegion: Region.Implementation;
+/* eslint-disable @typescript-eslint/no-deprecated -- `testInsideRegion`/`segmentizeRegionMovement` are deprecated since v13 */
 expectTypeOf(token.testInsideRegion(someRegion)).toBeBoolean();
 // @ts-expect-error If `position` is non-nullish, it must contain `{x, y}` data
 expectTypeOf(token.testInsideRegion(someRegion), {}).toBeBoolean();
@@ -440,6 +437,7 @@ expectTypeOf(token.segmentizeRegionMovement(someRegion, waypoints, { teleport: t
 expectTypeOf(token.segmentizeRegionMovement(someRegion, waypoints, { teleport: null })).toEqualTypeOf<
   Region.MovementSegment[]
 >();
+/* eslint-enable @typescript-eslint/no-deprecated */
 
 declare const someUser: User.Stored;
 expectTypeOf(token.setTarget()).toBeVoid();
@@ -525,65 +523,21 @@ expectTypeOf(token["_prepareDragLeftDropUpdates"](pointerEvent)).toEqualTypeOf<T
 expectTypeOf(token["_onDragLeftMove"](pointerEvent)).toBeVoid();
 expectTypeOf(token["_onDragEnd"]()).toBeVoid();
 
-// deprecated since v11, until v13
+// deprecated since v13, until v15 — split into targetArrows/targetPips
 // eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(token.updatePosition()).toBeVoid();
+expectTypeOf(token.target).toEqualTypeOf<PIXI.Graphics | undefined>();
 
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(token.refreshHUD()).toBeVoid();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(token.refreshHUD({})).toBeVoid();
+// deprecated since v14, until v16
+/* eslint-disable @typescript-eslint/no-deprecated */
+expectTypeOf(token.getMovementAdjustedPoint({ x: 20, y: 30 })).toEqualTypeOf<Canvas.Point>();
+expectTypeOf(token.getMovementAdjustedPoint({ x: 20, y: 30 }, {})).toEqualTypeOf<Canvas.Point>();
 expectTypeOf(
-  // eslint-disable-next-line @typescript-eslint/no-deprecated
-  token.refreshHUD({ bars: true, border: true, effects: true, elevation: true, nameplate: true }),
-).toBeVoid();
+  token.getMovementAdjustedPoint({ x: 20, y: 30 }, { offsetX: 50, offsetY: 50 }),
+).toEqualTypeOf<Canvas.Point>();
 expectTypeOf(
-  // eslint-disable-next-line @typescript-eslint/no-deprecated
-  token.refreshHUD({ bars: null, border: null, effects: null, elevation: null, nameplate: null }),
-).toBeVoid();
-
-// deprecated since v12, until v14
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(token.updateSource()).toBeVoid();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(token.updateSource({})).toBeVoid();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(token.updateSource({ deleted: true })).toBeVoid();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(token.updateSource({ deleted: null })).toBeVoid();
-
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(token.getCenter(50, 270)).toEqualTypeOf<Canvas.Point>();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(token.owner).toBeBoolean();
-
-declare const someCombat: Combat.Stored;
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(token.toggleCombat()).toEqualTypeOf<Promise<Combatant.Stored[]>>();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(token.toggleCombat(someCombat)).toEqualTypeOf<Promise<Combatant.Stored[]>>();
-
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(token.toggleEffect(CONFIG.statusEffects[0]!)).toEqualTypeOf<
-  Promise<ActiveEffect.Stored | boolean | undefined>
->();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(token.toggleEffect(CONFIG.statusEffects[0]!, {})).toEqualTypeOf<
-  Promise<ActiveEffect.Stored | boolean | undefined>
->();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(token.toggleEffect(CONFIG.statusEffects[0]!, { active: true, overlay: false })).toEqualTypeOf<
-  Promise<ActiveEffect.Stored | boolean | undefined>
->();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(token.toggleEffect(CONFIG.statusEffects[0]!, { active: null, overlay: null })).toEqualTypeOf<
-  Promise<ActiveEffect.Stored | boolean | undefined>
->();
-
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(token.toggleVisibility()).toEqualTypeOf<Promise<TokenDocument.Stored[]>>();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(token["_recoverFromPreview"]()).toBeVoid();
+  token.getMovementAdjustedPoint({ x: 20, y: 30 }, { offsetX: null, offsetY: null }),
+).toEqualTypeOf<Canvas.Point>();
+/* eslint-enable @typescript-eslint/no-deprecated */
 
 // Reported by emily3k on Discord, see https://discord.com/channels/732325252788387980/803646399014109205/1375296418478030930
 test("Ensure that PIXI.Texture.from can accept PIXI.Resource", () => {
