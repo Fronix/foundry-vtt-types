@@ -330,3 +330,21 @@ Legend: `[x]` done (source-diffed + CI-green + type-tested), `[~]` partial (note
   - **token** (4009) — the new **token movement subsystem** (~15 `TokenMovement*` `_types.mjs` typedefs + `TokenConstrainMovementPathOptions`) **+ `DataFieldOperator` + Scene Levels** (78 refs, stubbed `level` field).
 
   **Common denominators:** the **Scene Levels subsystem** (Phase 7) and **`common/data/operators.mjs`** (`DataFieldOperator`, Phase-7 deferral) gate 3 of the 4; active-effect has its own registry/config/duration prerequisites. **Strategic implication:** the Phase-4 member-diff cannot finish these giants until their prerequisites exist. **Decision (2026-05-26): proceed to Phase 5 (canvas)** — treat Phase 4 as "done modulo the 4 blocked giants" — and author each giant **with/after Phase 7**, doing its subsystem prerequisite first (Levels / `operators.mjs` / token-movement typedefs / AE registry) then its member-diff in the same session. (Rejected alternative: pulling all of Phase-7's Levels+operators groundwork forward now, which inverts the foundation-up order and front-loads the highest-risk greenfield authoring before Phases 5–6.) The four giants are deliberately left `[ ]` (not `[~]`) with full blocker annotations in their checklist entries — partially authoring them now would mean typing against stubbed `levels` fields, a missing `Level` document, and a missing `operators.mjs`, the exact trap avoided for active-effect.
+
+---
+
+## Baseline landscape (moved from the tracker 2026-05-27 — historical)
+
+_Measured against v14.363.0 at migration start (2026-05-25). Kept for the "size of the problem" context; superseded by per-phase progress._
+
+Measured against v14.363.0. Directory structure already mirrors v14 1:1 — **no restructuring needed**; this is a content-accuracy migration.
+
+| Category                                          | Size                                                                   | Concentration                                                                                                                                                                           |
+| ------------------------------------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A. Missing files** (in v14 source, absent here) | 97                                                                     | new `canvas/vfx/` (~21), placeable UI: `applications/sheets/palette/` (8), `applications/sidebar/tabs/` (10), `.../filters/` (4); `data/region-behaviors/` (4); misc canvas/elements/ux |
+| **B. Stub files** (`@remarks TODO: Stub`)         | 65                                                                     | ~98% in `applications/` (HUD, sidebar, sheets, settings menus); 2 in `data/`                                                                                                            |
+| **C. In-file drift**                              | ~34 docs (createDialog `.Stored`) + ~200 `Temporary` sites + scattered | `client/documents/`, `common/abstract/document.d.mts`, canvas                                                                                                                           |
+
+Files in the repo but not in v14 source (19) are almost all barrel/index files and renames (`quad-tree`→`quadtree`, `region-legend` removed, `measured-template` moved) — handled opportunistically within the relevant phase, not a category of their own.
+
+---
