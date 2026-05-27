@@ -1,4 +1,4 @@
-import type { Identity } from "#utils";
+import type { DeepReadonly, Identity } from "#utils";
 
 /**
  * The ruler of a Token visualizes
@@ -62,7 +62,7 @@ declare abstract class BaseTokenRuler {
    * Refresh the ruler.
    * Called in {@linkcode foundry.canvas.placeables.Token._refreshRuler | Token#_refreshRuler}.
    */
-  abstract refresh(rulerData: unknown): void;
+  abstract refresh(rulerData: DeepReadonly<foundry.canvas.placeables.tokens.TokenRuler.Data>): void;
 }
 
 declare namespace BaseTokenRuler {

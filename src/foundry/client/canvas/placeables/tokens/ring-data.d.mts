@@ -1,5 +1,6 @@
 import type DataModel from "#common/abstract/data.d.mts";
 import type { DataField, DataSchema } from "#common/data/fields.d.mts";
+import type { DataModelValidationFailure } from "#common/data/validation-failure.d.mts";
 import type { AnyConstructor, SimpleMerge } from "#utils";
 import type TokenRing from "./ring.d.mts";
 import type { PrimaryBaseSamplerShader } from "#client/canvas/rendering/shaders/_module.d.mts";
@@ -32,7 +33,8 @@ declare namespace DynamicRingData {
      *     RING_PULSE: "TOKEN.RING.EFFECTS.RING_PULSE",
      *     RING_GRADIENT: "TOKEN.RING.EFFECTS.RING_GRADIENT",
      *     BKG_WAVE: "TOKEN.RING.EFFECTS.BKG_WAVE",
-     *     INVISIBILITY: "TOKEN.RING.EFFECTS.INVISIBILITY"
+     *     INVISIBILITY: "TOKEN.RING.EFFECTS.INVISIBILITY",
+     *     COLOR_OVER_SUBJECT: "TOKEN.RING.EFFECTS.COLOR_OVER_SUBJECT"
      * }
      * ```
      */
@@ -43,6 +45,7 @@ declare namespace DynamicRingData {
           RING_GRADIENT: "TOKEN.RING.EFFECTS.RING_GRADIENT";
           BKG_WAVE: "TOKEN.RING.EFFECTS.BKG_WAVE";
           INVISIBILITY: "TOKEN.RING.EFFECTS.INVISIBILITY";
+          COLOR_OVER_SUBJECT: "TOKEN.RING.EFFECTS.COLOR_OVER_SUBJECT";
         };
       },
       Record<string, string> | null | undefined,
@@ -90,7 +93,14 @@ declare class ClassReferenceField<
 
   static override get _defaults(): DataField.Options.Any;
 
+  /** @remarks Only declared to satisfy the abstract `DataField#_cast`; the source field does not override it. */
   protected override _cast(value: unknown): AssignmentType;
+
+  /** @remarks Throws if `value` is not a subclass of the field's `baseClass`. */
+  protected override _validateType(
+    value: InitializedType,
+    options?: DataField.ValidateOptions<this>,
+  ): boolean | DataModelValidationFailure | void;
 
   /** @remarks `data` is unused, always returns `this.initial` */
   override getInitialValue(data?: unknown): InitializedType;

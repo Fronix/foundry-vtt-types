@@ -178,14 +178,6 @@ declare class TokenRingConfig {
 
   /** Get the labels of all configurations. */
   get configLabels(): Record<string, string>;
-
-  /**
-   * @deprecated since v12, until v14
-   * @remarks "TokenRingConfig#configNames is deprecated and replaced by TokenRingConfig#configIDs"
-   *
-   * Foundry comment claims deprecated since v11 - possibly a dnd5e-implementation-related deprecation?
-   */
-  get configNames(): string[];
 }
 
 declare namespace TokenRingConfig {

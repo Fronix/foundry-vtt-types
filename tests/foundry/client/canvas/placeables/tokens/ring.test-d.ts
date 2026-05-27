@@ -27,15 +27,20 @@ expectTypeOf(TokenRing.createSpikeEasing(0.72)).toEqualTypeOf<CanvasAnimation.Ea
 expectTypeOf(TokenRing.easeTwoPeaks(0.34)).toBeNumber();
 expectTypeOf(TokenRing.easeTwoPeaks).toExtend<CanvasAnimation.EasingFunction>();
 
+expectTypeOf(TokenRing.easePingPong(0.5)).toBeNumber();
+expectTypeOf(TokenRing.easePingPong).toExtend<CanvasAnimation.EasingFunction>();
+
 declare const someToken: Token.Implementation;
 const myTR = new TokenRing(someToken);
 
 expectTypeOf(myTR.ringName).toEqualTypeOf<string | undefined>();
 expectTypeOf(myTR.bkgName).toEqualTypeOf<string | undefined>();
+expectTypeOf(myTR.maskName).toEqualTypeOf<string | undefined>();
 
 // Ideally these would narrow based upon `initialized`.
 expectTypeOf(myTR.ringUVs).toEqualTypeOf<Float32Array | undefined>();
 expectTypeOf(myTR.bkgUVs).toEqualTypeOf<Float32Array | undefined>();
+expectTypeOf(myTR.maskUVs).toEqualTypeOf<Float32Array | undefined>();
 
 expectTypeOf(myTR.ringColorLittleEndian).toBeNumber();
 expectTypeOf(myTR.bkgColorLittleEndian).toBeNumber();
@@ -49,9 +54,11 @@ expectTypeOf(myTR.subjectScaleAdjustment).toEqualTypeOf<number | null>();
 expectTypeOf(myTR.colorBand).toEqualTypeOf<TokenRing.ColorBand | undefined>();
 expectTypeOf(myTR.token).toEqualTypeOf<Token.Implementation | undefined>();
 
-expectTypeOf(myTR.configure(someToken.mesh!)).toBeVoid();
+expectTypeOf(myTR.configure(someToken.mesh)).toBeVoid();
+expectTypeOf(myTR.configure()).toBeVoid();
 expectTypeOf(myTR.clear()).toBeVoid();
 expectTypeOf(myTR.configureSize()).toBeVoid();
+expectTypeOf(myTR.configureSize({ fit: "contain", scaleMultiplier: 2 })).toBeVoid();
 expectTypeOf(myTR.configureVisuals()).toBeVoid();
 
 declare const someColor: Color;

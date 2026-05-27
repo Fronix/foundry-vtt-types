@@ -1,5 +1,5 @@
 import type { Ruler } from "#client/canvas/interaction/_module.d.mts";
-import type { Identity } from "#utils";
+import type { DeepReadonly, Identity } from "#utils";
 import type { BaseTokenRuler } from "./_module.d.mts";
 
 declare class TokenRuler extends BaseTokenRuler {
@@ -31,6 +31,29 @@ declare class TokenRuler extends BaseTokenRuler {
   clear(): void;
 
   destroy(): void;
+
+  /**
+   * Prepare the path.
+   * @remarks The base implementation is a no-op.
+   */
+  protected _preparePath(path: TokenRuler.Waypoint[]): void;
+
+  /**
+   * Should the ruler waypoint be rendered?
+   */
+  protected _shouldRenderWaypoint(waypoint: DeepReadonly<TokenRuler.Waypoint>): boolean;
+
+  /**
+   * Accumulate waypoint data. Skipped waypoints and the next rendered waypoint are accumulated.
+   *
+   * The base implementation accumulates the waypoint cost.
+   * @param accumulator - The accumulated waypoint data
+   * @param waypoint    - A waypoint to be accumulated
+   */
+  protected _accumulateWaypointData(
+    accumulator: Partial<TokenRuler.Waypoint>,
+    waypoint: DeepReadonly<TokenRuler.Waypoint>,
+  ): void;
 
   refresh(rulerData: TokenRuler.Data): void;
 

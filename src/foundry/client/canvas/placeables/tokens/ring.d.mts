@@ -73,9 +73,17 @@ declare class TokenRing {
    */
   bkgName: TokenRing.RingData["bkgName"];
 
+  /**
+   * @remarks Not initialized to a value, this gets set in {@linkcode TokenRing.configureSize}.
+   * After initialization (`ready`), this will only be `undefined` if the current spritesheet provides no frames
+   */
+  maskName: TokenRing.RingData["maskName"];
+
   ringUVs: InitializedOn<Float32Array, "ready">;
 
   bkgUVs: InitializedOn<Float32Array, "ready">;
+
+  maskUVs: InitializedOn<Float32Array, "ready">;
 
   /**
    * Little endian format =\> BBGGRR
@@ -147,15 +155,18 @@ declare class TokenRing {
 
   /**
    * Configure the sprite mesh.
-   * @param mesh  - The mesh to which TokenRing functionality is configured.
+   * @param mesh  - The mesh to which TokenRing functionality is configured (default to `token.mesh`)
    */
-  configure(mesh: PrimarySpriteMesh): void;
+  configure(mesh?: PrimarySpriteMesh | null): void;
 
   /** Clear configuration pertaining to token ring from the mesh. */
   clear(): void;
 
-  /** Configure token ring size. */
-  configureSize(): void;
+  /**
+   * Configure token ring size according to mesh texture, token dimensions, fit mode, and dynamic ring fit mode.
+   * @param options - (default: `{}`)
+   */
+  configureSize(options?: TokenRing.ConfigureSizeOptions): void;
 
   /** Configure the token ring visuals properties. */
   configureVisuals(): void;
@@ -183,18 +194,11 @@ declare class TokenRing {
   static easeTwoPeaks(pt: number): number;
 
   /**
-   * To avoid breaking dnd5e.
-   * @deprecated since v12
-   * @remarks No deprecation warning or end of deprecation period provided, method body completely empty
+   * Soft ping pong curve for photosensitive people.
+   * @param pt  - The proportional animation timing on [0,1].
+   * @returns   - The eased animation progress on [0,1].
    */
-  configureMesh(): void;
-
-  /**
-   * To avoid breaking dnd5e.
-   * @deprecated since v12
-   * @remarks No deprecation warning or end of deprecation period provided, method body completely empty
-   */
-  configureNames(): void;
+  static easePingPong(pt: number): number;
 }
 
 declare namespace TokenRing {
@@ -227,6 +231,23 @@ declare namespace TokenRing {
     easing?: CanvasAnimation.EasingFunction | undefined;
   }
 
+  /** @remarks Options for {@link TokenRing.configureSize | `TokenRing#configureSize`} */
+  interface ConfigureSizeOptions {
+    /**
+     * The desired fit mode
+     * @defaultValue `"contain"`
+     * @remarks Only has a parameter default, so passing `null` would not fall back to `"contain"`
+     */
+    fit?: CONST.TEXTURE_DATA_FIT_MODES | undefined;
+
+    /**
+     * A custom scale multiplier applied on scale correction
+     * @defaultValue `1`
+     * @remarks Only has a parameter default, so passing `null` would not fall back to `1`
+     */
+    scaleMultiplier?: number | undefined;
+  }
+
   interface TextureData {
     UVs: Float32Array;
     center: { x: number; y: number };
@@ -239,6 +260,8 @@ declare namespace TokenRing {
     ringName: string | undefined;
 
     bkgName: string | undefined;
+
+    maskName: string | undefined;
 
     colorBand: ColorBand | undefined;
 
@@ -288,6 +311,8 @@ declare namespace TokenRing {
 
     /** @remarks Foundry comments "or spectral pulse effect" */
     readonly INVISIBILITY: 0x10 & EFFECTS;
+
+    readonly COLOR_OVER_SUBJECT: 0x20 & EFFECTS;
   }
 
   /**
