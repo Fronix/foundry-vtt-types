@@ -900,6 +900,7 @@ declare global {
    * @deprecated "You are accessing the global {@linkcode srcExists} which is now namespaced under {@linkcode foundry.canvas.srcExists}"
    * (since v13 will be removed in v15)
    */
+  // eslint-disable-next-line @typescript-eslint/no-deprecated -- Intentionally re-exporting the deprecated global shim.
   export import srcExists = foundry.canvas.srcExists;
 
   /**

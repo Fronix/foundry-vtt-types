@@ -8,6 +8,7 @@ export * as types from "./_types.mjs";
 export { default as Canvas } from "./board.mjs";
 export { default as SceneManager } from "./scene-manager.mjs";
 export { default as KTX2Parser } from "./ktx2-parser.mjs";
+// eslint-disable-next-line @typescript-eslint/no-deprecated -- `srcExists` is a deprecated-but-present v14 re-export mirroring Foundry's own barrel.
 export { default as TextureLoader, getTexture, loadTexture, srcExists } from "./loader.mjs";
 export { default as TextureExtractor } from "./texture-extractor.mjs";
 export { default as FramebufferSnapshot } from "./framebuffer-snapshot.mjs";
