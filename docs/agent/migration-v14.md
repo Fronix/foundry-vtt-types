@@ -32,16 +32,16 @@ CI-green alone is **not** sufficient — CI doesn't know the v14 source, so sile
 
 Status is one line per phase. Open the linked **phase file** for batch-level detail and that phase's inherited deferrals.
 
-| Phase | Scope (short)                                                                                         | Status                                                                                                                                                                                       | Detail                              |
-| ----- | ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
-| **1** | `createDialog` → `.Stored \| null` + `renderOptions` param                                            | **Done — CI green**                                                                                                                                                                          | [archive](migration-v14-archive.md) |
-| **2** | Remove the `Temporary` create-operation concept (~85 files)                                           | **Done — CI green**                                                                                                                                                                          | [archive](migration-v14-archive.md) |
-| **3** | Verify `common/abstract` + `common/data` + `common/documents` schemas                                 | **Done** (deferrals → P5/P7/P8)                                                                                                                                                              | [archive](migration-v14-archive.md) |
-| **4** | Verify `client/documents` leaf classes member-by-member                                               | **Done — CI green** (28 `[x]`; 4 Tier-B giants + measured-template → P7)                                                                                                                     | [archive](migration-v14-archive.md) |
-| **5** | Canvas: verify + fill + add (ex-vfx)                                                                  | **ACTIVE** — 5.1–5.6 done; **5.7 `[~]` partial** (bounded adds done: borders/transition/ktx2-parser/shake; remaining: particle-generator giant + board/loader/interaction/extensions verify) | [phase-5](migration-v14-phase-5.md) |
-| **6** | Applications: fill 65 stubs + missing files                                                           | **In progress** (interleaved) — sheets prioritized; `base-sheet` done (1/25 sheet stubs)                                                                                                     | [phase-6](migration-v14-phase-6.md) |
-| **7** | Greenfield: vfx, region-behaviors, **Scene Levels**, 4 Tier-B giants, MeasuredTemplate, shapes barrel | Not started — **inherits deferrals**                                                                                                                                                         | [phase-7](migration-v14-phase-7.md) |
-| **8** | Cleanup: remove `removed in v14` deprecations, bump to `14.x`, backfill tests                         | Not started — **inherits deferrals**                                                                                                                                                         | [phase-8](migration-v14-phase-8.md) |
+| Phase | Scope (short)                                                                                         | Status                                                                                             | Detail                              |
+| ----- | ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| **1** | `createDialog` → `.Stored \| null` + `renderOptions` param                                            | **Done — CI green**                                                                                | [archive](migration-v14-archive.md) |
+| **2** | Remove the `Temporary` create-operation concept (~85 files)                                           | **Done — CI green**                                                                                | [archive](migration-v14-archive.md) |
+| **3** | Verify `common/abstract` + `common/data` + `common/documents` schemas                                 | **Done** (deferrals → P5/P7/P8)                                                                    | [archive](migration-v14-archive.md) |
+| **4** | Verify `client/documents` leaf classes member-by-member                                               | **Done — CI green** (28 `[x]`; 4 Tier-B giants + measured-template → P7)                           | [archive](migration-v14-archive.md) |
+| **5** | Canvas: verify + fill + add (ex-vfx)                                                                  | **Done — CI green** (5.1–5.7 all done; commit `22b8d9225`. Scene-Levels-coupled bits FIXME'd → P7) | [phase-5](migration-v14-phase-5.md) |
+| **6** | Applications: fill 65 stubs + missing files                                                           | **In progress** (interleaved) — sheets prioritized; `base-sheet` done (1/25 sheet stubs)           | [phase-6](migration-v14-phase-6.md) |
+| **7** | Greenfield: vfx, region-behaviors, **Scene Levels**, 4 Tier-B giants, MeasuredTemplate, shapes barrel | Not started — **inherits deferrals**                                                               | [phase-7](migration-v14-phase-7.md) |
+| **8** | Cleanup: remove `removed in v14` deprecations, bump to `14.x`, backfill tests                         | Not started — **inherits deferrals**                                                               | [phase-8](migration-v14-phase-8.md) |
 
 Closed phases' full detail (per-file checklists, drift surveys, commit lists, reusable findings) and the original baseline-landscape survey are in [migration-v14-archive.md](migration-v14-archive.md).
 
@@ -51,7 +51,7 @@ Closed phases' full detail (per-file checklists, drift surveys, commit lists, re
 
 **Decided 2026-05-27 — pursue a pragmatic high-value subset, NOT full member-by-member parity.** Full parity ≈ 27–40 more sessions; the long tail (sidebar UI, vfx) is high-volume / low-consumer-value. Reordered priority (overrides the numeric phase order):
 
-1. **Finish Phase 5 canvas** (5.6e → 5.6f → 5.6g → 5.7) — already ~80% in; don't leave canvas incoherent.
+1. ~~**Finish Phase 5 canvas**~~ **DONE** (commit `22b8d9225`) — canvas fully migrated; Scene-Levels bits FIXME'd → P7.
 2. **Sheets** (Phase 6 subset) — high consumer value; **interleaved now**. Order: `base-sheet` ✅ → journal → Tier A → media; Tier B (placeable configs) deferred. See [phase-6](migration-v14-phase-6.md).
 3. **Phase 7 document giants + Scene Levels** — the most-consumed types; highest remaining leverage.
 4. **Usability MVP items** (cheap — pull forward from P8): bump `package.json` → `14.x`; prune the `removed in v14` accuracy-wins. See [phase-8](migration-v14-phase-8.md).
@@ -64,19 +64,19 @@ The package is **already substantially usable on v14** for backward-compatible u
 
 > ### ▶ Next session — start here
 >
-> Two threads are live, both committed-or-clean. Pick one:
+> **Phase 5 (canvas) is CLOSED** (commit `22b8d9225`). Per scope priority, the live threads are now Phase 6 sheets, then Phase 7 document giants + Scene Levels. Pick one:
 >
-> - **Phase 5.7 finish** (canvas — **bounded adds just landed `[~]`**) — close the last Phase 5 batch. Remaining: **add `animation/particle-generator`** (4502L `ParticleGenerator`; deprecated-only consumer — own session) + `animation/_types`; **member-diff verify existing** `board`(2666, the Canvas god-object — own session)/`loader`/`scene-manager`/`texture-extractor`/`framebuffer-snapshot`/`interaction/*`/`extensions/*`/`workers/`. Read [phase-5](migration-v14-phase-5.md) (Batch 5.7 PARTIAL section). Closing these **closes Phase 5**.
-> - **Phase 6 sheets** (in progress) — `base-sheet` done; next is the **journal cluster**: 4 small files + the 1443-line `journal-entry-sheet` giant (own session). Read [phase-6](migration-v14-phase-6.md).
+> - **Phase 6 sheets** (in progress — highest consumer value) — `base-sheet` done; next is the **journal cluster**: 4 small files + the 1443-line `journal-entry-sheet` giant (own session). Read [phase-6](migration-v14-phase-6.md).
+> - **Phase 7 — Scene Levels subsystem** — the largest inherited deferral, now fed by all of Phase 5's `object`-typed `Level` FIXMEs (board `get level`/`inferLevelFromElevation`/`tearDown.nextLevel`/`_viewOptions.level`, scene-manager `_determineInitialLevel`/`_getAvailableLevels`, sources/perception/edges, plus the 4 Tier-B giants). Authoring the `Level` document unblocks them all. Read [phase-7](migration-v14-phase-7.md).
 >
 > **Kickoff message** (pick one, paste verbatim — short on purpose; the agent reads this tracker + the phase file first):
 >
 > ```
-> Continue the v14 migration (Batch 5.7 finish — particle-generator + verify board/loader/interaction/extensions)
+> Continue the v14 migration (Phase 6 sheets — journal cluster)
 > ```
 >
 > ```
-> Continue the v14 migration (Phase 6 sheets — journal cluster)
+> Continue the v14 migration (Phase 7 — Scene Levels subsystem: author the Level document, resolve the object-typed FIXMEs)
 > ```
 >
 > _Maintainers: overwrite this block (not append) when a batch/phase closes._
