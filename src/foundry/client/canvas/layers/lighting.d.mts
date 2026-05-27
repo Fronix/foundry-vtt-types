@@ -60,8 +60,9 @@ declare class LightingLayer extends PlaceablesLayer<"AmbientLight"> {
 
   protected override _onDragLeftCancel(event: Canvas.Event.Pointer): void;
 
-  // @ts-expect-error Foundry is changing the return type here from Promise<PlaceableObject[]> to just Promise<AmbientLight>
-  protected _onMouseWheel(event: Canvas.Event.Wheel): Promise<AmbientLight.Implementation>;
+  // Note: v14 removed `LightingLayer#_onMouseWheel` (the v13 override is gone from source); the base
+  // `PlaceablesLayer#_onMouseWheel` is inherited. Removed here as a prerequisite for `AmbientLightShapeControls`
+  // (Batch 5.6e) — `LightingLayer` must satisfy `PlaceablesLayer.Any`. Full v14 member-diff of this layer is Phase 5.6f.
 
   /**
    * Actions to take when the darkness level of the Scene is changed

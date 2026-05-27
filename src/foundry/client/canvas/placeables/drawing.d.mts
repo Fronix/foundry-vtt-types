@@ -1,9 +1,10 @@
 import type { ValueOf, FixedInstanceType, HandleEmptyObject, RequiredProps, NullishProps } from "#utils";
 import type { Canvas } from "#client/canvas/_module.d.mts";
 import type { PlaceableObject } from "#client/canvas/placeables/_module.d.mts";
+import type { ShapePlaceableObject } from "./mixins/shapes.mjs";
 import type { PrimaryGraphics } from "#client/canvas/primary/_module.d.mts";
 import type { ConfiguredObjectClassOrDefault } from "../../config.d.mts";
-import type { PreciseText } from "#client/canvas/containers/_module.mjs";
+import type { PreciseText, ShapeControls } from "#client/canvas/containers/_module.mjs";
 import { RenderFlagsMixin, RenderFlags, RenderFlag } from "#client/canvas/interaction/_module.mjs";
 
 declare module "#configuration" {
@@ -18,16 +19,16 @@ declare module "#configuration" {
  * The Drawing object is an implementation of the PlaceableObject container.
  * Each Drawing is a placeable object in the DrawingsLayer.
  */
-declare class Drawing extends PlaceableObject<DrawingDocument.Implementation> {
+declare class Drawing extends ShapePlaceableObject<DrawingDocument.Implementation> {
   // fake override; super has to type as if this could be a ControlIcon, but Drawings don't use one
   override controlIcon: null;
 
   /**
    * The texture that is used to fill this Drawing, if any.
-   * @defaultValue `undefined`
-   * @remarks Only `undefined` prior to first draw. Set `null` if the Drawing's document has no `texture` set
+   * @defaultValue `null`
+   * @remarks Set to a `PIXI.Texture` during {@link Drawing._draw | `Drawing#_draw`} if the document has a `texture`.
    */
-  texture: PIXI.Texture | null | undefined;
+  texture: PIXI.Texture | null;
 
   /**
    * The border frame and resizing handles for the drawing.
@@ -73,11 +74,6 @@ declare class Drawing extends PlaceableObject<DrawingDocument.Implementation> {
    */
   get isAuthor(): boolean;
 
-  /**
-   * Is this Drawing currently visible on the Canvas?
-   */
-  get isVisible(): boolean;
-
   override get bounds(): PIXI.Rectangle;
 
   override get center(): PIXI.Point;
@@ -103,6 +99,13 @@ declare class Drawing extends PlaceableObject<DrawingDocument.Implementation> {
   get type(): ValueOf<foundry.data.ShapeData.TYPES>;
 
   /**
+   * The shape controls of this Drawing.
+   * @defaultValue `undefined`
+   * @remarks Only `undefined` prior to first draw.
+   */
+  controls: ShapeControls.Any;
+
+  /**
    * The pending text.
    * @defaultValue `undefined`
    * @remarks Foundry marked `@internal`
@@ -117,6 +120,8 @@ declare class Drawing extends PlaceableObject<DrawingDocument.Implementation> {
   protected _onkeydown: ((event: KeyboardEvent) => void) | null;
 
   protected override _destroy(options: PIXI.IDestroyOptions | boolean | undefined): void;
+
+  protected override _clear(): void;
 
   protected override _draw(options: HandleEmptyObject<Drawing.DrawOptions> | undefined): Promise<void>;
 
@@ -153,11 +158,13 @@ declare class Drawing extends PlaceableObject<DrawingDocument.Implementation> {
    */
   protected _refreshRotation(): void;
 
+  protected override _refreshVisibility(): void;
+
   /**
    * Refresh the displayed state of the Drawing.
    * Used to update aspects of the Drawing which change based on the user interaction state.
    */
-  protected _refreshState(): void;
+  protected override _refreshState(): void;
 
   /**
    * Clear and then draw the shape.
@@ -171,29 +178,9 @@ declare class Drawing extends PlaceableObject<DrawingDocument.Implementation> {
   protected _refreshElevation(): void;
 
   /**
-   * Refresh the border frame that encloses the Drawing.
-   */
-  protected _refreshFrame(): void;
-
-  /**
    * Refresh the content and appearance of text.
    */
   protected _refreshText(): void;
-
-  /**
-   * Add a new polygon point to the drawing, ensuring it differs from the last one
-   * @param position - The drawing point to add
-   * @param options  - Options which configure how the point is added
-   * @remarks Foundry marked `@internal`
-   */
-  // options: not null (destructured)
-  protected _addPoint(position: Canvas.Point, options?: Drawing.AddPointOptions): void;
-
-  /**
-   * Remove the last fixed point from the polygon
-   * @remarks Foundry marked `@internal`
-   */
-  protected _removePoint(): void;
 
   protected override _onControl(options: Drawing.ControlOptions): void;
 
@@ -209,68 +196,18 @@ declare class Drawing extends PlaceableObject<DrawingDocument.Implementation> {
   // _onUpdate and _onDelete are overridden but with no signature changes.
   // For type simplicity they are left off. These methods historically have been the source of a large amount of computation from tsc.
 
-  override activateListeners(): void;
+  // `_initializeDragShape` is overridden in the v14 source (it returns `this.document._shape.clone()`,
+  // i.e. a `RectangleShapeData | EllipseShapeData | PolygonShapeData`), but is intentionally left off here:
+  // declaring that narrowed client-shape union return tripped a `tsc` internal assertion
+  // ("Debug Failure ... parameter should have errors when reporting errors") during type-aware ESLint,
+  // surfacing as a spurious crash in an unrelated overload (`DialogV2.input`). `tsgo`, `tsc`, and the
+  // type tests are unaffected. The inherited `ShapePlaceableObject#_initializeDragShape(): BaseShapeData`
+  // is correct, just less specific.
 
-  protected override _canControl(user: User.Implementation, event?: Canvas.Event.Pointer): boolean;
-
-  protected override _canConfigure(user: User.Implementation, event?: Canvas.Event.Pointer): boolean;
-
-  // fake override to narrow the type from super, which had to account for this class's misbehaving siblings
-  // options: not null (destructured)
-  protected override _onHoverIn(event: Canvas.Event.Pointer, options?: PlaceableObject.HoverInOptions): void;
-
-  /**
-   * Handle mouse movement which modifies the dimensions of the drawn shape
-   * @remarks Foundry marked `@internal`
-   */
-  protected _onMouseDraw(event: Canvas.Event.Pointer): void;
-
-  protected override _onClickLeft(event: Canvas.Event.Pointer): void;
-
-  protected override _onDragLeftStart(event: Canvas.Event.Pointer): void;
-
-  protected override _onDragLeftMove(event: Canvas.Event.Pointer): void;
-
-  protected override _onDragLeftDrop(event: Canvas.Event.Pointer): void;
-
-  protected override _onDragLeftCancel(event: Canvas.Event.Pointer): void;
+  protected override _updateDragPreviews(event: Canvas.Event.Pointer): void;
 
   // fake override to narrow the type from super, which had to account for this class's misbehaving siblings
   protected override _prepareDragLeftDropUpdates(event: Canvas.Event.Pointer): PlaceableObject.DragLeftDropUpdate[];
-
-  /**
-   * Handle mouse-over event on a control handle
-   * @param event - The mouseover event
-   */
-  protected _onHandleHoverIn(event: PIXI.FederatedEvent<PointerEvent>): void;
-
-  /**
-   * Handle mouse-out event on a control handle
-   * @param event - The mouseout event
-   */
-  protected _onHandleHoverOut(event: PIXI.FederatedEvent<PointerEvent>): void;
-
-  /**
-   * Starting the resize handle drag event, initialize the original data.
-   */
-  protected _onHandleDragStart(event: Canvas.Event.Pointer): void;
-
-  /**
-   * Handle mousemove while dragging a tile scale handler
-   * @param event - The mousemove event
-   */
-  protected _onHandleDragMove(event: Canvas.Event.Pointer): void;
-
-  /**
-   * Handle mouseup after dragging a tile scale handler
-   * @param event - The mouseup event
-   */
-  protected _onHandleDragDrop(event: Canvas.Event.Pointer): void;
-
-  /**
-   * Handle cancellation of a drag event for one of the resizing handles
-   */
-  protected _onHandleDragCancel(event: Canvas.Event.Pointer): void;
 
   /**
    * Get a vectorized rescaling transformation for drawing data and dimensions passed in parameter
@@ -330,10 +267,10 @@ declare namespace Drawing {
     /** @defaultValue `{}` */
     refreshPosition: RenderFlag<this, "refreshPosition">;
 
-    /** @defaultValue `{ propagate: ["refreshFrame"] }` */
+    /** @defaultValue `{}` */
     refreshRotation: RenderFlag<this, "refreshRotation">;
 
-    /** @defaultValue `{ propagate: ["refreshPosition", "refreshFrame", "refreshShape", "refreshText"] }` */
+    /** @defaultValue `{ propagate: ["refreshPosition", "refreshShape", "refreshText"] }` */
     refreshSize: RenderFlag<this, "refreshSize">;
 
     /** @defaultValue `{}` */
@@ -343,23 +280,13 @@ declare namespace Drawing {
     refreshText: RenderFlag<this, "refreshText">;
 
     /** @defaultValue `{}` */
-    refreshFrame: RenderFlag<this, "refreshFrame">;
-
-    /** @defaultValue `{}` */
     refreshElevation: RenderFlag<this, "refreshElevation">;
 
     /**
-     * @defaultValue
-     * ```js
-     * {
-     *   propagate: ["refreshTransform", "refreshShape", "refreshElevation"],
-     *   deprecated: { since: 12, until: 14, alias: true }
-     * }
-     * ```
-     * @deprecated since v12, until v14
-     * @remarks The `alias: true` should be a sibling of `deprecated`, not a child, this is a Foundry bug in 12.331
+     * @defaultValue `{ deprecated: { since: 14, until: 16 }, alias: true }`
+     * @deprecated since v14, until v16
      */
-    refreshMesh: RenderFlag<this, "refreshMesh">;
+    refreshFrame: RenderFlag<this, "refreshFrame">;
   }
 
   interface RenderFlags extends RenderFlagsMixin.ToBooleanFlags<RENDER_FLAGS> {}
@@ -376,29 +303,6 @@ declare namespace Drawing {
 
   /** @remarks Conditionally includes `texture`, which is already optional in the interface */
   type FillStyleData = RequiredProps<PIXI.IFillStyleOptions, "color" | "alpha">;
-
-  /** @internal */
-  type _AddPointOptions = NullishProps<{
-    /**
-     * Should the point be rounded to integer coordinates?
-     * @defaultValue `false`
-     */
-    round: boolean;
-
-    /**
-     * Should the point be snapped to grid precision?
-     * @defaultValue `false`
-     */
-    snap: boolean;
-
-    /**
-     * Is this a temporary control point?
-     * @defaultValue `false`
-     */
-    temporary: boolean;
-  }>;
-
-  interface AddPointOptions extends _AddPointOptions {}
 
   /** @internal */
   type _EnableTextEditingOptions = NullishProps<{

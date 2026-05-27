@@ -3,6 +3,7 @@ import { expectTypeOf } from "vitest";
 import Drawing = foundry.canvas.placeables.Drawing;
 import PlaceableObject = foundry.canvas.placeables.PlaceableObject;
 import PrimaryGraphics = foundry.canvas.primary.PrimaryGraphics;
+import ShapeControlsHandle = foundry.canvas.containers.ShapeControlsHandle;
 
 declare const drawingDoc: DrawingDocument.Stored;
 declare const scene: Scene.Stored;
@@ -19,9 +20,8 @@ expectTypeOf(Drawing.RENDER_FLAGS.redraw.propagate).toEqualTypeOf<
       | "refreshSize"
       | "refreshShape"
       | "refreshText"
-      | "refreshFrame"
       | "refreshElevation"
-      | "refreshMesh"
+      | "refreshFrame"
     >
   | undefined
 >();
@@ -102,26 +102,20 @@ expectTypeOf(
     refreshSize: true,
     refreshShape: true,
     refreshText: true,
-    refreshFrame: true,
     refreshElevation: true,
-    // deprecated since v12, until v14
-    refreshMesh: true,
+    // deprecated since v14, until v16
+    refreshFrame: true,
   }),
 ).toBeVoid();
 
+expectTypeOf(drawing["_clear"]()).toBeVoid();
+expectTypeOf(drawing["_refreshVisibility"]()).toBeVoid();
 expectTypeOf(drawing["_refreshPosition"]()).toBeVoid();
 expectTypeOf(drawing["_refreshRotation"]()).toBeVoid();
 expectTypeOf(drawing["_refreshState"]()).toBeVoid();
 expectTypeOf(drawing["_refreshShape"]()).toBeVoid();
 expectTypeOf(drawing["_refreshElevation"]()).toBeVoid();
-expectTypeOf(drawing["_refreshFrame"]()).toBeVoid();
 expectTypeOf(drawing["_refreshText"]()).toBeVoid();
-
-expectTypeOf(drawing["_addPoint"]({ x: 50, y: 60 })).toBeVoid();
-expectTypeOf(drawing["_addPoint"]({ x: 50, y: 60 }, {})).toBeVoid();
-expectTypeOf(drawing["_addPoint"]({ x: 50, y: 60 }, { round: true, snap: false, temporary: true })).toBeVoid();
-expectTypeOf(drawing["_addPoint"]({ x: 50, y: 60 }, { round: null, snap: undefined, temporary: null })).toBeVoid();
-expectTypeOf(drawing["_removePoint"]()).toBeVoid();
 
 expectTypeOf(
   drawing["_onCreate"](
@@ -167,12 +161,12 @@ declare const pointerEvent: foundry.canvas.Canvas.Event.Pointer;
 expectTypeOf(drawing["_canControl"](someUser, pointerEvent)).toBeBoolean();
 expectTypeOf(drawing["_canConfigure"](someUser, pointerEvent)).toBeBoolean();
 
-expectTypeOf(drawing["_onHoverIn"](pointerEvent)).toBeVoid();
-expectTypeOf(drawing["_onHoverIn"](pointerEvent, {})).toBeVoid();
-expectTypeOf(drawing["_onHoverIn"](pointerEvent, { hoverOutOthers: true })).toBeVoid();
-expectTypeOf(drawing["_onHoverIn"](pointerEvent, { hoverOutOthers: null })).toBeVoid();
+// v14 Drawing no longer overrides `_onHoverIn`; the base `PlaceableObject#_onHoverIn` (return `void | false`) is inherited.
+expectTypeOf(drawing["_onHoverIn"](pointerEvent)).toEqualTypeOf<void | false>();
+expectTypeOf(drawing["_onHoverIn"](pointerEvent, {})).toEqualTypeOf<void | false>();
+expectTypeOf(drawing["_onHoverIn"](pointerEvent, { hoverOutOthers: true })).toEqualTypeOf<void | false>();
+expectTypeOf(drawing["_onHoverIn"](pointerEvent, { hoverOutOthers: null })).toEqualTypeOf<void | false>();
 
-expectTypeOf(drawing["_onMouseDraw"](pointerEvent)).toBeVoid();
 expectTypeOf(drawing["_onClickLeft"](pointerEvent)).toBeVoid();
 expectTypeOf(drawing["_onDragLeftStart"](pointerEvent)).toBeVoid();
 expectTypeOf(drawing["_onDragLeftMove"](pointerEvent)).toBeVoid();
@@ -182,9 +176,7 @@ expectTypeOf(drawing["_prepareDragLeftDropUpdates"](pointerEvent)).toEqualTypeOf
 >();
 expectTypeOf(drawing["_onDragLeftCancel"](pointerEvent)).toBeVoid();
 
-expectTypeOf(drawing["_onHandleHoverIn"](pointerEvent)).toBeVoid();
-expectTypeOf(drawing["_onHandleHoverOut"](pointerEvent)).toBeVoid();
-expectTypeOf(drawing["_onHandleDragStart"](pointerEvent)).toBeVoid();
-expectTypeOf(drawing["_onHandleDragMove"](pointerEvent)).toBeVoid();
-expectTypeOf(drawing["_onHandleDragDrop"](pointerEvent)).toBeVoid();
-expectTypeOf(drawing["_onHandleDragCancel"](pointerEvent)).toBeVoid();
+// v14 shape-controls surface (via ShapeObjectMixin / ShapePlaceableObject).
+expectTypeOf(drawing.controls).toEqualTypeOf<foundry.canvas.containers.ShapeControls.Any>();
+expectTypeOf(drawing.hoveredHandle).toEqualTypeOf<ShapeControlsHandle | null>();
+expectTypeOf(drawing["_updateDragPreviews"](pointerEvent)).toBeVoid();

@@ -31,5 +31,6 @@ expectTypeOf(layer["_canDragLeftStart"](someUser, pointerEvent)).toBeBoolean();
 expectTypeOf(layer["_onDragLeftStart"](pointerEvent)).toBeVoid();
 expectTypeOf(layer["_onDragLeftMove"](pointerEvent)).toBeVoid();
 expectTypeOf(layer["_onDragLeftCancel"](pointerEvent)).toBeVoid();
-expectTypeOf(layer["_onMouseWheel"](wheelEvent)).toEqualTypeOf<Promise<AmbientLight.Implementation>>();
+// v14 removed `LightingLayer#_onMouseWheel`; the base `PlaceablesLayer#_onMouseWheel` is inherited.
+expectTypeOf(layer["_onMouseWheel"](wheelEvent)).toEqualTypeOf<Promise<AmbientLight.Implementation[] | void>>();
 expectTypeOf(layer["_onDarknessChange"](darknessChangeEvent)).toBeVoid();
