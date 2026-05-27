@@ -1,14 +1,14 @@
 import type { FixedInstanceType, HandleEmptyObject, Identity, NullishProps } from "#utils";
 import type { LineIntersection } from "#common/utils/geometry.d.mts";
 import type { Canvas } from "#client/canvas/_module.d.mts";
-import type { Cursor } from "#client/canvas/containers/_module.mjs";
+import type { Cursor, UnboundContainer } from "#client/canvas/containers/_module.mjs";
 import type { Ray } from "#client/canvas/geometry/_module.d.mts";
-import type { CanvasLayer, InteractionLayer } from "#client/canvas/layers/_module.d.mts";
+import type { CanvasLayer } from "#client/canvas/layers/_module.d.mts";
 import type { Ping, Ruler } from "#client/canvas/interaction/_module.d.mts";
 
 declare module "#configuration" {
   namespace Hooks {
-    interface InteractionLayerConfig {
+    interface CanvasLayerConfig {
       ControlsLayer: ControlsLayer.Implementation;
     }
   }
@@ -21,14 +21,13 @@ declare module "#configuration" {
  * 1) Cursor movement
  * 2) Ruler measurement
  * 3) Map pings
+ *
+ * @privateRemarks In v14 `ControlsLayer` extends {@linkcode CanvasLayer} directly (no longer an
+ * {@linkcode InteractionLayer}); its interaction is wired through `canvas.registerMouseMoveHandler`
+ * rather than the activate/deactivate framework.
  */
-declare class ControlsLayer extends InteractionLayer {
+declare class ControlsLayer extends CanvasLayer {
   constructor();
-
-  /**
-   * @privateRemarks This is not overridden in foundry but reflects the real behavior.
-   */
-  static get instance(): Canvas["controls"];
 
   /**
    * Always interactive even if disabled for doors controls
@@ -38,34 +37,42 @@ declare class ControlsLayer extends InteractionLayer {
 
   /**
    * A container of DoorControl instances
-   * @defaultValue `new PIXI.Container()`
+   * @defaultValue `this.addChild(new PIXI.Container())`
    */
   doors: PIXI.Container;
 
   /**
-   * A container of cursor interaction elements.
-   * Contains cursors, rulers, interaction rectangles, and pings
-   * @defaultValue `new PIXI.Container()`
+   * A container of pings interaction elements. Contains pings elements.
+   * @defaultValue `this.addChild(new PIXI.Container())`
    * @remarks This Container's `eventMode` is set to `"none"` and its `mask` is set to `canvas.masks.canvas`
    */
-  cursors: PIXI.Container;
+  pings: PIXI.Container;
 
   /**
-   * Ruler tools, one per connected user
-   * @defaultValue `new PIXI.Container()`
+   * A container of cursor interaction elements not bound to stage transforms. Contains cursors elements.
+   * @defaultValue `this.addChild(new UnboundContainer())`
    * @remarks This Container's `eventMode` is set to `"none"`
    */
-  rulers: PIXI.Container;
+  cursors: UnboundContainer;
+
+  /**
+   * The ruler paths.
+   * @defaultValue `this.addChild(new PIXI.Container())`
+   * @remarks This Container's `eventMode` is set to `"none"`
+   *
+   * Foundry marked `@internal`
+   */
+  _rulerPaths: PIXI.Container;
 
   /**
    * A graphics instance used for drawing debugging visualization
-   * @defaultValue `new PIXI.Graphics()`
+   * @defaultValue `this.addChild(new PIXI.Graphics())`
    * @remarks This Graphics's `eventMode` is set to `"none"`
    */
   debug: PIXI.Graphics;
 
   /**
-   * Canvas selection rectangle
+   * The Canvas selection rectangle
    * @remarks Only `undefined` prior to first draw
    */
   select: PIXI.Graphics | undefined;
@@ -74,11 +81,13 @@ declare class ControlsLayer extends InteractionLayer {
    * A mapping of user IDs to Cursor instances for quick access
    * @defaultValue `{}`
    * @remarks Cursor class is non-configurable
+   *
+   * Foundry marked `@private`
    */
   _cursors: Record<string, Cursor>;
 
   /**
-   * A convenience mapping of user IDs to Ruler instances for quick access
+   * A mapping of user IDs to Ruler instances for quick access
    * @defaultValue `{}`
    * @remarks Keys are User IDs
    *
@@ -88,17 +97,12 @@ declare class ControlsLayer extends InteractionLayer {
 
   /**
    * The positions of any offscreen pings we are tracking.
+   * @defaultValue `{}`
    * @remarks Keys in the format `Ping.${foundry.utils.randomID()}`
    *
    * Foundry marked `@private`
    */
   protected _offscreenPings: Record<string, Canvas.Point>;
-
-  /**
-   * @privateRemarks This override does not exist in Foundry but reflects reality. Not automateable because of
-   * lack of access to the constructor from the instance side
-   */
-  override options: ControlsLayer.LayerOptions;
 
   /**
    * @defaultValue
@@ -112,14 +116,32 @@ declare class ControlsLayer extends InteractionLayer {
   static override get layerOptions(): ControlsLayer.LayerOptions;
 
   /**
+   * @privateRemarks This is not overridden in foundry but reflects the real behavior.
+   */
+  static get instance(): Canvas["controls"];
+
+  /**
+   * @privateRemarks This override does not exist in Foundry but reflects reality. Not automateable because of
+   * lack of access to the constructor from the instance side
+   */
+  override options: ControlsLayer.LayerOptions;
+
+  /**
    * A convenience accessor to the Ruler for the active game user
    */
   get ruler(): Ruler.Implementation | null;
 
   /**
-   * Get the Ruler display for a specific User ID
+   * Get the Ruler instance for a specific User ID.
+   * @param userId - The User ID
    */
   getRulerForUser(userId: string): Ruler.Implementation | null;
+
+  /**
+   * Get the Cursor instance for a specific User ID.
+   * @param userId - The User ID
+   */
+  getCursorForUser(userId: string): Cursor | null;
 
   protected override _draw(options: HandleEmptyObject<ControlsLayer.DrawOptions>): Promise<void>;
 
@@ -131,9 +153,9 @@ declare class ControlsLayer extends InteractionLayer {
   drawCursors(): void;
 
   /**
-   * Create and add Ruler graphics instances for every game User.
+   * Create and add Ruler instances for every game User.
    */
-  drawRulers(): void;
+  drawRulers(): Promise<void>;
 
   /**
    * Draw door control icons to the doors container.
@@ -146,12 +168,13 @@ declare class ControlsLayer extends InteractionLayer {
    */
   drawSelect(coords: Canvas.Rectangle): void;
 
-  protected override _deactivate(): void;
+  protected _deactivate(): void;
 
   /**
-   * Handle mousemove events on the game canvas to broadcast activity of the user's cursor position
+   * Handle mousemove events on the game canvas to broadcast activity. With SHOW_CURSOR permission enabled,
+   * the user's cursor position is transmitted.
    */
-  protected _onMouseMove(): void;
+  protected _onMouseMove(currentPos: PIXI.Point): void;
 
   /**
    * Handle pinging the canvas.
@@ -174,6 +197,13 @@ declare class ControlsLayer extends InteractionLayer {
   drawCursor(user: User.Stored): Cursor;
 
   /**
+   * Create and draw the Ruler object for a given User.
+   * @param user - The User document for whom to draw the Ruler
+   * @returns The Ruler instance
+   */
+  drawRuler(user: User.Stored): Promise<Ruler.Implementation>;
+
+  /**
    * Update the cursor when the user moves to a new position
    * @param user     - The User for whom to update the cursor
    * @param position - The new cursor position
@@ -182,10 +212,11 @@ declare class ControlsLayer extends InteractionLayer {
   updateCursor(user: User.Stored, position: Canvas.Point | null): void;
 
   /**
-   * Update display of an active Ruler object for a user given provided data
-   * @see {@link Ruler#update}
+   * Update the Ruler for a User given the provided path.
+   * @param user - The User for whom to update the Ruler
+   * @param data - The path and hidden state of the Ruler
    */
-  updateRuler(user: User.Stored, rulerData?: Ruler.UpdateData | null): void;
+  updateRuler(user: User.Stored, data?: Ruler.UpdateData | null): Promise<void>;
 
   /**
    * Handle a broadcast ping.
@@ -252,11 +283,11 @@ declare namespace ControlsLayer {
   interface ImplementationClass extends Identity<CONFIG["Canvas"]["layers"]["controls"]["layerClass"]> {}
   interface Implementation extends FixedInstanceType<ImplementationClass> {}
 
-  interface DrawOptions extends InteractionLayer.DrawOptions {}
+  interface DrawOptions extends CanvasLayer.DrawOptions {}
 
   interface TearDownOptions extends CanvasLayer.TearDownOptions {}
 
-  interface LayerOptions extends InteractionLayer.LayerOptions {
+  interface LayerOptions extends CanvasLayer.LayerOptions {
     name: "controls";
     zIndex: 1000;
   }

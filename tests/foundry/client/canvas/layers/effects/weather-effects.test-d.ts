@@ -44,8 +44,9 @@ expectTypeOf(layer.weatherEffects).toEqualTypeOf<PIXI.Container | undefined>();
 expectTypeOf(layer.suppression).toEqualTypeOf<PIXI.Container | undefined>();
 
 expectTypeOf(layer.options.name).toEqualTypeOf<"effects">();
+expectTypeOf(layer.hookName).toEqualTypeOf<"WeatherEffects">();
 
-expectTypeOf(layer.effects).toEqualTypeOf<Map<string, (ParticleEffect | WeatherShaderEffect)[]>>();
+expectTypeOf(layer.effects).toEqualTypeOf<Map<string, ParticleEffect | WeatherShaderEffect>>();
 expectTypeOf(layer.terrainMaskConfig).toEqualTypeOf<WeatherEffects.MaskConfiguration | undefined>();
 expectTypeOf(layer.occlusionMaskConfig).toEqualTypeOf<WeatherEffects.MaskConfiguration | undefined>();
 
@@ -123,7 +124,3 @@ expectTypeOf(
 ).toBeVoid();
 
 expectTypeOf(layer.clearEffects()).toBeVoid();
-
-// deprecated until v13
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.weather).toEqualTypeOf<typeof layer>();

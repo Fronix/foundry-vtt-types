@@ -1,8 +1,8 @@
-import type { Coalesce, HandleEmptyObject, Identity, NullishProps } from "#utils";
+import type { AnyObject, HandleEmptyObject, Identity, NullishProps } from "#utils";
 import type { Canvas } from "#client/canvas/_module.d.mts";
-import type { Ray, PointSourcePolygon } from "#client/canvas/geometry/_module.d.mts";
 import type { PlaceablesLayer } from "./_module.d.mts";
 import type { PlaceableObject, Wall } from "#client/canvas/placeables/_module.d.mts";
+import type SceneControls from "#client/applications/ui/scene-controls.d.mts";
 
 declare module "#configuration" {
   namespace Hooks {
@@ -26,22 +26,16 @@ declare class WallsLayer extends PlaceablesLayer<"Wall"> {
   /**
    * Track whether we are currently within a chained placement workflow
    * @defaultValue `false`
+   * @remarks Foundry marked `@internal`
    */
   protected _chain: boolean;
 
   /**
-   * Track the most recently created or updated wall data for use with the clone tool
-   * @defaultValue `null`
-   * @remarks Foundry marked `@private`, is set via {@link Wall#_onCreate} and {@link Wall#_onUpdate}
-   */
-  protected _cloneType: WallDocument.Source | null;
-
-  /**
    * Reference the last interacted wall endpoint for the purposes of chaining
    * @defaultValue `{ point: null }`
-   * @remarks Foundry marked `@private`, is set via {@link Wall#_onHoverIn}, {@link Wall#_onHoverOut}, and {@link Wall#_prepareDragLeftDropUpdates}
+   * @remarks Foundry marked `@internal`
    */
-  protected last: {
+  protected _last: {
     point: Canvas.PointTuple | null;
   };
 
@@ -54,8 +48,9 @@ declare class WallsLayer extends PlaceablesLayer<"Wall"> {
    * @defaultValue
    * ```js
    * mergeObject(super.layerOptions, {
-   *  name: "walls"
+   *  name: "walls",
    *  controllableObjects: true,
+   *  controlObjectAfterCreation: false,
    *  zIndex: 700
    * })
    * ```
@@ -66,6 +61,8 @@ declare class WallsLayer extends PlaceablesLayer<"Wall"> {
   override options: WallsLayer.LayerOptions;
 
   static override documentName: "Wall";
+
+  // FIXME: WallPalette // `static paletteClass = WallPalette` is added with the `applications/sheets/palette/` files in Batch 5.6.
 
   override get hookName(): "WallsLayer";
 
@@ -91,32 +88,15 @@ declare class WallsLayer extends PlaceablesLayer<"Wall"> {
   override releaseAll(options?: PlaceableObject.ReleaseOptions): number;
 
   /**
-   * Pan the canvas view when the cursor position gets close to the edge of the frame
-   * @param event - The originating mouse movement event
-   * @param x     - The x-coordinate
-   * @param y     - The y-coordinate
-   * @remarks Foundry marked `@private`
-   */
-  protected _panCanvasEdge(event: MouseEvent, x: number, y: number): Promise<boolean> | void;
-
-  /**
    * Get the wall endpoint coordinates for a given point.
    * @param  point - The candidate wall endpoint.
    * @returns The wall endpoint coordinates.
-   * @remarks Foundry marked `@internal`, is called externally in {@link Wall#_onDragLeftMove} and {@link Wall#_prepareDragLeftDropUpdates}
+   * @remarks Foundry marked `@internal`
    */
   protected _getWallEndpointCoordinates(
     point: Canvas.Point,
     options?: WallsLayer.GetWallEndpointCoordinatesOptions, // not:null (destructured)
   ): Canvas.PointTuple;
-
-  /**
-   * The Scene Controls tools provide several different types of prototypical Walls to choose from
-   * This method helps to translate each tool into a default wall data configuration for that type
-   * @param tool - The active canvas tool
-   * @remarks If a tool is not provided, returns an object with `light`, `sight`, `sound`, and `move` keys, all with the value `CONST.EDGE_SENSE_TYPES.NORMAL`
-   */
-  protected _getWallDataFromActiveTool(tool?: WallsLayer.WallTools | null): WallDocument.Source;
 
   /**
    * Identify the interior enclosed by the given walls.
@@ -126,8 +106,12 @@ declare class WallsLayer extends PlaceablesLayer<"Wall"> {
    */
   identifyInteriorArea(walls: Wall.Implementation[]): PIXI.Polygon[];
 
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  protected override _onDragLeftStart(event: Canvas.Event.Pointer): Promise<Wall.Implementation>;
+  /**
+   * Prepare data used by SceneControls to register tools used by this layer.
+   */
+  static override prepareSceneControls(): SceneControls.Control;
+
+  protected override _createDragPreviewData(event: Canvas.Event.Pointer): AnyObject;
 
   protected override _onDragLeftMove(event: Canvas.Event.Pointer): void;
 
@@ -135,45 +119,11 @@ declare class WallsLayer extends PlaceablesLayer<"Wall"> {
 
   protected override _onDragLeftCancel(event: Canvas.Event.Pointer): void;
 
-  protected override _onClickRight(event: Canvas.Event.Pointer): void;
-
   /**
-   * @deprecated since v11, will be removed in v13
-   * @remarks "WallsLayer#checkCollision is obsolete. Prefer calls to testCollision from CONFIG.Canvas.polygonBackends[type]"
+   * Custom undo for wall creation while chaining is active.
+   * @returns An array of documents which were modified by the undo operation
    */
-  checkCollision<Mode extends PointSourcePolygon.CollisionModes | undefined = undefined>(
-    ray: Ray,
-    options: PointSourcePolygon.TestCollisionOptions<Mode>,
-  ): PointSourcePolygon.TestCollision<Coalesce<Mode, "all">>;
-
-  /**
-   * @deprecated since v11, will be removed in v13
-   * @remarks "The WallsLayer#highlightControlledSegments function is deprecated in favor of calling wall.renderFlags.set(\"refreshHighlight\") on individual Wall objects"
-   */
-  highlightControlledSegments(): void;
-
-  /**
-   * Perform initialization steps for the WallsLayer whenever the composition of walls in the Scene is changed.
-   * Cache unique wall endpoints and identify interior walls using overhead roof tiles.
-   * @deprecated since v12 until v14
-   * @remarks "WallsLayer#initialize is deprecated in favor of Canvas#edges#initialize"
-   */
-  initialize(): void;
-
-  /**
-   * Identify walls which are treated as "interior" because they are contained fully within a roof tile.
-   * @deprecated since v12 until v14
-   * @remarks "WallsLayer#identifyInteriorWalls has been deprecated. It has no effect anymore and there's no replacement."
-   */
-  identifyInteriorWalls(): void;
-
-  /**
-   * Initialization to identify all intersections between walls.
-   * These intersections are cached and used later when computing point source polygons.
-   * @deprecated since v12 until v14
-   * @remarks "WallsLayer#identifyWallIntersections is deprecated in favor of foundry.canvas.geometry.edges.Edge.identifyEdgeIntersections and has no effect."
-   */
-  identifyWallIntersections(): void;
+  protected override _onUndoCreate(event: PlaceablesLayer.HistoryEntry<"Wall">): Promise<WallDocument.Implementation[]>;
 }
 
 declare namespace WallsLayer {
@@ -185,6 +135,7 @@ declare namespace WallsLayer {
   interface LayerOptions extends PlaceablesLayer.LayerOptions<Wall.ImplementationClass> {
     name: "walls";
     controllableObjects: true;
+    controlObjectAfterCreation: false;
     objectClass: Wall.ImplementationClass;
     zIndex: 700;
   }
@@ -197,9 +148,6 @@ declare namespace WallsLayer {
      */
     snap: boolean;
   }>;
-
-  /** @remarks The types handled by {@link Wall#_getWallDataFromActiveTool} */
-  type WallTools = "clone" | "invisible" | "terrain" | "ethereal" | "doors" | "secret" | "window";
 
   interface GetWallEndpointCoordinatesOptions extends _Snap {}
 }

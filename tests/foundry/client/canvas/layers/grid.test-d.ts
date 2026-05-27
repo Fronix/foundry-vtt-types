@@ -1,6 +1,5 @@
 import { expectTypeOf } from "vitest";
 
-import BaseGrid = foundry.grid.BaseGrid;
 import GridLayer = foundry.canvas.layers.GridLayer;
 import GridMesh = foundry.canvas.containers.GridMesh;
 import GridHighlight = foundry.canvas.containers.GridHighlight;
@@ -23,7 +22,7 @@ expectTypeOf(layer.draw()).toEqualTypeOf<Promise<GridLayer>>();
 expectTypeOf(layer.draw({})).toEqualTypeOf<Promise<GridLayer>>();
 expectTypeOf(layer["_draw"]({})).toEqualTypeOf<Promise<void>>();
 
-expectTypeOf(layer["_drawMesh"]()).toEqualTypeOf<GridMesh>();
+expectTypeOf(layer["_drawMesh"]()).toEqualTypeOf<Promise<GridMesh>>();
 // @ts-expect-error `initializeMesh` lacks a default for its one parameter, despite all its properties being optional
 expectTypeOf(layer.initializeMesh()).toBeVoid();
 expectTypeOf(layer.initializeMesh({})).toBeVoid();
@@ -72,28 +71,3 @@ expectTypeOf(
     shape: undefined, // will fail silently on gridless
   }),
 ).toEqualTypeOf<void>();
-
-// deprecated since v12 until v14
-
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.type).toEqualTypeOf<foundry.CONST.GRID_TYPES>();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.size).toEqualTypeOf<number>();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.grid).toEqualTypeOf<BaseGrid | null>();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.isNeighbor(0, 1, 2, 3)).toEqualTypeOf<boolean>();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.w).toEqualTypeOf<number>();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.h).toEqualTypeOf<number>();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.isHex).toEqualTypeOf<boolean>();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.getTopLeft(8, 17)).toEqualTypeOf<[number, number]>();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.getCenter(8, 17)).toEqualTypeOf<[number, number]>();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.getSnappedPosition(10, 100, 2)).toEqualTypeOf<{ x: number; y: number }>();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.measureDistance({ x: 8, y: 17 }, { x: 1100, y: 1200 })).toEqualTypeOf<number>();

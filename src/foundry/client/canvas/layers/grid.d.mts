@@ -1,5 +1,4 @@
-import type { EmptyObject, HandleEmptyObject, Identity, NullishProps, RemoveIndexSignatures } from "#utils";
-import type { Canvas } from "#client/canvas/_module.d.mts";
+import type { HandleEmptyObject, Identity, NullishProps, RemoveIndexSignatures } from "#utils";
 import type { GridShader } from "#client/canvas/rendering/shaders/_module.d.mts";
 import type { GridMesh, GridHighlight } from "#client/canvas/containers/_module.d.mts";
 import type { CanvasLayer } from "#client/canvas/layers/_module.d.mts";
@@ -16,13 +15,6 @@ declare module "#configuration" {
  * A CanvasLayer responsible for drawing a square grid
  */
 declare class GridLayer extends CanvasLayer {
-  /**
-   * @remarks Due to the grid rework in v12 this points to a BaseGrid subclass rather than a GridLayer instance,
-   *          however to avoid inheritance-based issues this is left as the intended GridLayer instance
-   * @privateRemarks This is not overridden in foundry but reflects the real behavior.
-   */
-  static get instance(): GridLayer;
-
   /**
    * The grid mesh.
    * @defaultValue `undefined`
@@ -51,6 +43,13 @@ declare class GridLayer extends CanvasLayer {
    */
   static override get layerOptions(): GridLayer.LayerOptions;
 
+  /**
+   * @remarks Due to the grid rework in v12 this points to a BaseGrid subclass rather than a GridLayer instance,
+   *          however to avoid inheritance-based issues this is left as the intended GridLayer instance
+   * @privateRemarks This is not overridden in foundry but reflects the real behavior.
+   */
+  static get instance(): GridLayer;
+
   override options: GridLayer.LayerOptions;
 
   protected override _draw(options: HandleEmptyObject<GridLayer.DrawOptions>): Promise<void>;
@@ -58,7 +57,7 @@ declare class GridLayer extends CanvasLayer {
   /**
    * Creates the grid mesh.
    */
-  protected _drawMesh(): GridMesh;
+  protected _drawMesh(): Promise<GridMesh>;
 
   /**
    * Initialize the grid mesh appearance and configure the grid shader.
@@ -98,90 +97,6 @@ declare class GridLayer extends CanvasLayer {
    * or puts garbage data into the associated `GridHightlightLayer`, depending on the current grid type
    */
   highlightPosition(name: string, options: GridLayer.HighlightPositionOptions): void;
-
-  /**
-   * @deprecated since v12, will be removed in v14
-   * @remarks "GridLayer#type is deprecated. Use canvas.grid.type instead."
-   */
-  get type(): foundry.CONST.GRID_TYPES;
-
-  /**
-   * @deprecated since v12, will be removed in v14
-   * @remarks "GridLayer#size is deprecated. Use canvas.grid.size instead.
-   */
-  get size(): number;
-
-  /**
-   * @deprecated since v12, will be removed in v14
-   * @remarks "GridLayer#grid is deprecated. Use canvas.grid instead."
-   */
-  get grid(): Canvas["grid"];
-
-  /**
-   * @deprecated since v12, will be removed in v14
-   * @remarks "GridLayer#isNeighbor is deprecated. Use canvas.grid.testAdjacency instead."
-   */
-  isNeighbor(r0: number, c0: number, r1: number, c1: number): boolean;
-
-  /**
-   * @deprecated since v12, will be removed in v14
-   * @remarks "GridLayer#w is deprecated in favor of canvas.grid.sizeX."
-   */
-  get w(): number;
-
-  /**
-   * @deprecated since v12, will be removed in v14
-   * @remarks "GridLayer#h is deprecated in favor of canvas.grid.sizeY."
-   */
-  get h(): number;
-
-  /**
-   * @deprecated since v12, will be removed in v14
-   * @remarks "GridLayer#isHex is deprecated. Use canvas.grid.isHexagonal instead."
-   */
-  get isHex(): boolean;
-
-  /**
-   * @deprecated since v12, will be removed in v14
-   * @remarks "GridLayer#getTopLeft is deprecated. Use canvas.grid.getTopLeftPoint instead."
-   */
-  getTopLeft(x: number, y: number): Canvas.PointTuple;
-
-  /**
-   * @deprecated since v12, will be removed in v14
-   * @remarks "GridLayer#getCenter is deprecated. Use canvas.grid.getCenterPoint instead."
-   */
-  getCenter(x: number, y: number): Canvas.PointTuple;
-
-  /**
-   * @deprecated since v12, will be removed in v14
-   * @remarks "GridLayer#getSnappedPosition is deprecated. Use canvas.grid.getCenterPoint instead."
-   */
-  getSnappedPosition(
-    x: number,
-    y: number,
-
-    /**
-     * @defaultValue `1`
-     * @remarks Can't be `null` due to being used directly as a divisor
-     */
-    interval?: number,
-
-    /** @remarks Unused */
-    options?: EmptyObject | null,
-  ): PIXI.IPointData;
-
-  /**
-   * @deprecated since v12, will be removed in v14
-   * @remarks `"GridLayer#measureDistance is deprecated. "Use canvas.grid.measurePath instead for non-Euclidean measurements."`
-   */
-  measureDistance(
-    origin: Canvas.Point,
-    target: Canvas.Point,
-
-    /** @remarks Unused */
-    options?: EmptyObject | null,
-  ): number;
 }
 
 declare namespace GridLayer {

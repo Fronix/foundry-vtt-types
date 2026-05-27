@@ -2,6 +2,7 @@ import type { HandleEmptyObject, Identity, InexactPartial, NullishProps } from "
 import type { Canvas } from "#client/canvas/_module.d.mts";
 import type { PlaceablesLayer } from "./_module.d.mts";
 import type { Note } from "#client/canvas/placeables/_module.d.mts";
+import type SceneControls from "#client/applications/ui/scene-controls.d.mts";
 
 declare module "#configuration" {
   namespace Hooks {
@@ -25,7 +26,9 @@ declare class NotesLayer extends PlaceablesLayer<"Note"> {
    * ```
    * foundry.utils.mergeObject(super.layerOptions, {
    *  name: "notes",
-   *  zIndex: 800
+   *  controllableObjects: true,
+   *  zIndex: 800,
+   *  confirmBeforeCreation: true
    * })
    * ```
    */
@@ -38,6 +41,8 @@ declare class NotesLayer extends PlaceablesLayer<"Note"> {
 
   static override documentName: "Note";
 
+  // FIXME: NotePalette // `static paletteClass = NotePalette` is added with the `applications/sheets/palette/` files in Batch 5.6.
+
   /**
    * The named core setting which tracks the toggled visibility state of map notes
    */
@@ -48,19 +53,18 @@ declare class NotesLayer extends PlaceablesLayer<"Note"> {
   /** @defaultValue `game.settings.get("core", "notesDisplayToggle")` */
   override interactiveChildren: boolean;
 
+  protected override _getCopyableObjects(options: PlaceablesLayer.GetCopyableObjectsOptions): Note.Implementation[];
+
   protected override _deactivate(): void;
 
   protected override _draw(options: HandleEmptyObject<NotesLayer.DrawOptions>): Promise<void>;
+
+  protected override _tearDown(options: HandleEmptyObject<NotesLayer.TearDownOptions>): Promise<void>;
 
   /**
    * Register game settings used by the NotesLayer
    */
   static registerSettings(): void;
-
-  /**
-   * Visually indicate in the Scene Controls that there are visible map notes present in the Scene.
-   */
-  hintMapNotes(): void;
 
   /**
    * Pan to a given note on the layer.
@@ -73,8 +77,13 @@ declare class NotesLayer extends PlaceablesLayer<"Note"> {
     options?: NotesLayer.PanToNoteOptions, // not:null (destructured)
   ): Promise<void>;
 
+  /**
+   * Prepare data used by SceneControls to register tools used by this layer.
+   */
+  static override prepareSceneControls(): SceneControls.Control;
+
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  protected override _onClickLeft(event: Canvas.Event.Pointer): Promise<Note.Implementation | void>;
+  protected override _onClickLeft(event: Canvas.Event.Pointer): Promise<void>;
 
   /**
    * Handle JournalEntry document drop data
@@ -88,9 +97,13 @@ declare namespace NotesLayer {
 
   interface DrawOptions extends PlaceablesLayer.DrawOptions {}
 
+  interface TearDownOptions extends PlaceablesLayer.TearDownOptions {}
+
   interface LayerOptions extends PlaceablesLayer.LayerOptions<Note.ImplementationClass> {
     name: "notes";
+    controllableObjects: true;
     zIndex: 800;
+    confirmBeforeCreation: true;
   }
 
   /** @internal */

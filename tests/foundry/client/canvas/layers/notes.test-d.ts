@@ -10,6 +10,7 @@ expectTypeOf(NotesLayer.layerOptions.name).toEqualTypeOf<"notes">();
 expectTypeOf(NotesLayer.layerOptions.objectClass).toEqualTypeOf<Note.ImplementationClass>();
 expectTypeOf(NotesLayer.TOGGLE_SETTING).toEqualTypeOf<"notesDisplayToggle">();
 expectTypeOf(NotesLayer.registerSettings()).toBeVoid();
+expectTypeOf(NotesLayer.prepareSceneControls()).toEqualTypeOf<foundry.applications.ui.SceneControls.Control>();
 
 const layer = new NotesLayer();
 
@@ -21,8 +22,7 @@ expectTypeOf(layer.hookName).toEqualTypeOf<"NotesLayer">();
 expectTypeOf(layer.interactiveChildren).toBeBoolean();
 
 expectTypeOf(layer["_draw"]({})).toEqualTypeOf<Promise<void>>();
-
-expectTypeOf(layer.hintMapNotes()).toBeVoid();
+expectTypeOf(layer["_tearDown"]({})).toEqualTypeOf<Promise<void>>();
 
 declare const someNote: Note.Implementation;
 expectTypeOf(layer.panToNote(someNote)).toEqualTypeOf<Promise<void>>();
@@ -41,7 +41,7 @@ expectTypeOf(
 
 declare const pointerEvent: foundry.canvas.Canvas.Event.Pointer;
 declare const someDragEvent: DragEvent;
-expectTypeOf(layer["_onClickLeft"](pointerEvent)).toEqualTypeOf<Promise<Note.Implementation | void>>();
+expectTypeOf(layer["_onClickLeft"](pointerEvent)).toEqualTypeOf<Promise<void>>();
 
 expectTypeOf(
   layer["_onDropData"](someDragEvent, {

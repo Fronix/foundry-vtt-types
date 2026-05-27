@@ -1,7 +1,8 @@
-import type { HandleEmptyObject, Identity } from "#utils";
+import type { AnyObject, HandleEmptyObject, Identity } from "#utils";
 import type { Canvas } from "#client/canvas/_module.d.mts";
-import type { PlaceablesLayer } from "./_module.d.mts";
+import type { PlaceablesLayer, InteractionLayer } from "./_module.d.mts";
 import type { MeasuredTemplate } from "#client/canvas/placeables/_module.d.mts";
+import type SceneControls from "#client/applications/ui/scene-controls.d.mts";
 
 declare module "#configuration" {
   namespace Hooks {
@@ -14,6 +15,12 @@ declare module "#configuration" {
 /**
  * This Canvas Layer provides a container for MeasuredTemplate objects.
  * @see {@linkcode MeasuredTemplate}
+ *
+ * @privateRemarks v14 marks the whole class `@deprecated since v14` (Measured Templates are superseded by
+ * Regions). The class-level `@deprecated` annotation — and its cascade into `CONFIG.Canvas.layers.templates`,
+ * the `globals`/`client` re-exports, the interface group `templates` accessor, and the consumers' tests —
+ * travels with the Phase 7 MeasuredTemplate reconciliation, which owns the MeasuredTemplate document/placeable
+ * deprecation coherently. Only the v14 member surface is verified here (Batch 5.5b).
  */
 declare class TemplateLayer extends PlaceablesLayer<"MeasuredTemplate"> {
   /**
@@ -42,7 +49,20 @@ declare class TemplateLayer extends PlaceablesLayer<"MeasuredTemplate"> {
 
   override get hookName(): "TemplateLayer";
 
-  protected override _deactivate(): void;
+  /**
+   * @remarks Returns `canvas.scene?.templates.map(document => document.object) || []`. The layer's own
+   * `objects` container stays empty in v14 — only preview Measured Templates are possible.
+   */
+  override get placeables(): MeasuredTemplate.Implementation[];
+
+  protected override _getCopyableObjects(
+    options: PlaceablesLayer.GetCopyableObjectsOptions,
+  ): MeasuredTemplate.Implementation[];
+
+  /**
+   * @remarks Activates the {@link foundry.canvas.layers.RegionLayer | `RegionLayer`} instead of this layer.
+   */
+  override activate(options?: InteractionLayer.ActivateOptions): this;
 
   protected override _draw(options: HandleEmptyObject<TemplateLayer.DrawOptions>): Promise<void>;
 
@@ -51,7 +71,13 @@ declare class TemplateLayer extends PlaceablesLayer<"MeasuredTemplate"> {
    */
   static registerSettings(): void;
 
-  protected override _onDragLeftStart(event: Canvas.Event.Pointer): void;
+  /**
+   * Prepare data used by SceneControls to register tools used by this layer.
+   * @remarks The control is registered with `visible: false` because Measured Templates are deprecated.
+   */
+  static override prepareSceneControls(): SceneControls.Control;
+
+  protected override _createDragPreviewData(event: Canvas.Event.Pointer): AnyObject;
 
   protected override _onDragLeftMove(event: Canvas.Event.Pointer): void;
 

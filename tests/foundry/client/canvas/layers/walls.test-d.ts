@@ -1,13 +1,14 @@
 import { expectTypeOf } from "vitest";
+import type { AnyObject } from "fvtt-types/utils";
 
 import WallsLayer = foundry.canvas.layers.WallsLayer;
+import PlaceablesLayer = foundry.canvas.layers.PlaceablesLayer;
 import Wall = foundry.canvas.placeables.Wall;
 import Canvas = foundry.canvas.Canvas;
-import PointSourcePolygon = foundry.canvas.geometry.PointSourcePolygon;
-import Ray = foundry.canvas.geometry.Ray;
-import Document = foundry.abstract.Document;
+import SceneControls = foundry.applications.ui.SceneControls;
 
 expectTypeOf(WallsLayer.documentName).toEqualTypeOf<"Wall">();
+expectTypeOf(WallsLayer.prepareSceneControls()).toEqualTypeOf<SceneControls.Control>();
 expectTypeOf(WallsLayer.instance).toEqualTypeOf<WallsLayer | undefined>();
 expectTypeOf(WallsLayer.layerOptions).toEqualTypeOf<WallsLayer.LayerOptions>();
 expectTypeOf(WallsLayer.layerOptions.name).toEqualTypeOf<"walls">();
@@ -24,6 +25,8 @@ expectTypeOf(layer.options.name).toEqualTypeOf<"walls">();
 
 expectTypeOf(layer.hookName).toEqualTypeOf<"WallsLayer">();
 expectTypeOf(layer.doors).toEqualTypeOf<Wall.Implementation[]>();
+expectTypeOf(layer["_chain"]).toBeBoolean();
+expectTypeOf(layer["_last"]).toEqualTypeOf<{ point: Canvas.PointTuple | null }>();
 
 expectTypeOf(layer.getSnappedPoint({ x: 71, y: 59 })).toEqualTypeOf<Canvas.Point>();
 
@@ -32,51 +35,17 @@ expectTypeOf(layer["_deactivate"]()).toBeVoid();
 
 expectTypeOf(layer.releaseAll()).toBeNumber();
 
-declare const _x: Document.ConfiguredSourceForName<"Wall">;
-
 expectTypeOf(layer["_getWallEndpointCoordinates"](somePoint)).toEqualTypeOf<Canvas.PointTuple>();
 expectTypeOf(layer["_getWallEndpointCoordinates"](somePoint, { snap: true })).toEqualTypeOf<Canvas.PointTuple>();
 expectTypeOf(layer["_getWallEndpointCoordinates"](somePoint, { snap: null })).toEqualTypeOf<Canvas.PointTuple>();
 
-expectTypeOf(layer["_getWallDataFromActiveTool"]()).toEqualTypeOf<WallDocument.Source>();
-expectTypeOf(layer["_getWallDataFromActiveTool"]("ethereal")).toEqualTypeOf<WallDocument.Source>();
-// @ts-expect-error foobar is not a handled Wall tool
-expectTypeOf(layer["_getWallDataFromActiveTool"]("foobar")).toEqualTypeOf<Document.ConfiguredSourceForName<"Wall">>();
-
 expectTypeOf(layer.identifyInteriorArea([someWall, someWall])).toEqualTypeOf<PIXI.Polygon[]>();
 
 declare const pointerEvent: foundry.canvas.Canvas.Event.Pointer;
-expectTypeOf(layer["_onDragLeftStart"](pointerEvent)).toEqualTypeOf<Promise<Wall.Implementation>>();
+expectTypeOf(layer["_createDragPreviewData"](pointerEvent)).toEqualTypeOf<AnyObject>();
 expectTypeOf(layer["_onDragLeftMove"](pointerEvent)).toBeVoid();
 expectTypeOf(layer["_onDragLeftDrop"](pointerEvent)).toBeVoid();
 expectTypeOf(layer["_onDragLeftCancel"](pointerEvent)).toBeVoid();
-expectTypeOf(layer["_onClickRight"](pointerEvent)).toBeVoid();
 
-declare const someRay: Ray;
-
-// deprecated since v11 until v13
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.checkCollision(someRay, { type: "move" })).toEqualTypeOf<PointSourcePolygon.TestCollision<"all">>();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.checkCollision(someRay, { type: "sight", mode: "any" })).toEqualTypeOf<
-  PointSourcePolygon.TestCollision<"any">
->();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.checkCollision(someRay, { type: "light", mode: "closest" })).toEqualTypeOf<
-  PointSourcePolygon.TestCollision<"closest">
->();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.checkCollision(someRay, { type: "sound", mode: "all" })).toEqualTypeOf<
-  PointSourcePolygon.TestCollision<"all">
->();
-
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.highlightControlledSegments()).toBeVoid();
-
-// deprecated since v12 until v14
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.initialize()).toBeVoid();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.identifyInteriorWalls()).toBeVoid();
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-expectTypeOf(layer.identifyWallIntersections()).toBeVoid();
+declare const histEntry: PlaceablesLayer.HistoryEntry<"Wall">;
+expectTypeOf(layer["_onUndoCreate"](histEntry)).toEqualTypeOf<Promise<WallDocument.Implementation[]>>();

@@ -27,11 +27,6 @@ declare class CanvasIlluminationEffects extends CanvasLayer {
   lights: PIXI.Container;
 
   /**
-   * A minimalist texture that holds the background color.
-   */
-  backgroundColorTexture: PIXI.Texture;
-
-  /**
    * The base line mesh.
    */
   baselineMesh: SpriteMesh;
@@ -52,15 +47,6 @@ declare class CanvasIlluminationEffects extends CanvasLayer {
   get renderTexture(): PIXI.RenderTexture;
 
   /**
-   * Set or retrieve the illumination background color.
-   * @remarks Foundry types this as `number` but it gets passed to {@link Color.from}
-   */
-  set backgroundColor(color: Color.Source);
-
-  /** @remarks This getter doesn't actually exist, it's only here to correct the type inferred from the setter */
-  get backgroundColor(): undefined;
-
-  /**
    * Clear illumination effects container
    */
   clear(): void;
@@ -72,46 +58,9 @@ declare class CanvasIlluminationEffects extends CanvasLayer {
    */
   invalidateDarknessLevelContainer(force?: boolean | null): void;
 
-  /**
-   * Create the background color texture used by illumination point source meshes.
-   * 1x1 single pixel texture.
-   * @returns The background color texture.
-   * @defaultValue
-   * ```js
-   * PIXI.Texture.fromBuffer(new Float32Array(3), 1, 1, {
-   *      type: PIXI.TYPES.FLOAT,
-   *      format: PIXI.FORMATS.RGB,
-   *      wrapMode: PIXI.WRAP_MODES.CLAMP,
-   *      scaleMode: PIXI.SCALE_MODES.NEAREST,
-   *      mipmap: PIXI.MIPMAP_MODES.OFF
-   * })
-   * ```
-   */
-  protected _createBackgroundColorTexture(): PIXI.Texture;
-
-  override render(renderer: PIXI.Renderer): void;
-
   protected override _draw(options: HandleEmptyObject<CanvasIlluminationEffects.DrawOptions>): Promise<void>;
 
   protected override _tearDown(options: HandleEmptyObject<CanvasIlluminationEffects.TearDownOptions>): Promise<void>;
-
-  /**
-   * @deprecated since v11, will be removed in v13
-   * @remarks "CanvasIlluminationEffects#updateGlobalLight has been deprecated."
-   */
-  updateGlobalLight(): false;
-
-  /**
-   * @deprecated since v12, will be removed in v14
-   * @remarks "CanvasIlluminationEffects#background is now obsolete."
-   */
-  background(): null;
-
-  /**
-   * @deprecated since v12, will be removed in v14
-   * @remarks "CanvasIlluminationEffects#globalLight has been deprecated without replacement. Check the canvas.environment.globalLightSource.active instead."
-   */
-  get globalLight(): boolean;
 }
 
 declare namespace CanvasIlluminationEffects {

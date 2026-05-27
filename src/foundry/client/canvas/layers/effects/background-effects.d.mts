@@ -46,7 +46,7 @@ declare namespace CanvasBackgroundAlterationEffects {
 
   interface DrawOptions extends CanvasLayer.DrawOptions {}
 
-  interface TearDownOptions extends CanvasLayer.DrawOptions {}
+  interface TearDownOptions extends CanvasLayer.TearDownOptions {}
 }
 
 export default CanvasBackgroundAlterationEffects;

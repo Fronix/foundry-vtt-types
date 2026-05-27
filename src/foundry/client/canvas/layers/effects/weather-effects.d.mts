@@ -48,6 +48,8 @@ declare class WeatherEffects extends FullCanvasObjectMixin(CanvasLayer) {
    */
   suppression: PIXI.Container | undefined;
 
+  override get hookName(): "WeatherEffects";
+
   /**
    * @defaultValue `foundry.utils.mergeObject(super.layerOptions, { name: "effects" })`
    */
@@ -58,9 +60,11 @@ declare class WeatherEffects extends FullCanvasObjectMixin(CanvasLayer) {
 
   /**
    * Array of weather effects linked to this weather container.
+   * @remarks v14 values are single effects (not arrays); each is a `ParticleEffect`, `WeatherShaderEffect`, or `ParticleGenerator`.
    */
+  // FIXME: ParticleGenerator (animation/particle-generator → Batch 5.7); v14 effect values may also be a ParticleGenerator.
   // eslint-disable-next-line @typescript-eslint/no-deprecated -- ParticleEffect is @deprecated (until v16) but still the v14 weather-effect base
-  effects: Map<string, Array<ParticleEffect | WeatherShaderEffect>>;
+  effects: Map<string, ParticleEffect | WeatherShaderEffect>;
 
   /**
    * A default configuration of the terrain mask that is automatically applied to any shader-based weather effects.
@@ -154,12 +158,6 @@ declare class WeatherEffects extends FullCanvasObjectMixin(CanvasLayer) {
     context: PIXI.Shader,
     config?: WeatherEffects.MaskConfiguration, // not:null (destructured)
   ): void;
-
-  /**
-   * @deprecated since v11, will be removed in v13
-   * @remarks `"The WeatherContainer at canvas.weather.weather is deprecated and combined with the layer itself."`
-   */
-  get weather(): this;
 }
 
 declare namespace WeatherEffects {

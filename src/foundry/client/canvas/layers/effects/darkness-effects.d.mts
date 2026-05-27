@@ -1,4 +1,5 @@
 import type { HandleEmptyObject, Identity } from "#utils";
+import type { VoidFilter } from "#client/canvas/rendering/filters/_module.d.mts";
 import type { CanvasLayer } from "../_module.d.mts";
 
 declare module "#configuration" {
@@ -17,6 +18,12 @@ declare class CanvasDarknessEffects extends CanvasLayer {
    * @defaultValue `true`
    */
   override sortableChildren: boolean;
+
+  /**
+   * The filter used to mask visual effects on this layer
+   * @remarks Only `undefined` prior to first draw
+   */
+  filter: VoidFilter | undefined;
 
   /**
    * Clear coloration effects container

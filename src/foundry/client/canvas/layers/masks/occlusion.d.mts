@@ -1,4 +1,4 @@
-import type { Identity } from "#utils";
+import type { AnyObject, Identity } from "#utils";
 import type { CachedContainer } from "#client/canvas/containers/_module.d.mts";
 import type { PrimaryCanvasObjectMixin } from "#client/canvas/primary/_module.d.mts";
 import type { Token } from "#client/canvas/placeables/_module.d.mts";
@@ -8,6 +8,7 @@ import type { Token } from "#client/canvas/placeables/_module.d.mts";
  * Red channel: Fade occlusion.
  * Green channel: Radial occlusion.
  * Blue channel: Vision occlusion.
+ * Alpha channel: Surface occlusion.
  */
 declare class CanvasOcclusionMask extends CachedContainer {
   /**
@@ -15,7 +16,7 @@ declare class CanvasOcclusionMask extends CachedContainer {
    * ```js
    * {
    *   scaleMode: PIXI.SCALE_MODES.NEAREST,
-   *   format: PIXI.FORMATS.RGB,
+   *   format: PIXI.FORMATS.RGBA,
    *   multisample: PIXI.MSAA_QUALITY.NONE
    * }
    * ```
@@ -29,11 +30,36 @@ declare class CanvasOcclusionMask extends CachedContainer {
   tokens: PIXI.LegacyGraphics;
 
   /**
+   * Graphics in which surface occlusion shapes are drawn.
+   * @remarks The `blendMode` of this `LegacyGraphics` is set to `PIXI.BLEND_MODES.MIN_ALL`, and its `mask`'s
+   * `colorMask` is set to `PIXI.COLOR_MASK_BITS.ALPHA`
+   */
+  surfaces: PIXI.LegacyGraphics;
+
+  /**
    * @defaultValue `[0, 1, 1, 1]`
    */
   override clearColor: Color.RGBAColorVector;
 
   override autoRender: boolean;
+
+  /**
+   * The set of currently occluded canvas objects.
+   */
+  get occluded(): Set<PrimaryCanvasObjectMixin.AnyMixed>;
+
+  /** @remarks No setter is provided */
+  set occluded(value: never);
+
+  /**
+   * The occluded surfaces.
+   * @remarks Backed by a private `Set`.
+   */
+  // FIXME: RegionSurface (client/documents/_types) → P7; element type is `DeepReadonly<RegionSurface>`.
+  get occludedSurfaces(): ReadonlySet<object>;
+
+  /** @remarks No setter is provided */
+  set occludedSurfaces(value: never);
 
   /**
    * Is vision occlusion active?
@@ -49,44 +75,50 @@ declare class CanvasOcclusionMask extends CachedContainer {
   override clear(): this;
 
   /**
-   * Map an elevation to a value in the range [0, 1] with 8-bit precision.
+   * Map an elevation to a value in the range (0, 1] with 8-bit precision.
    * The radial and vision shapes are drawn with these values into the render texture.
    * @param elevation - The elevation in distance units
-   * @returns The value for this elevation in the range [0, 1] with 8-bit precision
+   * @returns The value for this elevation in the range (0, 1] with 8-bit precision
    */
   mapElevation(elevation: number): number;
 
   /**
-   * Update the set of occludable Tokens, redraw the occlusion mask, and update the occluded state
-   * of all occludable objects.
+   * Update the occludable tokens.
    */
-  updateOcclusion(): void;
+  protected _updateOccludableTokens(): void;
 
   /**
    * Draw occlusion shapes to the occlusion mask.
    * Fade occlusion draws to the red channel with varying intensity from [0, 1] based on elevation.
    * Radial occlusion draws to the green channel with varying intensity from [0, 1] based on elevation.
    * Vision occlusion draws to the blue channel with varying intensity from [0, 1] based on elevation.
+   * Surface occlusion draws to the alpha channel with varying intensity from [0, 1] based on elevation.
    */
   protected _updateOcclusionMask(): void;
 
   /**
-   * Update the current occlusion status of all Tile objects.
+   * Update the current occlusion status of all PCOs.
    */
-  protected _updateOcclusionStates(): void;
+  protected _updateOccludedObjects(): void;
 
   /**
    * Determine the set of objects which should be currently occluded by a Token.
-   * @param tokens - The set of currently controlled Token objects
+   * @param tokens - The occludable Tokens
    * @returns The PCO objects which should be currently occluded
    */
   protected _identifyOccludedObjects(tokens: Token.Implementation[]): Set<PrimaryCanvasObjectMixin.AnyMixed>;
 
   /**
-   * @deprecated since v11, will be removed in v13
-   * @remarks "CanvasOcclusionMask#_identifyOccludedTiles has been deprecated in favor of CanvasOcclusionMask#_identifyOccludedObjects."
+   * Determine the occluded surfaces.
+   * @param flags - The perception render flags that are processed
    */
-  _identifyOccludedTiles(): Set<PrimaryCanvasObjectMixin.AnyMixed>;
+  protected _updateOccludedSurfaces(flags: AnyObject): void;
+
+  /**
+   * @deprecated since v14, until v16
+   * @remarks "CanvasOcclusionMask#updateOcclusion is deprecated. Use `canvas.perception.update({refreshOcclusion: true})` instead."
+   */
+  updateOcclusion(): void;
 }
 
 declare namespace CanvasOcclusionMask {

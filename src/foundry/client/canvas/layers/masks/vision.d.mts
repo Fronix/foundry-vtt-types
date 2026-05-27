@@ -1,5 +1,4 @@
 import type { Identity } from "#utils";
-// TODO: following import is temporary pending a proper v13 pass on this file
 import type AlphaBlurFilter from "#client/canvas/rendering/filters/blur.mjs";
 import type { VoidFilter } from "#client/canvas/rendering/filters/_module.d.mts";
 import type { CachedContainer, SpriteMesh } from "#client/canvas/containers/_module.d.mts";
@@ -68,6 +67,8 @@ declare namespace CanvasVisionMask {
   /**
    * The sight part of {@linkcode CanvasVisionContainer}.
    * The blend mode is {@linkcode PIXI.BLEND_MODES.MAX_COLOR | MAX_COLOR}.
+   * @privateRemarks The `_types.mjs` typedef only lists `preview`; v14 also builds `surfaceExposure` and
+   * `shared` on the sight container (see `CanvasVisibility#createVision`).
    */
   interface CanvasVisionContainerSight extends PIXI.LegacyGraphics {
     /**
@@ -75,6 +76,18 @@ declare namespace CanvasVisionMask {
      * @remarks `blendMode` set to {@linkcode PIXI.BLEND_MODES.MAX_COLOR}
      */
     preview: PIXI.LegacyGraphics;
+
+    /**
+     * Surface exposure of vision sources.
+     * @remarks `blendMode` set to {@linkcode PIXI.BLEND_MODES.MAX_COLOR}; `renderable` is `false`
+     */
+    surfaceExposure: PIXI.LegacyGraphics;
+
+    /**
+     * Shared FoW for sight, not visible by default.
+     * @remarks `blendMode` set to {@linkcode PIXI.BLEND_MODES.MAX_COLOR}; `visible` is `false`
+     */
+    shared: PIXI.LegacyGraphics;
   }
 
   interface GlobalLightContainer extends PIXI.Container {
@@ -86,18 +99,46 @@ declare namespace CanvasVisionMask {
 
   interface LightMaskGraphics extends PIXI.LegacyGraphics {
     preview: PIXI.LegacyGraphics;
+
+    /** Shared FoW for light sources, not visible by default. */
+    shared: PIXI.LegacyGraphics;
+
+    /**
+     * Surface exposure of light sources that provide vision.
+     * @remarks `renderable` is `false`
+     */
+    surfaceExposure: PIXI.LegacyGraphics;
   }
 
   /**
    * The light part of {@linkcode CanvasVisionContainer}.
    * The blend mode is {@linkcode PIXI.BLEND_MODES.MAX_COLOR | MAX_COLOR}.
+   * @privateRemarks At runtime this is a plain {@linkcode PIXI.Container}, but Foundry's `_types.mjs`
+   * typedef declares `PIXI.LegacyGraphics & …`; the repo follows the typedef.
    */
   interface CanvasVisionContainerLight extends PIXI.LegacyGraphics {
+    /**
+     * The global light container, which holds darkness level meshes for dynamic illumination.
+     */
+    global: GlobalLightContainer;
+
+    /**
+     * The light sources.
+     * @remarks `blendMode` set to {@linkcode PIXI.BLEND_MODES.MAX_COLOR}
+     */
+    sources: PIXI.LegacyGraphics;
+
     /**
      * FOV that should not be committed to fog exploration.
      * @remarks `blendMode` set to {@linkcode PIXI.BLEND_MODES.MAX_COLOR}
      */
     preview: PIXI.LegacyGraphics;
+
+    /**
+     * Surface exposure of light sources.
+     * @remarks `blendMode` set to {@linkcode PIXI.BLEND_MODES.MAX_COLOR}; `renderable` is `false`
+     */
+    surfaceExposure: PIXI.LegacyGraphics;
 
     /**
      * The sprite with the texture of FOV of cached light sources.
@@ -109,37 +150,10 @@ declare namespace CanvasVisionMask {
      * The light perception polygons of vision sources and the FOV of vision sources that provide vision.
      */
     mask: LightMaskGraphics;
-
-    /**
-     * The global light container, which hold darkness level meshes for dynamic illumination
-     */
-    global: GlobalLightContainer;
-
-    /**
-     * The light sources
-     * @remarks `blendMode` set to {@linkcode PIXI.BLEND_MODES.MAX_COLOR}
-     */
-    sources: PIXI.LegacyGraphics;
-
-    /**
-     * @deprecated "`CanvasVisibility#vision#fov#lights` is deprecated without replacement." (since v12, until v14)
-     * @privateRemarks Returns `CanvasVisibility##cachedLights`
-     */
-    get lights(): PIXI.LegacyGraphics;
-
-    /**
-     * @deprecated "`CanvasVisibility#vision#fov#lightsSprite` is deprecated in favor of {@linkcode CanvasVisionContainerLight.cached | CanvasVisibility#vision#light#cached}." (since v12, until v14)
-     */
-    get lightsSprite(): this["cached"];
-
-    /**
-     * @deprecated "`CanvasVisibility#vision#fov#tokens` is deprecated in favor of {@linkcode CanvasVisionContainer.light | CanvasVisibility#vision#light}." (since v12, until v14)
-     */
-    get tokens(): this;
   }
 
   /**
-   * The sight part of {@linkcode CanvasVisionContainer}.
+   * The darkness part of {@linkcode CanvasVisionContainer}.
    * The blend mode is {@linkcode PIXI.BLEND_MODES.ERASE | ERASE}.
    */
   interface CanvasVisionContainerDarkness extends PIXI.LegacyGraphics {
@@ -150,8 +164,9 @@ declare namespace CanvasVisionMask {
   /** The currently visible areas. */
   interface CanvasVisionContainer extends PIXI.Container {
     /**
-     * A void filter necessary when committing fog on a texture for dynamic illumination; disabled by default, used only when writing on textures
-     * @remarks `blendMode` set to {@linkcode PIXI.BLEND_MODES.MAX_COLOR}
+     * A void filter necessary when committing fog on a texture for dynamic illumination; disabled by
+     * default, used only when writing on textures.
+     * @remarks `blendMode` set to {@linkcode PIXI.BLEND_MODES.MAX_COLOR}; `enabled` is `false`
      */
     containmentFilter: VoidFilter;
 
@@ -169,21 +184,6 @@ declare namespace CanvasVisionMask {
      * @remarks `blendMode` set to {@linkcode PIXI.BLEND_MODES.ERASE}
      */
     darkness: CanvasVisionContainerDarkness;
-
-    /**
-     * @deprecated "`CanvasVisibility#vision#base` is deprecated in favor of {@linkcode CanvasVisionContainerLight.preview | CanvasVisibility#vision#light#preview}." (since v12, until v14)
-     */
-    get base(): this["light"]["preview"];
-
-    /**
-     * @deprecated "`CanvasVisibility#vision#fov` is deprecated in favor of {@linkcode CanvasVisionContainer.light | CanvasVisibility#vision#light}." (since v12, until v14)
-     */
-    get fov(): this["light"];
-
-    /**
-     * @deprecated "`CanvasVisibility#vision#los` is deprecated in favor of {@linkcode CanvasVisionContainerLight.mask | CanvasVisibility#vision#light#mask}." (since v12, until v14)
-     */
-    get los(): this["light"]["mask"];
   }
 }
 
