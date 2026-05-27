@@ -20,6 +20,7 @@ export { default as PreciseText } from "./elements/precise-text.mjs";
 export { default as QuadMesh } from "./elements/quad-mesh.mjs";
 export { default as ResizeHandle } from "./elements/resize-handle.mjs";
 export { default as SpriteMesh } from "./elements/sprite-mesh.mjs";
+export * from "./elements/shape-controls.mjs";
 
 // Deprecated exports
 /* eslint-disable @typescript-eslint/no-deprecated -- re-exporting @deprecated (until v16) classes, matching the v14 source barrel */
