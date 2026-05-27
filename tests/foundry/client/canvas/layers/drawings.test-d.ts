@@ -12,6 +12,7 @@ expectTypeOf(DrawingsLayer.layerOptions.name).toEqualTypeOf<"drawings">();
 expectTypeOf(DrawingsLayer.layerOptions.objectClass).toEqualTypeOf<Drawing.ImplementationClass>();
 expectTypeOf(DrawingsLayer.layerOptions.discardClosingPoint).toEqualTypeOf<false>();
 expectTypeOf(DrawingsLayer.prepareSceneControls()).toEqualTypeOf<foundry.applications.ui.SceneControls.Control>();
+expectTypeOf(DrawingsLayer.paletteClass).toEqualTypeOf<typeof foundry.applications.sheets.palette.DrawingPalette>();
 
 const layer = new DrawingsLayer();
 

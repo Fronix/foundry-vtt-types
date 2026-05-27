@@ -5,6 +5,7 @@ import type ShapeLayerMixin from "./mixins/shapes.d.mts";
 import type { ShapeLayerPlaceablesLayer } from "./mixins/shapes.d.mts";
 import type { Tile } from "#client/canvas/placeables/_module.d.mts";
 import type SceneControls from "#client/applications/ui/scene-controls.d.mts";
+import type TilePalette from "#client/applications/sheets/palette/tile-palette.d.mts";
 
 declare module "#configuration" {
   namespace Hooks {
@@ -25,7 +26,7 @@ declare class TilesLayer extends ShapeLayerPlaceablesLayer<"Tile"> {
 
   static override documentName: "Tile";
 
-  // FIXME: TilePalette // `static paletteClass = TilePalette` is added with the `applications/sheets/palette/` files in Batch 5.6g.
+  static paletteClass: typeof TilePalette;
 
   override options: TilesLayer.LayerOptions;
 

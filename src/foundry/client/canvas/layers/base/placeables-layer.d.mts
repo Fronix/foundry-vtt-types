@@ -118,9 +118,10 @@ declare class PlaceablesLayer<out DocumentName extends PlaceablesLayer.DocumentN
 
   /**
    * The default creation data sourced from this layer's palette, if it has one.
-   * @remarks Returns `this.constructor.paletteClass?.createData ?? {}`
+   * @remarks Returns `this.constructor.paletteClass?.createData ?? {}`. The leaf layers that have a palette
+   * declare a `static paletteClass` (see {@linkcode foundry.applications.sheets.palette | the palette apps});
+   * the base layer has none, so this returns the empty-object fallback.
    */
-  // FIXME: PaletteApplication // The `paletteClass` static and its palette types are added with the `applications/sheets/palette/` files in Batch 5.6.
   get paletteCreateData(): AnyObject;
 
   /**

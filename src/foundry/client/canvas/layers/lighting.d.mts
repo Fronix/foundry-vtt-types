@@ -5,6 +5,7 @@ import type ShapeLayerMixin from "./mixins/shapes.d.mts";
 import type { ShapeLayerPlaceablesLayer } from "./mixins/shapes.d.mts";
 import type { AmbientLight } from "#client/canvas/placeables/_module.d.mts";
 import type SceneControls from "#client/applications/ui/scene-controls.d.mts";
+import type AmbientLightPalette from "#client/applications/sheets/palette/ambient-light-palette.d.mts";
 
 declare module "#configuration" {
   namespace Hooks {
@@ -25,7 +26,7 @@ declare class LightingLayer extends ShapeLayerPlaceablesLayer<"AmbientLight"> {
 
   static override documentName: "AmbientLight";
 
-  // FIXME: AmbientLightPalette // `static paletteClass = AmbientLightPalette` is added with the `applications/sheets/palette/` files in Batch 5.6g.
+  static paletteClass: typeof AmbientLightPalette;
 
   /**
    * @privateRemarks This is not overridden in foundry but reflects the real behavior.

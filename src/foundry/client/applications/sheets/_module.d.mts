@@ -4,6 +4,7 @@
 /* eslint-disable import-x/extensions */
 
 export * as journal from "./journal/_module.mjs";
+export * as palette from "./palette/_module.mjs";
 export { default as ActiveEffectConfig } from "./active-effect-config.mjs";
 export { default as ActorSheetV2, default as ActorSheet } from "./actor-sheet.mjs";
 export { default as AdventureExporter } from "./adventure-exporter.mjs";

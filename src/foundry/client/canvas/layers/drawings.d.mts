@@ -5,6 +5,7 @@ import type ShapeLayerMixin from "./mixins/shapes.d.mts";
 import type { ShapeLayerPlaceablesLayer } from "./mixins/shapes.d.mts";
 import type { Drawing } from "#client/canvas/placeables/_module.d.mts";
 import type SceneControls from "#client/applications/ui/scene-controls.d.mts";
+import type DrawingPalette from "#client/applications/sheets/palette/drawing-palette.d.mts";
 
 declare module "#configuration" {
   namespace Hooks {
@@ -46,7 +47,7 @@ declare class DrawingsLayer extends ShapeLayerPlaceablesLayer<"Drawing"> {
 
   static override documentName: "Drawing";
 
-  // FIXME: DrawingPalette // `static paletteClass = DrawingPalette` is added with the `applications/sheets/palette/` files in Batch 5.6g.
+  static paletteClass: typeof DrawingPalette;
 
   /**
    * The collection of drawing objects which are rendered in the interface.

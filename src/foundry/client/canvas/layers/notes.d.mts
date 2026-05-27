@@ -3,6 +3,7 @@ import type { Canvas } from "#client/canvas/_module.d.mts";
 import type { PlaceablesLayer } from "./_module.d.mts";
 import type { Note } from "#client/canvas/placeables/_module.d.mts";
 import type SceneControls from "#client/applications/ui/scene-controls.d.mts";
+import type NotePalette from "#client/applications/sheets/palette/note-palette.d.mts";
 
 declare module "#configuration" {
   namespace Hooks {
@@ -41,7 +42,7 @@ declare class NotesLayer extends PlaceablesLayer<"Note"> {
 
   static override documentName: "Note";
 
-  // FIXME: NotePalette // `static paletteClass = NotePalette` is added with the `applications/sheets/palette/` files in Batch 5.6.
+  static paletteClass: typeof NotePalette;
 
   /**
    * The named core setting which tracks the toggled visibility state of map notes

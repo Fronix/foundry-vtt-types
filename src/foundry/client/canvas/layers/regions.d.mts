@@ -7,6 +7,7 @@ import type { ShapeLayerPlaceablesLayer } from "./mixins/shapes.d.mts";
 import type { Region } from "#client/canvas/placeables/_module.d.mts";
 import type { BaseShapeData } from "#common/data/_module.mjs";
 import type SceneControls from "#client/applications/ui/scene-controls.d.mts";
+import type RegionPalette from "#client/applications/sheets/palette/region-palette.d.mts";
 
 declare module "#configuration" {
   namespace Hooks {
@@ -49,7 +50,7 @@ declare class RegionLayer extends ShapeLayerPlaceablesLayer<"Region"> {
 
   static override documentName: "Region";
 
-  // FIXME: RegionPalette // `static paletteClass = RegionPalette` is added with the `applications/sheets/palette/` files in Batch 5.6g.
+  static paletteClass: typeof RegionPalette;
 
   override get hookName(): "RegionLayer";
 
