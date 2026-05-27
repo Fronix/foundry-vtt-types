@@ -1,7 +1,10 @@
 import type JournalEntryPageSheet from "./journal-entry-page-sheet.mjs";
 import type HandlebarsApplicationMixin from "../../api/handlebars-application.d.mts";
 import type DocumentSheetV2 from "../../api/document-sheet.d.mts";
-import type { Identity } from "#utils";
+import type FormDataExtended from "../../ux/form-data-extended.d.mts";
+import type { DeepPartial, Identity } from "#utils";
+
+import ApplicationV2 = foundry.applications.api.ApplicationV2;
 
 declare module "#configuration" {
   namespace Hooks {
@@ -13,13 +16,63 @@ declare module "#configuration" {
 
 /**
  * An abstract subclass that contains specialised handlebars logic for JournalEntryPageSheets.
- * @remarks TODO: Stub
  */
 declare class JournalEntryPageHandlebarsSheet<
   RenderContext extends JournalEntryPageHandlebarsSheet.RenderContext = JournalEntryPageHandlebarsSheet.RenderContext,
   Configuration extends JournalEntryPageHandlebarsSheet.Configuration = JournalEntryPageHandlebarsSheet.Configuration,
   RenderOptions extends JournalEntryPageHandlebarsSheet.RenderOptions = JournalEntryPageHandlebarsSheet.RenderOptions,
-> extends HandlebarsApplicationMixin(JournalEntryPageSheet)<RenderContext, Configuration, RenderOptions> {}
+> extends HandlebarsApplicationMixin(JournalEntryPageSheet)<RenderContext, Configuration, RenderOptions> {
+  /**
+   * Handlebars parts to render in edit mode.
+   */
+  static EDIT_PARTS: Record<string, HandlebarsApplicationMixin.HandlebarsTemplatePart>;
+
+  /**
+   * Handlebars part to render in view mode.
+   */
+  static VIEW_PARTS: Record<string, HandlebarsApplicationMixin.HandlebarsTemplatePart>;
+
+  protected override _configureRenderParts(
+    options: HandlebarsApplicationMixin.RenderOptions,
+  ): Record<string, HandlebarsApplicationMixin.HandlebarsTemplatePart>;
+
+  /**
+   * Prepare render context for the content part.
+   */
+  protected _prepareContentContext(
+    context: ApplicationV2.RenderContextOf<this>,
+    options: DeepPartial<HandlebarsApplicationMixin.RenderOptions>,
+  ): Promise<void>;
+
+  protected override _preparePartContext(
+    partId: string,
+    context: ApplicationV2.RenderContextOf<this>,
+    options: DeepPartial<HandlebarsApplicationMixin.RenderOptions>,
+  ): Promise<ApplicationV2.RenderContextOf<this>>;
+
+  /**
+   * Prepare render context for the footer part.
+   */
+  protected _prepareFooterContext(
+    context: ApplicationV2.RenderContextOf<this>,
+    options: DeepPartial<HandlebarsApplicationMixin.RenderOptions>,
+  ): Promise<void>;
+
+  /**
+   * Prepare render context for the header part.
+   */
+  protected _prepareHeaderContext(
+    context: ApplicationV2.RenderContextOf<this>,
+    options: DeepPartial<HandlebarsApplicationMixin.RenderOptions>,
+  ): Promise<void>;
+
+  protected override _prepareSubmitData(
+    event: SubmitEvent,
+    form: HTMLFormElement,
+    formData: FormDataExtended,
+    updateData?: unknown,
+  ): object;
+}
 
 declare namespace JournalEntryPageHandlebarsSheet {
   interface Any extends AnyJournalEntryPageHandlebarsSheet {}

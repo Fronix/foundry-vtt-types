@@ -27,7 +27,7 @@ Per the scope decision, **sheets are the high-value subset** (systems live in th
 | Order                       | Files                                                                                                                                                                                                | Notes                                                                                     |
 | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
 | **1 (done)**                | `base-sheet`                                                                                                                                                                                         | ✅ **DONE** — generic fallback sheet; first Phase-6 file (uncommitted at time of writing) |
-| **2 — Journal**             | `journal-entry-sheet` (1443 src — **giant, own session**), `journal-entry-page-sheet` (134), `journal-entry-page-hbs-sheet` (111), `journal-entry-category-config` (146), `dialog-show` (148)        | 4 small + 1 giant                                                                         |
+| **2 — Journal (done)**      | `journal-entry-sheet` (1443 src — giant), `journal-entry-page-sheet` (134), `journal-entry-page-hbs-sheet` (111), `journal-entry-category-config` (146), `dialog-show` (148)                         | ✅ **DONE** — all 5 stubs filled + tests; CI green. Missing siblings → see note below     |
 | **3 — Tier A**              | `active-effect-config` (263), `scene-config` (980), `token/token-config` (159), `token/prototype-config` (383)                                                                                       | high-touch configs                                                                        |
 | **4 — Tier D (media/misc)** | `playlist-config`, `playlist-sound-config`, `cards-config`, `card-config`, `macro-config`, `roll-table-sheet`, `table-result-config`, `combatant-config`, `adventure-importer`, `adventure-exporter` | lower frequency                                                                           |
 | **Deferred — Tier B**       | `drawing-config`, `note-config`, `tile-config`, `wall-config`, `template-config`                                                                                                                     | placeable configs — "standalone for now" (maintainer call)                                |
@@ -37,6 +37,15 @@ Per the scope decision, **sheets are the high-value subset** (systems live in th
 ### Recipe (from `base-sheet`, mirrors developed `UserConfig`)
 
 Drop the `@remarks TODO: Stub`; declare the v14 members in source order — typically `static override DEFAULT_OPTIONS: DocumentSheetV2.DefaultOptions`, `static override PARTS: Record<string, HandlebarsApplicationMixin.HandlebarsTemplatePart>`, the `_prepareContext` override, plus a `#private: true` duck-typing guard; the `RenderContext`/`Configuration`/`RenderOptions` namespaces capture the type surface. Add/extend a `.test-d.ts` mirror.
+
+### Journal cluster — missing files (drift discovered 2026-05-28)
+
+Foundry's `sheets/journal/_module.mjs` exports two page-sheet classes that have **no file in the repo** yet (and aren't in the repo barrel):
+
+- `journal-entry-page-code-mirror-sheet.mjs` (131 src) → `JournalEntryPageCodeMirrorSheet`
+- `journal-entry-page-html-sheet.mjs` (68 src) → `JournalEntryPageHTMLSheet`
+
+Add these two files + their barrel entries to fully close the journal subdir. (The other 7 page-type sheets already exist and are developed.)
 
 ## Deprioritized (do only if explicitly requested)
 
