@@ -544,7 +544,12 @@ declare namespace RegionDocument {
       }
     >;
 
-    // TODO(v14-levels): levels: SceneLevelsSetField (Phase 7)
+    /**
+     * The set of specific Scene Levels on which this Region is present. An empty
+     * set means the Region is present on every Level.
+     * @defaultValue `new Set()`
+     */
+    levels: fields.SceneLevelsSetField;
 
     /**
      * The movement and perception restrictions applied by this Region

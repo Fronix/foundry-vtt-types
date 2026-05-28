@@ -234,6 +234,13 @@ declare namespace DrawingDocument {
     elevation: fields.NumberField<{ required: true; nullable: false; initial: 0 }>;
 
     /**
+     * The set of specific Scene Levels on which this Drawing is present. An empty
+     * set means the Drawing is present on every Level.
+     * @defaultValue `new Set()`
+     */
+    levels: fields.SceneLevelsSetField;
+
+    /**
      * The z-index of this drawing relative to other siblings
      * @defaultValue `0`
      */
@@ -372,8 +379,6 @@ declare namespace DrawingDocument {
      * @defaultValue `false`
      */
     interface: fields.BooleanField;
-
-    // TODO(v14-levels): levels: SceneLevelsSetField (Phase 7)
 
     /**
      * An object of optional key/value flags

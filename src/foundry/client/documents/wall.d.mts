@@ -267,6 +267,13 @@ declare namespace WallDocument {
     >;
 
     /**
+     * The set of specific Scene Levels on which this Wall is present. An empty
+     * set means the Wall is present on every Level.
+     * @defaultValue `new Set()`
+     */
+    levels: fields.SceneLevelsSetField;
+
+    /**
      * The illumination restriction type of this wall
      * @defaultValue `CONST.EDGE_SENSE_TYPES.NORMAL` (`20`)
      */

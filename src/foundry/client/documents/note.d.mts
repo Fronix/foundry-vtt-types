@@ -231,7 +231,12 @@ declare namespace NoteDocument {
      */
     elevation: fields.NumberField<{ required: true; nullable: false; initial: 0 }>;
 
-    // TODO(v14-levels): levels: SceneLevelsSetField (Phase 7)
+    /**
+     * The set of specific Scene Levels on which this Note is present. An empty
+     * set means the Note is present on every Level.
+     * @defaultValue `new Set()`
+     */
+    levels: fields.SceneLevelsSetField;
 
     /**
      * The z-index of this note relative to other siblings

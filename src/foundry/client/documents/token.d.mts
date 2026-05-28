@@ -713,7 +713,11 @@ declare namespace TokenDocument {
       CONST.TOKEN_SHAPES
     >;
 
-    // TODO(v14-levels): level field (Phase 7)
+    /**
+     * The _id of the Scene Level on which the Token is placed at this waypoint.
+     * @defaultValue `undefined`
+     */
+    level: fields.DocumentIdField<{ required: true; nullable: false; readonly: false }>;
 
     /**
      * The movement action from the previous to this waypoint.
@@ -862,7 +866,11 @@ declare namespace TokenDocument {
      */
     shape: fields.NumberField<{ initial: typeof CONST.TOKEN_SHAPES.RECTANGLE_1; choices: CONST.TOKEN_SHAPES[] }>;
 
-    // TODO(v14-levels): level field (Phase 7)
+    /**
+     * The _id of the Scene Level on which this Token is placed.
+     * @defaultValue {@linkcode foundry.documents.BaseScene.metadata | BaseScene.metadata.defaultLevelId}
+     */
+    level: fields.DocumentIdField<{ required: true; nullable: false; readonly: false; initial: string }>;
 
     /**
      * The z-index of this token relative to other siblings

@@ -211,7 +211,12 @@ declare namespace AmbientLightDocument {
      */
     elevation: fields.NumberField<{ required: true; nullable: false; initial: 0 }>;
 
-    // TODO(v14-levels): levels: SceneLevelsSetField (Phase 7)
+    /**
+     * The set of specific Scene Levels on which this AmbientLight is present. An
+     * empty set means the light is present on every Level.
+     * @defaultValue `new Set()`
+     */
+    levels: fields.SceneLevelsSetField;
 
     /**
      * The angle of rotation for the tile between 0 and 360
