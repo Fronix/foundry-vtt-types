@@ -34,6 +34,24 @@
 - **2026-05-28 — scene Tier-B giant, first batch (commit `4773af838`), CI green.** `[~]` partial. Added the Scene-Levels + edges/surfaces members now unblocked by `Level` + `operators`: fixed `_view` drift (`boolean`→`string | null`), `_availableLevels` cache, `availableLevels`/`initializedEdges` getters, `prepareEmbeddedDocuments`/`prepareDerivedData`, `updateRegionShapeConstraints`(+`_`), `cycleLevel`, `_configureLevelTextures`, `_resetEdges`, `initializeEdges`, `_getAvailableLevels`, `moveTokens` (loose, token-movement), `_invalidateSurfaces`/`getSurfaces`/`testSurfaceCollision` (loose `RegionSurface`; new `GetAvailableLevelsOptions`/`GetSurfacesOptions`/`TestSurfaceCollisionConfig`). Also added `initialLevel`/`firstLevel` to common BaseScene (commit `ba1db3b5b`). **Scene-giant remaining:** the `background`/`foreground`/`backgroundColor`/`foregroundElevation` **schema→`@deprecated`-getter migration** (v14 moved these fields to the `Level` document — a schema removal with consumer/test cascade), `_configure`/`_updateCommit` inheritDoc overrides (omitted per repo convention), static `_onUpdateOperation`, and a final full member-order verification.
 - **2026-05-28 — tightened the `object`-typed Level FIXMEs (commit `e244d7bfa`), CI green.** Replaced loose `object` with `Level.Implementation` in: `CanvasEdges` (ctor + `get level()`), `BaseEffectSource#level`, `PointLightSource#_canDetectObject`, `DetectionMode#_canDetect`, `Canvas#level`/`#inferLevelFromElevation`/`TearDownOptions.nextLevel`, `SceneManager#_getAvailableLevels`, `SceneConfig#defaultLevel`/`_onSortLevel`. Updated the matching `.test-d.ts`. **Still loose/deferred:** `PointSourcePolygon.Config.level` + `ClockwiseSweepPolygon` level internals (source-polygon not yet touched), `CanvasOcclusionMask#occludedSurfaces` (`RegionSurface`, region giant), the primary/visibility group `levelTextures`/`surfaceExposure` (informational TODOs — already concrete types).
 
+## Design proposal — MeasuredTemplate structural un-embed (the remaining architectural blocker)
+
+The only Phase-7 work that cannot be done piecemeal. v14 removes `MeasuredTemplate` from `ALL_DOCUMENT_TYPES` (it is in neither `PRIMARY_DOCUMENT_TYPES` nor `EMBEDDED_DOCUMENT_TYPES`) and un-embeds it from Scene, while keeping it a **deprecated** `Document` subclass with a live `CONFIG.MeasuredTemplate` (documentClass + objectClass) and a deprecated canvas `TemplateLayer`/`MeasuredTemplate` placeable. Verified cascade when attempting naively (reverted to stay CI-green):
+
+1. **`Document<Name extends ALL_DOCUMENT_TYPES>`** rejects `"MeasuredTemplate"` once it leaves `EMBEDDED_DOCUMENT_TYPES` → breaks `BaseMeasuredTemplate`/`MeasuredTemplateDocument` and every `documentConfiguration` map entry (which require valid `ALL_DOCUMENT_TYPES` keys).
+2. **`parentCollection`** union no longer contains `"templates"`, but `MeasuredTemplateDocument.ParentCollectionName` is still `"templates"`.
+3. **`PlaceableObject.AnyCanvasDocument = Document.ImplementationFor<Scene.Embedded.Name>`** (placeable-object.d.mts:729) — the canvas placeable system derives valid canvas documents **from Scene's embedded set**. Un-embedding MeasuredTemplate drops it from `Scene.Embedded.Name`, so `CONFIG.MeasuredTemplate.objectClass`'s placeable (whose `document` is `MeasuredTemplateDocument`) no longer satisfies `AnyPlaceableObject`, breaking `placeables-layer.d.mts`, `templates.d.mts`, `template.d.mts`, and `config.d.mts`.
+
+**Proposed approach (needs human sign-off — touches `document.d.mts` + `documentConfiguration.d.mts` + `src/configuration/` + `placeable-object.d.mts`):**
+
+- Introduce a small **`DEPRECATED_DOCUMENT_TYPES`** concept (e.g. `["MeasuredTemplate"]`) and make the `Document` `DocumentName` constraint accept `PRIMARY ∪ EMBEDDED ∪ DEPRECATED`. Keep MeasuredTemplate in `documentConfiguration` (it stays a configured doc) but **out of `EMBEDDED_DOCUMENT_TYPES`** (v14-accurate).
+- Decouple **`AnyCanvasDocument`** from `Scene.Embedded.Name`: define it as `Document.ImplementationFor<Scene.Embedded.Name | "MeasuredTemplate">` (or a `CANVAS_DOCUMENT_TYPES`/deprecated-canvas concept) so the deprecated placeable still type-checks without MeasuredTemplate being Scene-embedded.
+- Remove the Scene `templates` schema field + the `MeasuredTemplate: "templates"` embedded-metadata entry + the `Scene.DirectDescendant*` MeasuredTemplate entries (the consumer-visible un-embed).
+- Then the common→client `BaseMeasuredTemplate` move becomes safe (common Scene no longer references it).
+- The **client-data shapes-barrel unification** is the same class of problem (client shape classes would shadow common `BaseShapeData` subclasses, breaking `RegionDocument#shapes`) and should be designed alongside this.
+
+Everything else in Phase 7 is done; this proposal is the actionable unblock.
+
 ## Scope
 
 Greenfield + the deferred subsystems that everything else has been parking here:
