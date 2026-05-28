@@ -14,7 +14,6 @@ declare module "#configuration" {
 /**
  * An implementation of the PlaceableHUD base class which renders a heads-up-display interface for Drawing objects.
  * The DrawingHUD implementation can be configured and replaced via {@link CONFIG.Drawing.hudClass}.
- * @remarks TODO: Stub
  */
 declare class DrawingHUD<
   RenderContext extends DrawingHUD.RenderContext = DrawingHUD.RenderContext,
@@ -25,7 +24,11 @@ declare class DrawingHUD<
   RenderContext,
   Configuration,
   RenderOptions
-> {}
+> {
+  static override DEFAULT_OPTIONS: BasePlaceableHUD.DefaultOptions;
+
+  static override PARTS: Record<string, HandlebarsApplicationMixin.HandlebarsTemplatePart>;
+}
 
 declare namespace DrawingHUD {
   interface Any extends AnyDrawingHUD {}

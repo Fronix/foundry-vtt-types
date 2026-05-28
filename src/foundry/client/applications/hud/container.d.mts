@@ -14,7 +14,6 @@ declare module "#configuration" {
 
 /**
  * The Heads-Up Display Container is a canvas-sized Application which renders HTML overtop of the game canvas.
- * @remarks TODO: Stub
  */
 declare class HeadsUpDisplayContainer<
   RenderContext extends HeadsUpDisplayContainer.RenderContext = HeadsUpDisplayContainer.RenderContext,
@@ -24,11 +23,36 @@ declare class HeadsUpDisplayContainer<
   // Fake override.
   static override DEFAULT_OPTIONS: HeadsUpDisplayContainer.DefaultOptions;
 
+  /**
+   * Token HUD
+   */
   token: TokenHUD;
 
+  /**
+   * Tile HUD
+   */
   tile: TileHUD;
 
+  /**
+   * Drawing HUD
+   */
   drawing: DrawingHUD;
+
+  /**
+   * Chat Bubbles
+   */
+  bubbles: foundry.canvas.animation.ChatBubbles;
+
+  protected override _renderHTML(context: RenderContext, options: DeepPartial<RenderOptions>): Promise<unknown>;
+
+  protected override _replaceHTML(result: unknown, content: HTMLElement, options: DeepPartial<RenderOptions>): void;
+
+  protected override _onRender(context: DeepPartial<RenderContext>, options: DeepPartial<RenderOptions>): Promise<void>;
+
+  /**
+   * Align the position of the HUD layer to the current position of the canvas
+   */
+  align(): void;
 }
 
 declare namespace HeadsUpDisplayContainer {
