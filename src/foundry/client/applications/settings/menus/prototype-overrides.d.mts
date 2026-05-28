@@ -12,7 +12,6 @@ declare module "#configuration" {
 
 /**
  * A submenu for managing user overrides of PrototypeTokens
- * @remarks TODO: Stub
  */
 declare class PrototypeOverridesConfig<
   RenderContext extends PrototypeOverridesConfig.RenderContext = PrototypeOverridesConfig.RenderContext,
@@ -21,6 +20,24 @@ declare class PrototypeOverridesConfig<
 > extends HandlebarsApplicationMixin(ApplicationV2)<RenderContext, Configuration, RenderOptions> {
   // Fake override.
   static override DEFAULT_OPTIONS: PrototypeOverridesConfig.DefaultOptions;
+
+  static override PARTS: Record<string, HandlebarsApplicationMixin.HandlebarsTemplatePart>;
+
+  /**
+   * Register this menu application and the setting it manages.
+   */
+  static registerSettings(): void;
+
+  override tabGroups: Record<string, string>;
+
+  protected override _prepareContext(
+    options: DeepPartial<RenderOptions> & { isFirstRender: boolean },
+  ): Promise<RenderContext>;
+
+  protected override _preFirstRender(
+    context: DeepPartial<RenderContext>,
+    options: DeepPartial<RenderOptions>,
+  ): Promise<void>;
 }
 
 declare namespace PrototypeOverridesConfig {
@@ -32,7 +49,15 @@ declare namespace PrototypeOverridesConfig {
    * inherit context from its parent class.
    */
   interface RenderContext {
+    tabs: Record<string, foundry.applications.api.ApplicationV2.Tab>;
+    tabClasses: string;
     rootId: string;
+    buttons: foundry.applications.api.ApplicationV2.FormFooterButton[];
+    booleanOptions: { true: string; false: string };
+    displayModes: Record<string, string>;
+    dispositions: Record<string, string>;
+    turnMarkerModes: Record<string, string>;
+    turnMarkerAnimations: unknown;
   }
 
   interface Configuration<PrototypeOverridesConfig extends PrototypeOverridesConfig.Any = PrototypeOverridesConfig.Any>

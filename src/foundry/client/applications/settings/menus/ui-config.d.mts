@@ -12,7 +12,6 @@ declare module "#configuration" {
 
 /**
  * A submenu that provides UI configuration settings.
- * @remarks TODO: Stub
  */
 declare class UIConfig<
   RenderContext extends UIConfig.RenderContext = UIConfig.RenderContext,
@@ -21,6 +20,29 @@ declare class UIConfig<
 > extends HandlebarsApplicationMixin(ApplicationV2)<RenderContext, Configuration, RenderOptions> {
   // Fake override.
   static override DEFAULT_OPTIONS: UIConfig.DefaultOptions;
+
+  static override PARTS: Record<string, HandlebarsApplicationMixin.HandlebarsTemplatePart>;
+
+  /**
+   * The data schema for the core.uiConfig setting.
+   */
+  static get schema(): foundry.data.fields.SchemaField.Any;
+
+  protected override _preFirstRender(
+    context: DeepPartial<RenderContext>,
+    options: DeepPartial<RenderOptions>,
+  ): Promise<void>;
+
+  protected override _prepareContext(
+    options: DeepPartial<RenderOptions> & { isFirstRender: boolean },
+  ): Promise<RenderContext>;
+
+  protected override _onClose(options: DeepPartial<RenderOptions>): void;
+
+  protected override _onChangeForm(
+    formConfig: foundry.applications.api.ApplicationV2.FormConfiguration,
+    event: Event,
+  ): void;
 }
 
 declare namespace UIConfig {
@@ -41,10 +63,15 @@ declare namespace UIConfig {
   interface GameUIConfiguration {
     uiScale: number;
     fontScale: number;
+    colorScheme: { applications: "" | "dark" | "light"; interface: "" | "dark" | "light" };
+    chatNotifications: "cards" | "pip";
+    fade: { opacity: number; speed: number };
   }
 
   interface RenderContext {
     setting: GameUIConfiguration;
+    fields: foundry.data.fields.DataSchema;
+    buttons: foundry.applications.api.ApplicationV2.FormFooterButton[];
   }
 }
 

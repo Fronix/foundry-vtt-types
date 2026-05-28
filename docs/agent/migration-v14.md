@@ -64,19 +64,21 @@ The package is **already substantially usable on v14** for backward-compatible u
 
 > ### ▶ Next session — start here
 >
-> **Phase 5 (canvas) is CLOSED** (commit `22b8d9225`). Per scope priority, the live threads are now Phase 6 sheets, then Phase 7 document giants + Scene Levels. Pick one:
+> **Phase 6 is nearly complete (2026-05-28).** The entire sheets cluster (all 25 stubs + missing journal page sheets + the new `PlaceableConfig` base + the `TokenApplication` mixin members), all of `apps/`, and all of `hud/` are migrated + tested + CI-green. **Only these remain in Phase 6:**
 >
-> - **Phase 6 sheets** (in progress — highest consumer value) — `base-sheet` done; next is the **journal cluster**: 4 small files + the 1443-line `journal-entry-sheet` giant (own session). Read [phase-6](migration-v14-phase-6.md).
-> - **Phase 7 — Scene Levels subsystem** — the largest inherited deferral, now fed by all of Phase 5's `object`-typed `Level` FIXMEs (board `get level`/`inferLevelFromElevation`/`tearDown.nextLevel`/`_viewOptions.level`, scene-manager `_determineInitialLevel`/`_getAvailableLevels`, sources/perception/edges, plus the 4 Tier-B giants). Authoring the `Level` document unblocks them all. Read [phase-7](migration-v14-phase-7.md).
+> - **`sidebar/` (21 stubs)** and **`settings/` (6 stubs)** — deprioritized UI, but completable now (all ApplicationV2-based, independent). Grinding through these closes Phase 6 except scene-config.
+> - **`sheets/scene-config`** — the only sheet not done; **genuinely blocked on the P7 `Level` document** (`defaultLevel`/`document.levels`/add-edit-removeLevel). Cannot finish until Phase 7 authors `Level`.
 >
-> **Kickoff message** (pick one, paste verbatim — short on purpose; the agent reads this tracker + the phase file first):
+> So **Phase 6 cannot reach 100% before Phase 7** (scene-config ↔ Level). The cleanest order: finish sidebar+settings, then go to **Phase 7 — Scene Levels** (author `Level`, which unblocks scene-config + all of Phase 5's `object`-typed `Level` FIXMEs + the 4 Tier-B document giants).
 >
-> ```
-> Continue the v14 migration (Phase 6 sheets — journal cluster)
-> ```
+> **Kickoff message** (pick one, paste verbatim):
 >
 > ```
-> Continue the v14 migration (Phase 7 — Scene Levels subsystem: author the Level document, resolve the object-typed FIXMEs)
+> Continue the v14 migration (Phase 6 — finish sidebar + settings stubs)
+> ```
+>
+> ```
+> Continue the v14 migration (Phase 7 — Scene Levels subsystem: author the Level document, then scene-config + resolve the object-typed FIXMEs)
 > ```
 >
 > _Maintainers: overwrite this block (not append) when a batch/phase closes._

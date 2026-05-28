@@ -14,7 +14,6 @@ declare module "#configuration" {
 
 /**
  * Audio/Video Conferencing Configuration Sheet
- * @remarks TODO: Stub
  */
 declare class AVConfig<
   RenderContext extends AVConfig.RenderContext = AVConfig.RenderContext,
@@ -23,13 +22,44 @@ declare class AVConfig<
 > extends HandlebarsApplicationMixin(ApplicationV2)<RenderContext, Configuration, RenderOptions> {
   // Fake override.
   static override DEFAULT_OPTIONS: AVConfig.DefaultOptions;
+
+  static override PARTS: Record<string, HandlebarsApplicationMixin.HandlebarsTemplatePart>;
+
+  static override TABS: Record<string, ApplicationV2.TabsConfiguration>;
+
+  /**
+   * The AVMaster instance being configured
+   */
+  webrtc: AVMaster;
+
+  protected override _configureRenderParts(
+    options: HandlebarsApplicationMixin.RenderOptions,
+  ): Record<string, HandlebarsApplicationMixin.HandlebarsTemplatePart>;
+
+  protected override _prepareContext(
+    options: DeepPartial<RenderOptions> & { isFirstRender: boolean },
+  ): Promise<RenderContext>;
+
+  protected override _preparePartContext(
+    partId: string,
+    context: ApplicationV2.RenderContextOf<this>,
+    options: DeepPartial<HandlebarsApplicationMixin.RenderOptions>,
+  ): Promise<ApplicationV2.RenderContextOf<this>>;
+
+  protected override _onRender(context: DeepPartial<RenderContext>, options: DeepPartial<RenderOptions>): Promise<void>;
 }
 
 declare namespace AVConfig {
   interface Any extends AnyAVConfig {}
   interface AnyConstructor extends Identity<typeof AnyAVConfig> {}
 
-  interface RenderContext extends HandlebarsApplicationMixin.RenderContext, ApplicationV2.RenderContext {}
+  interface RenderContext extends HandlebarsApplicationMixin.RenderContext, ApplicationV2.RenderContext {
+    tabClasses: string;
+    rootId: string;
+    settings: foundry.av.AVSettings;
+    fields: { world: foundry.data.fields.DataSchema; client: foundry.data.fields.DataSchema };
+    isSSL: boolean;
+  }
 
   interface Configuration<AVConfig extends AVConfig.Any = AVConfig.Any>
     extends HandlebarsApplicationMixin.Configuration, ApplicationV2.Configuration<AVConfig> {
