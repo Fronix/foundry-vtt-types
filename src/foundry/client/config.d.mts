@@ -1,4 +1,5 @@
 import type {
+  AnyFunction,
   AnyObject,
   Brand,
   ConcreteKeys,
@@ -1580,6 +1581,32 @@ declare global {
        * @remarks Foundry states "\@deprecated since v11" but this is misleading for actual use
        */
       legacyTransferral: boolean;
+
+      /**
+       * Registered change types, keyed by identifier.
+       * @defaultValue `{}`
+       */
+      changeTypes: Record<string, CONFIG.ActiveEffectChangeTypeConfig>;
+
+      /**
+       * Additional expiry events registered by packages — key is an identifier, value a label. Such events
+       * must be triggered by calling {@linkcode foundry.helpers.ActiveEffectRegistry.refresh | ActiveEffect.registry.refresh}.
+       * @defaultValue `{}`
+       */
+      expiryEvents: Record<string, string>;
+
+      /**
+       * The action taken by the {@linkcode foundry.helpers.ActiveEffectRegistry | ActiveEffectRegistry} upon an
+       * ActiveEffect's expiration. An `"update"` action sets {@linkcode ActiveEffect.duration | ActiveEffectDuration#expired}.
+       * @defaultValue `"update"`
+       */
+      expiryAction: "update" | "delete" | null;
+
+      /**
+       * Additional change phases registered by packages.
+       * @defaultValue `{}`
+       */
+      phases: Record<string, { label: string; hint: string }>;
     };
 
     /**
@@ -2258,6 +2285,29 @@ declare global {
   }
 
   namespace CONFIG {
+    /**
+     * Configuration for a registered ActiveEffect change type ({@linkcode CONFIG.ActiveEffect | CONFIG.ActiveEffect.changeTypes}).
+     */
+    interface ActiveEffectChangeTypeConfig {
+      label: string;
+
+      defaultPriority: number;
+
+      /**
+       * A function that applies the change to a document.
+       * @remarks FIXME(v14): the precise `ActiveEffectChangeHandler` callback signature rides with the
+       * active-effect document member-diff (Phase 7); typed loosely as a function until then.
+       */
+      handler?: AnyFunction | null | undefined;
+
+      /**
+       * A function that renders the change in the ActiveEffect config.
+       * @remarks FIXME(v14): the precise `ActiveEffectChangeRenderer` callback signature rides with the
+       * active-effect document member-diff (Phase 7); typed loosely as a function until then.
+       */
+      render?: AnyFunction | null | undefined;
+    }
+
     interface UI {
       /** @defaultValue `MainMenu` */
       menu: foundry.applications.ui.MainMenu.AnyConstructor;
