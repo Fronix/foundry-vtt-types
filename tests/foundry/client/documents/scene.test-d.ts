@@ -13,7 +13,8 @@ expectTypeOf(scene).toEqualTypeOf<Scene.Implementation>();
 expectTypeOf(scene.grid).toEqualTypeOf<foundry.grid.BaseGrid>();
 expectTypeOf(scene.dimensions).toEqualTypeOf<Scene.Dimensions>();
 expectTypeOf(scene.active).toEqualTypeOf<boolean>();
-expectTypeOf(scene.background.src).toEqualTypeOf<string | null>();
+// `background`/`foreground` moved to the Level document in v14; the Scene getters are now deprecated shims.
+expectTypeOf(scene.firstLevel?.background.src).toEqualTypeOf<string | null | undefined>();
 expectTypeOf(scene.isView).toEqualTypeOf<boolean>();
 expectTypeOf(scene.initialLevel).toEqualTypeOf<Level.Implementation | undefined>();
 expectTypeOf(scene.firstLevel).toEqualTypeOf<Level.Implementation | undefined>();

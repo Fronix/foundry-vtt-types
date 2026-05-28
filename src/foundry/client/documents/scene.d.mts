@@ -1,5 +1,5 @@
 import type { AnyObject, InexactPartial, MaybeArray, Merge } from "#utils";
-import type { LightData, TextureData, fields } from "#common/data/_module.d.mts";
+import type { LightData, fields } from "#common/data/_module.d.mts";
 import type { DatabaseBackend, Document, EmbeddedCollection } from "#common/abstract/_module.d.mts";
 import type {
   BaseAmbientLight,
@@ -516,26 +516,9 @@ declare namespace Scene {
      */
     navName: fields.HTMLField<{ textSearch: true }>;
 
-    /**
-     * An image or video file that provides the background texture for the scene.
-     * @defaultValue see {@linkcode TextureData}
-     */
-    background: TextureData;
-
-    /**
-     * An image or video file path providing foreground media for the scene
-     * @defaultValue `null`
-     */
-    foreground: fields.FilePathField<{ categories: ["IMAGE", "VIDEO"]; virtual: true }>;
-
-    /**
-     * The elevation of the foreground layer where overhead tiles reside
-     * @defaultValue `null`
-     * @remarks If falsey, {@linkcode Scene.prepareBaseData | Scene#prepareBaseData} initializes this to `this.grid.distance * 4`, with the comment:
-     *
-     * "A temporary assumption until a more robust long-term solution when we implement Scene Levels."
-     */
-    foregroundElevation: fields.NumberField<{ required: false; positive: true; integer: true }>;
+    // `background` (TextureData), `foreground` (FilePathField), and `foregroundElevation` (NumberField)
+    // were removed from the Scene schema in v14 — the background/foreground media moved to the Level
+    // document. They survive as `@deprecated` getters deriving from `firstLevel` (see the class body).
 
     /**
      * A thumbnail image which depicts the scene at lower resolution
@@ -576,11 +559,8 @@ declare namespace Scene {
       scale: fields.NumberField<{ required: true; positive: true }>;
     }>;
 
-    /**
-     * The color of the canvas displayed behind the scene background
-     * @defaultValue `"#999999"`
-     */
-    backgroundColor: fields.ColorField<{ nullable: false; initial: "#999999" }>;
+    // `backgroundColor` was removed from the Scene schema in v14 (moved to `Level#background.color`);
+    // it survives as a `@deprecated` getter deriving from `firstLevel` (see the class body).
 
     // TODO(v14, P7): add the `initialLevel: DocumentIdField<{ readonly: false }>` schema field. It is
     // shadowed at runtime by the `initialLevel` getter (which returns the resolved Level), so adding it
@@ -1820,6 +1800,24 @@ declare namespace Scene {
 
   interface ThumbnailCreationData extends InexactPartial<_ThumbnailCreationData> {}
 
+  /**
+   * The shape of the object returned by the `@deprecated` {@linkcode Scene.background | Scene#background} getter,
+   * derived from {@linkcode Scene.firstLevel | Scene#firstLevel}.
+   */
+  interface DeprecatedBackgroundData {
+    src?: string | null;
+    tint?: Color;
+    alphaThreshold?: number;
+    anchorX?: number;
+    anchorY?: number;
+    fit?: CONST.TEXTURE_DATA_FIT_MODES;
+    scaleX?: number;
+    scaleY?: number;
+    rotation?: number;
+    offsetX: number;
+    offsetY: number;
+  }
+
   /** Options for {@linkcode Scene._getAvailableLevels | Scene#_getAvailableLevels}. */
   interface GetAvailableLevelsOptions {
     /**
@@ -1994,7 +1992,6 @@ declare class Scene extends BaseScene.Internal.ClientDocument {
    * - Transforms `this.grid` from source data to a {@linkcode BaseGrid} (or subclass) instance
    * - Sets `this.dimensions` to `this.getDimensions()`
    * - If a `playlist` is set, attempts to initialize `this.playlistSound` to a Document reference (it's an `idOnly` field in the schema)
-   * - Sets `this.foregroundElevation` to `this.grid.distance * 4` if its otherwise falsey
    */
   override prepareBaseData(): void;
 
@@ -2208,6 +2205,29 @@ declare class Scene extends BaseScene.Internal.ClientDocument {
     source: Scene.Source,
     context?: Document.FromImportContext<Scene.Parent>,
   ): Promise<Scene.Implementation>;
+
+  /**
+   * @deprecated "`Scene#background` is deprecated. Use `Level#background` and `Level#textures` instead."
+   * (since v14, until v16)
+   * @remarks Derived from {@linkcode firstLevel} via `BaseScene._LEVELS_PROPERTY_MAP`, plus `offsetX`/`offsetY`
+   * from `shiftX`/`shiftY`.
+   */
+  get background(): Scene.DeprecatedBackgroundData;
+
+  /**
+   * @deprecated "`Scene#backgroundColor` is deprecated. Use `Level#background#color` instead." (since v14, until v16)
+   */
+  get backgroundColor(): Color | undefined;
+
+  /**
+   * @deprecated "`Scene#foreground` is deprecated. Use `Level#foreground.src` instead." (since v14, until v16)
+   */
+  get foreground(): string | null | undefined;
+
+  /**
+   * @deprecated "`Scene#foregroundElevation` is deprecated. Use `Level#elevation.top` instead." (since v14, until v16)
+   */
+  get foregroundElevation(): number | null | undefined;
 
   #Scene: true;
 }
