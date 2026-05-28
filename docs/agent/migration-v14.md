@@ -69,7 +69,7 @@ The package is **already substantially usable on v14** for backward-compatible u
 > **Next, in priority order — the remaining work is the large items:**
 >
 > 1. **The 4 Tier-B document giants** (highest leverage, **one giant per session** — each 1.1k–4k lines, authored prerequisite-first then member-diff):
->    - `active-effect` (1154) — **prereqs DONE** (`ActiveEffectRegistry` + `CONFIG.ActiveEffect` additions). Remaining (the giant's core member-diff): `ActiveEffect.registry` static, `ActiveEffectDuration` rework, the change-application family moved instance→static (v13 instance methods → `@deprecated` shims), `isExpiryTrackable`/`isExpiryEvent`/`updateDuration`/`onUpdateEffectDurations`, and tightening the loose CONFIG `handler`/`render` callback types.
+>    - `active-effect` (1154) — **prereqs + additive members DONE** (`ActiveEffectRegistry`, `CONFIG.ActiveEffect` additions, static `registry`, `isExpiryTrackable`/`isExpiryEvent`, `updateDuration` context). Remaining (the risky core): the change-application family moved instance→static (v13 instance methods → `@deprecated` shims — a refactor with test cascade), `ActiveEffectDuration` rework, `Actor#onUpdateEffectDurations`, and tightening the loose CONFIG `handler`/`render` callback types.
 >    - `scene` (1780) — **SUBSTANTIALLY DONE** (`4773af838`/`91ce464d3`/`4a8b7df8f`/`008ce71c3`): Levels/edges/surfaces members, `transition` field, the background/foreground/backgroundColor/foregroundElevation schema→deprecated-getter migration, and the `initialLevel` field-override all landed CI-green. Only a final member-order verification pass remains.
 >    - `region` (2718) — needs `Level` (done) + `RegionSurface` (`client/documents/_types`) for `occludedSurfaces`/`define-surface`; ~25 missing live members listed in the phase-7 Tier-B deferral row.
 >    - `token` (4009) — needs the token-movement subsystem (~15 `TokenMovement*` `_types` + `TokenConstrainMovementPathOptions`); also unblocks the deferred Token-placeable drag/movement surface and `ModifyMovementCost._getTerrainEffects`.
@@ -80,7 +80,7 @@ The package is **already substantially usable on v14** for backward-compatible u
 > **Kickoff message** (paste verbatim):
 >
 > ```
-> Continue the v14 migration (Phase 7 — active-effect giant: prereqs ActiveEffectRegistry + CONFIG additions are DONE, so do the core member-diff of client/documents/active-effect.d.mts against v14 source: ActiveEffect.registry static, ActiveEffectDuration rework, the change-application instance->static move, isExpiryTrackable/isExpiryEvent/updateDuration)
+> Continue the v14 migration (Phase 7 — active-effect giant core: prereqs + additive members are DONE; now do the change-application instance->static refactor in client/documents/active-effect.d.mts (applyChange/applyChangeField/_applyChange* become static, v13 instance versions become @deprecated shims) + the ActiveEffectDuration rework, fixing the test cascade. Then the region giant (needs RegionSurface) and token giant (needs token-movement _types).)
 > ```
 >
 > _Maintainers: overwrite this block (not append) when a batch/phase closes._
