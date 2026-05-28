@@ -11,13 +11,18 @@ declare module "#configuration" {
 
 /**
  * The World Item directory listing.
- * @remarks TODO: Stub
  */
 declare class ItemDirectory<
   RenderContext extends ItemDirectory.RenderContext = ItemDirectory.RenderContext,
   Configuration extends ItemDirectory.Configuration = ItemDirectory.Configuration,
   RenderOptions extends ItemDirectory.RenderOptions = ItemDirectory.RenderOptions,
-> extends DocumentDirectory<Item.ImplementationClass, RenderContext, Configuration, RenderOptions> {}
+> extends DocumentDirectory<Item.ImplementationClass, RenderContext, Configuration, RenderOptions> {
+  static override DEFAULT_OPTIONS: DocumentDirectory.DefaultOptions;
+
+  static override tabName: string;
+
+  protected override _getEntryContextOptions(): foundry.applications.ux.ContextMenu.Entry<HTMLElement>[];
+}
 
 declare namespace ItemDirectory {
   interface Any extends AnyItemDirectory {}

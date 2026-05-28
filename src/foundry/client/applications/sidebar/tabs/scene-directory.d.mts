@@ -1,4 +1,4 @@
-import type { Identity } from "#utils";
+import type { DeepPartial, Identity } from "#utils";
 import type DocumentDirectory from "../document-directory.d.mts";
 
 declare module "#configuration" {
@@ -11,13 +11,24 @@ declare module "#configuration" {
 
 /**
  * The World Scene directory listing.
- * @remarks TODO: Stub
  */
 declare class SceneDirectory<
   RenderContext extends SceneDirectory.RenderContext = SceneDirectory.RenderContext,
   Configuration extends SceneDirectory.Configuration = SceneDirectory.Configuration,
   RenderOptions extends SceneDirectory.RenderOptions = SceneDirectory.RenderOptions,
-> extends DocumentDirectory<Scene.ImplementationClass, RenderContext, Configuration, RenderOptions> {}
+> extends DocumentDirectory<Scene.ImplementationClass, RenderContext, Configuration, RenderOptions> {
+  static override DEFAULT_OPTIONS: DocumentDirectory.DefaultOptions;
+
+  static override tabName: string;
+
+  protected static override _entryPartial: string;
+
+  protected override _canRender(options: DeepPartial<RenderOptions>): false | void;
+
+  protected override _getEntryContextOptions(): foundry.applications.ux.ContextMenu.Entry<HTMLElement>[];
+
+  protected override _getFolderContextOptions(): foundry.applications.ux.ContextMenu.Entry<HTMLElement>[];
+}
 
 declare namespace SceneDirectory {
   interface Any extends AnySceneDirectory {}

@@ -11,13 +11,18 @@ declare module "#configuration" {
 
 /**
  * The World Cards directory listing.
- * @remarks TODO: Stub
  */
 declare class CardsDirectory<
   RenderContext extends CardsDirectory.RenderContext = CardsDirectory.RenderContext,
   Configuration extends CardsDirectory.Configuration = CardsDirectory.Configuration,
   RenderOptions extends CardsDirectory.RenderOptions = CardsDirectory.RenderOptions,
-> extends DocumentDirectory<Cards.ImplementationClass, RenderContext, Configuration, RenderOptions> {}
+> extends DocumentDirectory<Cards.ImplementationClass, RenderContext, Configuration, RenderOptions> {
+  static override DEFAULT_OPTIONS: DocumentDirectory.DefaultOptions;
+
+  static override tabName: string;
+
+  protected override _getEntryContextOptions(): foundry.applications.ux.ContextMenu.Entry<HTMLElement>[];
+}
 
 declare namespace CardsDirectory {
   interface Any extends AnyCardsDirectory {}

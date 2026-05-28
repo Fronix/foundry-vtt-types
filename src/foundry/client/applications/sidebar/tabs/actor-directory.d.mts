@@ -11,13 +11,22 @@ declare module "#configuration" {
 
 /**
  * The World Actor directory listing.
- * @remarks TODO: Stub
  */
 declare class ActorDirectory<
   RenderContext extends ActorDirectory.RenderContext = ActorDirectory.RenderContext,
   Configuration extends ActorDirectory.Configuration = ActorDirectory.Configuration,
   RenderOptions extends ActorDirectory.RenderOptions = ActorDirectory.RenderOptions,
-> extends DocumentDirectory<Actor.ImplementationClass, RenderContext, Configuration, RenderOptions> {}
+> extends DocumentDirectory<Actor.ImplementationClass, RenderContext, Configuration, RenderOptions> {
+  static override DEFAULT_OPTIONS: DocumentDirectory.DefaultOptions;
+
+  static override tabName: string;
+
+  protected override _getEntryContextOptions(): foundry.applications.ux.ContextMenu.Entry<HTMLElement>[];
+
+  protected override _canDragStart(selector: string): boolean;
+
+  protected override _onDragStart(event: DragEvent): void;
+}
 
 declare namespace ActorDirectory {
   interface Any extends AnyActorDirectory {}

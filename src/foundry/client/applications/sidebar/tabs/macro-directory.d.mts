@@ -11,13 +11,16 @@ declare module "#configuration" {
 
 /**
  * The World Macro directory listing.
- * @remarks TODO: Stub
  */
 declare class MacroDirectory<
   RenderContext extends MacroDirectory.RenderContext = MacroDirectory.RenderContext,
   Configuration extends MacroDirectory.Configuration = MacroDirectory.Configuration,
   RenderOptions extends MacroDirectory.RenderOptions = MacroDirectory.RenderOptions,
-> extends DocumentDirectory<Macro.ImplementationClass, RenderContext, Configuration, RenderOptions> {}
+> extends DocumentDirectory<Macro.ImplementationClass, RenderContext, Configuration, RenderOptions> {
+  static override DEFAULT_OPTIONS: DocumentDirectory.DefaultOptions;
+
+  static override tabName: string;
+}
 
 declare namespace MacroDirectory {
   interface Any extends AnyMacroDirectory {}

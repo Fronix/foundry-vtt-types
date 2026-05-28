@@ -11,13 +11,18 @@ declare module "#configuration" {
 
 /**
  * The World Journal.
- * @remarks TODO: Stub
  */
 declare class JournalDirectory<
   RenderContext extends JournalDirectory.RenderContext = JournalDirectory.RenderContext,
   Configuration extends JournalDirectory.Configuration = JournalDirectory.Configuration,
   RenderOptions extends JournalDirectory.RenderOptions = JournalDirectory.RenderOptions,
-> extends DocumentDirectory<JournalEntry.ImplementationClass, RenderContext, Configuration, RenderOptions> {}
+> extends DocumentDirectory<JournalEntry.ImplementationClass, RenderContext, Configuration, RenderOptions> {
+  static override DEFAULT_OPTIONS: DocumentDirectory.DefaultOptions;
+
+  static override tabName: string;
+
+  protected override _getEntryContextOptions(): foundry.applications.ux.ContextMenu.Entry<HTMLElement>[];
+}
 
 declare namespace JournalDirectory {
   interface Any extends AnyJournalDirectory {}

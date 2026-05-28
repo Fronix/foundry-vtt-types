@@ -11,13 +11,18 @@ declare module "#configuration" {
 
 /**
  * The World RollTable directory listing.
- * @remarks TODO: Stub
  */
 declare class RollTableDirectory<
   RenderContext extends RollTableDirectory.RenderContext = RollTableDirectory.RenderContext,
   Configuration extends RollTableDirectory.Configuration = RollTableDirectory.Configuration,
   RenderOptions extends RollTableDirectory.RenderOptions = RollTableDirectory.RenderOptions,
-> extends DocumentDirectory<RollTable.ImplementationClass, RenderContext, Configuration, RenderOptions> {}
+> extends DocumentDirectory<RollTable.ImplementationClass, RenderContext, Configuration, RenderOptions> {
+  static override DEFAULT_OPTIONS: DocumentDirectory.DefaultOptions;
+
+  static override tabName: string;
+
+  protected override _getEntryContextOptions(): foundry.applications.ux.ContextMenu.Entry<HTMLElement>[];
+}
 
 declare namespace RollTableDirectory {
   interface Any extends AnyRollTableDirectory {}
