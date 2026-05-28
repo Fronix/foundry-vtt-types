@@ -12,7 +12,6 @@ declare module "#configuration" {
 
 /**
  * A V2 application responsible for configuring custom fonts for the world.
- * @remarks TODO: Stub
  */
 declare class FontConfig<
   RenderContext extends FontConfig.RenderContext = FontConfig.RenderContext,
@@ -30,6 +29,94 @@ declare class FontConfig<
     /** Font is from the system */
     SYSTEM: "system";
   }>;
+
+  /** The setting key that stores custom font definitions. */
+  static SETTING: "fonts";
+
+  static override PARTS: Record<string, HandlebarsApplicationMixin.HandlebarsTemplatePart>;
+
+  /**
+   * Get the list of fonts that successfully loaded.
+   */
+  static getAvailableFonts(): string[];
+
+  /**
+   * Get the list of fonts formatted for display with selectOptions.
+   */
+  static getAvailableFontChoices(): Record<string, string>;
+
+  /**
+   * Load a font definition.
+   * @param family     - The font family name (case-sensitive).
+   * @param definition - The font family definition.
+   * @returns Returns true if the font was successfully loaded.
+   */
+  static loadFont(
+    family: string,
+    definition: object,
+    options?: { document?: foundry.abstract.Document.Any },
+  ): Promise<boolean>;
+
+  /**
+   * Collect all the font definitions and load them.
+   * @internal
+   */
+  static _loadFonts(options?: { document?: foundry.abstract.Document.Any; timeout?: number }): Promise<void>;
+
+  /**
+   * Collect all the font definitions to load.
+   * @internal
+   */
+  static _collectDefinitions(): Record<string, object>[];
+
+  /**
+   * Create a FontFace object from a definition.
+   * @internal
+   */
+  static _createFontFace(family: string, definition: object): FontFace;
+
+  /**
+   * Format a font definition for use in CSS.
+   * @internal
+   */
+  static _formatFont(family: string, definition: object): string;
+
+  /**
+   * The new font definition currently being edited.
+   */
+  object: FontConfig.NewFontDefinition;
+
+  protected override _onRender(context: DeepPartial<RenderContext>, options: DeepPartial<RenderOptions>): Promise<void>;
+
+  protected override _prepareContext(
+    options: DeepPartial<RenderOptions> & { isFirstRender: boolean },
+  ): Promise<RenderContext>;
+
+  /**
+   * Prepare the data to display a single font definition.
+   */
+  protected _getDataForDefinition(family: string, definition: object): object;
+
+  protected override _onClickAction(event: PointerEvent, target: ApplicationV2.ActionTarget): void;
+
+  protected override _onChangeForm(formConfig: ApplicationV2.FormConfiguration, event: Event): void;
+
+  /**
+   * Add a new custom font definition.
+   */
+  protected _onAddFont(): Promise<void>;
+
+  /**
+   * Delete a font.
+   */
+  protected _onDeleteFont(event: PointerEvent): Promise<void>;
+
+  /**
+   * Select a font to preview and edit.
+   */
+  protected _onSelectFont(event: Event): void;
+
+  override close(options?: DeepPartial<ApplicationV2.ClosingOptions>): Promise<this>;
 }
 
 declare namespace FontConfig {
