@@ -62,9 +62,21 @@ Two consequences for Tier A:
 
 `PlaceableConfig` is high-leverage (unblocks ~9 configs incl. the deferred Tier B) and squarely Phase 6 — author it as its own focused batch.
 
+## Non-sheet clusters — status (2026-05-28)
+
+- **`apps/` — ✅ DONE** (all 5: combat-tracker-config, document-ownership, grid-config, av/camera-popout, av/cameras).
+- **`hud/` — ✅ DONE** (BasePlaceableHUD + drawing/tile/token huds + container).
+- **`settings/` — ✅ DONE** (dice-config, ui-config, prototype-overrides, av-config, dependency-resolution, font-config).
+- **`quickstart` — ✅ DONE.**
+- **`sidebar/` — NOT DONE (21 stubs remain).** This was the most-deprioritized cluster. Structure:
+  - **Foundation:** `document-directory` (DocumentDirectory, 1400) + `tabs/abstract` base. The small directory tabs extend `DocumentDirectory`.
+  - **Small directory tabs (quick):** macro (19), cards (36), journal (37), roll-table (38), item (48), actor (97), scene (107) — mostly just `DEFAULT_OPTIONS`/metadata over `DocumentDirectory`.
+  - **Giants (session-sized each):** `chat` (1590), `compendium-directory` (1126), `playlist-directory` (963), `combat-tracker` (797), `tabs/settings` (118).
+  - **Sidebar apps:** module-management (523), controls-config (505, CategoryBrowser), support-details (412), compendium (279), world-config (236), chat-popout (124), invitation-links (119), frame-viewer (64).
+
 ## Deprioritized (do only if explicitly requested)
 
-`sidebar/` tabs (21) + `settings/` menus (6) — mostly Foundry-internal UI, low consumer reach. See the scope-priority decision.
+`sidebar/` (21, above) — mostly Foundry-internal UI, low consumer reach. See the scope-priority decision.
 
 ## Inherited deferrals (action these in Phase 6)
 
