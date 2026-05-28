@@ -67,10 +67,8 @@ declare class SceneManager {
    * @param defaultLevels - The levels that are available to the current user by default.
    * @returns Return a Set of Level documents to override the default token-ownership logic, or return
    *          nothing to fall back to the default behavior.
-   * @remarks FIXME(v14-levels): `defaultLevels` and the return are `Set<Level>` (`foundry.documents.Level`);
-   * typed loosely as `Set<object>` until the Scene Levels subsystem authors the `Level` document (Phase 7).
    */
-  protected _getAvailableLevels(defaultLevels: Set<object>): Set<object> | void;
+  protected _getAvailableLevels(defaultLevels: Set<Level.Implementation>): Set<Level.Implementation> | void;
 
   /**
    * Additional behaviors to perform when the Canvas is first initialized for the Scene.

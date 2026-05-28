@@ -3,11 +3,6 @@ import type * as placeables from "#client/canvas/placeables/_module.d.mts";
 import type { EnvironmentCanvasGroup } from "#client/canvas/groups/_module.d.mts";
 import type { Canvas } from "#client/canvas/_module.d.mts";
 
-// FIXME(v14-levels): in v14 every effect source belongs to a `Level` (`foundry.documents.Level`).
-// The Scene Levels subsystem — including the `Level` document — is not yet authored (deferred to
-// Phase 7; see migration-v14 "Scene Levels subsystem"). `get level()` is typed loosely as `object`
-// until `Level` exists; `SourceData.level` is the level's id (a plain string), so it is typed now.
-
 /**
  * TODO - Re-document after ESM refactor.
  * An abstract base class which defines a framework for effect sources which originate radially from a specific point.
@@ -111,10 +106,9 @@ declare abstract class BaseEffectSource<
 
   /**
    * The level this source is in.
-   * @remarks FIXME(v14-levels): returns a `Level` document; typed as `object` until the Scene Levels
-   * subsystem is authored in Phase 7. Backed by a private `#level` set during `_initialize`.
+   * @remarks Backed by a private `#level` set during `_initialize`.
    */
-  get level(): object;
+  get level(): Level.Implementation;
 
   /**
    * The EffectsCanvasGroup collection linked to this effect source.

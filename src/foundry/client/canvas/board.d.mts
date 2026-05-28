@@ -299,10 +299,8 @@ declare class Canvas extends _InternalCanvas {
 
   /**
    * A reference to the currently displayed Level document, or null if the Canvas is currently blank.
-   * @remarks FIXME(v14-levels): returns a `Level` document (`foundry.documents.Level`); typed loosely as
-   * `object` until the Scene Levels subsystem authors the `Level` document (Phase 7).
    */
-  get level(): object | null;
+  get level(): Level.Implementation | null;
 
   /**
    * A reference to the edges of the currently displayed Level document.
@@ -534,11 +532,12 @@ declare class Canvas extends _InternalCanvas {
    * no viewed Level.
    * @param elevation - The elevation
    * @param options   - Additional options
-   * @remarks FIXME(v14-levels): returns a `Level` document (`foundry.documents.Level`) and `options.levels`
-   * is a `Set<string>` of Level IDs; the return is typed loosely as `object | null` until the Scene Levels
-   * subsystem authors the `Level` document (Phase 7).
+   * @remarks `options.levels` is a `Set<string>` of Level IDs.
    */
-  inferLevelFromElevation(elevation: number, options?: Canvas.InferLevelFromElevationOptions): object | null;
+  inferLevelFromElevation(
+    elevation: number,
+    options?: Canvas.InferLevelFromElevationOptions,
+  ): Level.Implementation | null;
 
   /**
    * Activate framerate tracking by adding an HTML element to the display and refreshing it every frame.
@@ -780,10 +779,8 @@ declare namespace Canvas {
 
     /**
      * The Level about to be drawn, or null if the canvas is going blank.
-     * @remarks FIXME(v14-levels): a `Level` document (`foundry.documents.Level`); typed loosely as `object`
-     * until the Scene Levels subsystem authors the `Level` document (Phase 7).
      */
-    nextLevel?: object | null | undefined;
+    nextLevel?: Level.Implementation | null | undefined;
   }
 
   /** @internal */

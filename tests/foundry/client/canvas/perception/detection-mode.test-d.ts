@@ -7,6 +7,7 @@ import CanvasVisibility = foundry.canvas.groups.CanvasVisibility;
 
 declare const visionSource: PointVisionSource.Initialized;
 declare const token: Token.Implementation;
+declare const level: Level.Implementation;
 
 describe("DetectionMode tests", () => {
   const source = {
@@ -79,8 +80,7 @@ describe("DetectionMode tests", () => {
       myDetectionMode.testVisibility(visionSource, dmData, { object: undefined, tests: visibilityTests, level: {} }),
     ).toBeBoolean();
 
-    // `level` is FIXME-typed `object` until the v14 `Level` document exists (Phase 7)
-    expectTypeOf(myDetectionMode["_canDetect"](visionSource, token, {})).toBeBoolean();
+    expectTypeOf(myDetectionMode["_canDetect"](visionSource, token, level)).toBeBoolean();
     expectTypeOf(myDetectionMode["_testPoint"](visionSource, dmData, token, visibilityTests[0]!)).toBeBoolean();
     expectTypeOf(myDetectionMode["_testLOS"](visionSource, dmData, token, visibilityTests[0]!)).toBeBoolean();
     expectTypeOf(myDetectionMode["_testAngle"](visionSource, dmData, token, visibilityTests[0]!)).toBeBoolean();

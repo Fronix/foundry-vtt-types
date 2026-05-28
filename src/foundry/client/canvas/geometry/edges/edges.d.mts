@@ -1,11 +1,6 @@
 import type { Identity, InexactPartial, ToMethod } from "#utils";
 import type Edge from "./edge.d.mts";
 
-// FIXME(v14): `CanvasEdges` is constructed with, and exposes, a `Level` document
-// (`foundry.documents.Level`). The Scene Levels subsystem — including the `Level` document — is not
-// yet authored (deferred to Phase 7; see migration-v14 "Scene Levels subsystem"). The `level`
-// constructor parameter and `get level()` are typed loosely as `object` until `Level` exists.
-
 /**
  * A specialized Map class that manages all edges used to restrict perception in a Scene.
  * Integrates with a Quadtree for efficient spatial queries.
@@ -15,12 +10,12 @@ declare class CanvasEdges extends Map<string, Edge> {
    * @param level - The Level these edges belong to
    * @remarks Throws unless `level` is a `Level` instance.
    */
-  constructor(level: object);
+  constructor(level: Level.Implementation);
 
   /**
    * The Level these edges belong to.
    */
-  get level(): object;
+  get level(): Level.Implementation;
 
   override set(id: string, edge: Edge): this;
 

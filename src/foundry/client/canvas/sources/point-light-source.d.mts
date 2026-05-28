@@ -87,10 +87,9 @@ declare class PointLightSource<
    * @returns Can the target object theoretically be detected by this vision source?
    * @remarks Only returns `false` in core's implementation if `target?.document` is a {@linkcode TokenDocument} with {@linkcode CONFIG.specialStatusEffects.INVISIBLE}
    *
-   * FIXME(v14-levels): `level` is a `Level` document; typed as `object` until the Scene Levels subsystem
-   * is authored in Phase 7. It is unused by this implementation at runtime.
+   * `level` is unused by this implementation at runtime.
    */
-  protected _canDetectObject(target?: CanvasVisibility.TestObject, level?: object): boolean;
+  protected _canDetectObject(target?: CanvasVisibility.TestObject, level?: Level.Implementation): boolean;
 
   #PointLightSource: true;
 }

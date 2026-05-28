@@ -6,7 +6,9 @@ const mySM = new SceneManager(someScene);
 
 expectTypeOf(mySM.scene).toEqualTypeOf<Scene.Implementation>();
 expectTypeOf(mySM["_determineInitialLevel"]()).toEqualTypeOf<string | void>();
-expectTypeOf(mySM["_getAvailableLevels"](new Set())).toEqualTypeOf<Set<object> | void>();
+expectTypeOf(
+  mySM["_getAvailableLevels"](new Set<Level.Implementation>()),
+).toEqualTypeOf<Set<Level.Implementation> | void>();
 expectTypeOf(mySM["_onInit"]()).toEqualTypeOf<Promise<void>>();
 expectTypeOf(mySM["_onDraw"]()).toEqualTypeOf<Promise<void>>();
 expectTypeOf(mySM["_onReady"]()).toEqualTypeOf<Promise<void>>();

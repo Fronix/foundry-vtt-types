@@ -6,11 +6,6 @@ import type { CanvasVisibility } from "#client/canvas/groups/_module.d.mts";
 import type { PointVisionSource } from "../sources/_module.d.mts";
 import type { PointSourcePolygon } from "../geometry/_module.d.mts";
 
-// FIXME(v14-levels): in v14 detection-mode methods take a `level` (`foundry.documents.Level`)
-// argument and `_testCollision` reads `level` off configs. The Scene Levels subsystem — including
-// the `Level` document — is not yet authored (deferred to Phase 7; see migration-v14
-// "Scene Levels subsystem"). `level` parameters are typed loosely as `object` until `Level` exists.
-
 /**
  * A Detection Mode which can be associated with any kind of sense/vision/perception.
  * A token could have multiple detection modes.
@@ -68,12 +63,11 @@ declare class DetectionMode extends DataModel<DetectionMode.Schema> {
    * @returns Can the target object theoretically be detected by this vision source?
    * @remarks Will always be passed a `target` when called by {@linkcode testVisibility | DetectionMode#testVisibility}, it just might possibly be `undefined`.
    * All use is gated behind an `instanceof Token` check, so that's fine.
-   * @privateRemarks `level` is FIXME-typed `object` until the v14 `Level` document exists (Phase 7).
    */
   protected _canDetect(
     visionSource: PointVisionSource.Internal.Any,
     target: CanvasVisibility.TestObject | undefined,
-    level: object,
+    level: Level.Implementation,
   ): boolean;
 
   /**
@@ -127,7 +121,7 @@ declare class DetectionMode extends DataModel<DetectionMode.Schema> {
    * {@linkcode PointSourcePolygon} and `test` is `Pick<CanvasVisibility.Test, "point" | "los">`. The single
    * declaration here accepts both forms via the union third argument.
    *
-   * The `level` config key is FIXME-omitted until the v14 `Level` document exists (Phase 7).
+   * The `level` config key is omitted pending the `PointSourcePolygon.Config.level` wiring (Phase 7).
    */
   protected static _testCollision(
     visionSource: PointVisionSource.Internal.Any,

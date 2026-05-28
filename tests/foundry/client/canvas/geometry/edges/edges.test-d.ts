@@ -3,14 +3,12 @@ import { expectTypeOf } from "vitest";
 import CanvasEdges = foundry.canvas.geometry.edges.CanvasEdges;
 import Edge = foundry.canvas.geometry.edges.Edge;
 
-// FIXME(v14): `CanvasEdges` is constructed with a `Level` document, which is not yet authored
-// (Phase 7 — Scene Levels). The `level` parameter is typed loosely as `object` until then.
-declare const level: object;
+declare const level: Level.Implementation;
 const myCanvasEdges = new CanvasEdges(level);
 declare const someEdge: Edge;
 declare const rect: PIXI.Rectangle;
 
-expectTypeOf(myCanvasEdges.level).toEqualTypeOf<object>();
+expectTypeOf(myCanvasEdges.level).toEqualTypeOf<Level.Implementation>();
 expectTypeOf(myCanvasEdges.set("foo", someEdge)).toEqualTypeOf<CanvasEdges>();
 expectTypeOf(myCanvasEdges.delete("foo")).toBeBoolean();
 expectTypeOf(myCanvasEdges.clear()).toEqualTypeOf<CanvasEdges>();

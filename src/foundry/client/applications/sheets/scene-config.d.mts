@@ -35,9 +35,8 @@ declare class SceneConfig<
   /**
    * The default Level of the Scene being configured.
    * @remarks Returns the Scene's `initialLevel`.
-   * @privateRemarks FIXME: typed as `object` until the `Level` document is authored in Phase 7 (Scene Levels).
    */
-  get defaultLevel(): object;
+  get defaultLevel(): Level.Implementation;
 
   /**
    * The available grid types which can be applied to this Scene.
@@ -91,7 +90,6 @@ declare class SceneConfig<
 
   /**
    * Get the set of ContextMenu options which should be used for Scene Levels.
-   * @privateRemarks FIXME: the entries operate on `Level` documents (Phase 7).
    */
   protected _getLevelContextOptions(): foundry.applications.ux.ContextMenu.Entry<HTMLElement>[];
 
@@ -105,9 +103,8 @@ declare class SceneConfig<
 
   /**
    * Handle sorting a Level relative to its siblings.
-   * @privateRemarks FIXME: `level` is a `Level` document, typed as `object` until Phase 7 (Scene Levels).
    */
-  protected _onSortLevel(event: Event, level: object): void;
+  protected _onSortLevel(event: Event, level: Level.Implementation): void;
 }
 
 declare namespace SceneConfig {
