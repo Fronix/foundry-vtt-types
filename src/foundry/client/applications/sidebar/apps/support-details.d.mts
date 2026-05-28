@@ -11,7 +11,7 @@ declare module "#configuration" {
 }
 
 /**
- * @remarks TODO: Stub
+ * An application that displays software and hardware support information for diagnostics and bug reports.
  */
 declare class SupportDetails<
   RenderContext extends SupportDetails.RenderContext = SupportDetails.RenderContext,
@@ -20,6 +20,37 @@ declare class SupportDetails<
 > extends HandlebarsApplicationMixin(ApplicationV2)<RenderContext, Configuration, RenderOptions> {
   // Fake override.
   static override DEFAULT_OPTIONS: SupportDetails.DefaultOptions;
+
+  static override PARTS: Record<string, HandlebarsApplicationMixin.HandlebarsTemplatePart>;
+
+  static override TABS: Record<string, ApplicationV2.TabsConfiguration>;
+
+  protected override _preparePartContext(
+    partId: string,
+    context: ApplicationV2.RenderContextOf<this>,
+    options: DeepPartial<HandlebarsApplicationMixin.RenderOptions>,
+  ): Promise<ApplicationV2.RenderContextOf<this>>;
+
+  /**
+   * Collect information about the validity of Documents in the World.
+   */
+  protected _getDocumentValidationErrors(): object[];
+
+  /**
+   * Collect information about reported module compatibility issues.
+   */
+  protected _getModuleIssues(): object[];
+
+  /**
+   * A bundle of metrics for Support.
+   */
+  static generateSupportReport(): object;
+
+  /**
+   * Get a WebGL renderer information string.
+   * @param gl - The rendering context.
+   */
+  static getWebGLRendererInfo(gl: WebGLRenderingContext): string;
 }
 
 declare namespace SupportDetails {
