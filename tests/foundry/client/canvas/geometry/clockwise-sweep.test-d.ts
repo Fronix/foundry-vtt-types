@@ -231,3 +231,8 @@ expectTypeOf(myCSP["_switchEdge"](collisionResult, edgeSet)).toBeVoid();
 expectTypeOf(myCSP["_visualizeCollision"](someRay, [somePV, somePV])).toBeVoid();
 
 expectTypeOf(myCSP.addPoint({ x: 37, y: 42 })).toEqualTypeOf<typeof myCSP>();
+
+// v14 Scene-Levels accessors (inherited from PointSourcePolygon)
+expectTypeOf(myCSP.level).toEqualTypeOf<Level.Implementation>();
+expectTypeOf(myCSP.scene).toEqualTypeOf<Scene.Implementation>();
+expectTypeOf(myCSP.config.level).toEqualTypeOf<Level.Implementation | undefined>();

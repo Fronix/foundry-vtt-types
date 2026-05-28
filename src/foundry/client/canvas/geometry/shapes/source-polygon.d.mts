@@ -49,6 +49,16 @@ declare abstract class PointSourcePolygon extends PIXI.Polygon {
   config: PointSourcePolygon.StoredConfig;
 
   /**
+   * The Level the polygon is computed in.
+   */
+  get level(): Level.Implementation;
+
+  /**
+   * The Scene the polygon is computed in.
+   */
+  get scene(): Scene.Implementation;
+
+  /**
    * An indicator for whether this polygon is constrained by some boundary shape?
    */
   get isConstrained(): boolean;
@@ -230,6 +240,12 @@ declare namespace PointSourcePolygon {
    * Properties not guaranteed to exist by {@linkcode PointSourcePolygon.initialize | PointSourcePolygon#initialize}, without restrictions on nullishness
    */
   type _InexactConfig = InexactPartial<{
+    /**
+     * The Level the polygon is computed in.
+     * @remarks Defaults to the viewed Level.
+     */
+    level: Level.Implementation;
+
     /**
      * The object (if any) that spawned this polygon.
      * @remarks Not guaranteed by {@linkcode PointSourcePolygon.initialize | PointSourcePolygon#initialize} but will exist in all configs created by {@linkcode PointEffectSourceMixin} subclasses.
