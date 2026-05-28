@@ -1,6 +1,7 @@
 import type { DeepPartial, Identity } from "#utils";
-import type ApplicationV2 from "../../api/application.d.mts";
 import type HandlebarsApplicationMixin from "../../api/handlebars-application.d.mts";
+
+import ApplicationV2 = foundry.applications.api.ApplicationV2;
 
 declare module "#configuration" {
   namespace Hooks {
@@ -20,6 +21,32 @@ declare class CameraPopout<
   RenderOptions extends CameraPopout.RenderOptions = CameraPopout.RenderOptions,
 > extends HandlebarsApplicationMixin(ApplicationV2)<RenderContext, Configuration, RenderOptions> {
   static override DEFAULT_OPTIONS: CameraPopout.DefaultOptions;
+
+  /**
+   * The user this camera view is for.
+   */
+  get user(): User.Stored;
+
+  protected override _initializeApplicationOptions(options: DeepPartial<Configuration>): Configuration;
+
+  protected override _onFirstRender(
+    context: DeepPartial<RenderContext>,
+    options: DeepPartial<RenderOptions>,
+  ): Promise<void>;
+
+  protected override _onRender(context: DeepPartial<RenderContext>, options: DeepPartial<RenderOptions>): Promise<void>;
+
+  protected override _prepareContext(
+    options: DeepPartial<RenderOptions> & { isFirstRender: boolean },
+  ): Promise<RenderContext>;
+
+  protected override _replaceHTML(result: unknown, content: HTMLElement, options: DeepPartial<RenderOptions>): void;
+
+  protected override _prePosition(options: DeepPartial<RenderOptions>): void;
+
+  override setPosition(position?: DeepPartial<ApplicationV2.Position>): ApplicationV2.Position | void;
+
+  protected override _onClickAction(event: PointerEvent, target: ApplicationV2.ActionTarget): void;
 }
 
 declare namespace CameraPopout {
