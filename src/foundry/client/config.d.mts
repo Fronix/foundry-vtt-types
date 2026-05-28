@@ -21,6 +21,8 @@ import type * as perception from "#client/canvas/perception/_module.d.mts";
 import type * as placeables from "#client/canvas/placeables/_module.d.mts";
 import type { DoorControl, DoorMesh } from "#client/canvas/containers/_module.d.mts";
 import type * as geometry from "#client/canvas/geometry/_module.d.mts";
+import type * as vfx from "#client/canvas/vfx/_module.d.mts";
+import type { VFXComponentAnimation, VFXPathGenerator } from "#client/canvas/vfx/_types.d.mts";
 import type { CanvasAnimation } from "#client/canvas/animation/_module.d.mts";
 import type { DocumentSheetConfig } from "#client/applications/apps/_module.d.mts";
 import type { SimplePeerAVClient } from "#client/av/clients/_module.d.mts";
@@ -2528,9 +2530,42 @@ declare global {
        * @deprecated "`CONFIG.Canvas.transcoders` has been deprecated without replacement. KTX2/Basis support is always enabled and this property has no effect anymore." (since v13, until v15)
        */
       get transcoders(): { basis: true };
+
+      /**
+       * Configuration for the {@link foundry.canvas.vfx | `foundry.canvas.vfx`} module.
+       * This configuration is used to register named components, animations, and presets which can be invoked within
+       * VFXEffect instances.
+       *
+       * @remarks The v14 VFX framework is EXPERIMENTAL. Its classes, functions, and configuration are likely to change
+       * over coming releases and should be treated as non-stable.
+       */
+      vfx: Canvas.VFX;
     }
 
     namespace Canvas {
+      interface VFX {
+        /**
+         * The v14 VFX framework is EXPERIMENTAL. You may use it by enabling it via `CONFIG.Canvas.vfx.enabled`.
+         * @defaultValue `false`
+         */
+        enabled: boolean;
+
+        /**
+         * Named VFXComponent subclasses which can be used to orchestrate different types of visual effects.
+         */
+        components: Record<string, vfx.VFXComponent.AnyConstructor>;
+
+        /**
+         * Named animations that may be called as part of a component.
+         */
+        animations: Record<string, VFXComponentAnimation>;
+
+        /**
+         * Named path generator functions that may be called as part of a component.
+         */
+        paths: Record<string, VFXPathGenerator>;
+      }
+
       interface Groups {
         // TODO: Index signature?
 
