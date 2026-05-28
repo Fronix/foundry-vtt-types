@@ -26,7 +26,7 @@ CI-green alone is **not** sufficient — CI doesn't know the v14 source, so sile
 
 **All v14 work lives on the single long-running `v14` branch (off `main`). Commit every phase directly onto `v14` — no per-phase branches.** Push only to `origin` (the Fronix fork) — never `upstream` (League). When ready, merge `v14` into `main` in one fast-forward (`main` doesn't drift — fork-only — so the merge stays conflict-free).
 
-**Versioning for consumption:** `v14` is the rolling dev line; frozen installable versions are **annotated tags** matching `package.json` and the historical `v9.x` convention (first: `v14.363.0` on `c67ddd81b`, pushed to `origin` 2026-05-28). Consume via `fvtt-types@github:Fronix/foundry-vtt-types#v14.363.0`. On a Foundry build bump, bump `package.json` and cut the next tag (`v14.364.0`, …) — do **not** rename the branch.
+**Versioning for consumption:** `v14` is the rolling dev line; frozen installable versions are **annotated tags** matching `package.json` and the historical `v9.x` convention (first: `v14.363.0`, pushed to `origin` 2026-05-28; retagged to the tip that adds `MIGRATING.md`). Consume via `fvtt-types@github:Fronix/foundry-vtt-types#v14.363.0`. On a Foundry build bump, bump `package.json` and cut the next tag (`v14.364.0`, …) — do **not** rename the branch.
 
 ---
 
