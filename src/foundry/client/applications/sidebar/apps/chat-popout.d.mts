@@ -11,7 +11,6 @@ declare module "#configuration" {
 
 /**
  * A simple application for rendering a single chat message in its own frame.
- * @remarks TODO: Stub
  */
 declare class ChatPopout<
   RenderContext extends ChatPopout.RenderContext = ChatPopout.RenderContext,
@@ -20,6 +19,24 @@ declare class ChatPopout<
 > extends ApplicationV2<RenderContext, Configuration, RenderOptions> {
   // Fake override.
   static override DEFAULT_OPTIONS: ChatPopout.DefaultOptions;
+
+  /**
+   * The message being rendered.
+   */
+  get message(): ChatMessage.Implementation;
+
+  override get title(): string;
+
+  protected override _initializeApplicationOptions(options: DeepPartial<Configuration>): Configuration;
+
+  protected override _onClose(options: DeepPartial<RenderOptions>): void;
+
+  protected override _onFirstRender(
+    context: DeepPartial<RenderContext>,
+    options: DeepPartial<RenderOptions>,
+  ): Promise<void>;
+
+  protected override _attachFrameListeners(): void;
 }
 
 declare namespace ChatPopout {

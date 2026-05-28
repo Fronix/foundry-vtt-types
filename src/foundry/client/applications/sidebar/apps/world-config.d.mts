@@ -12,7 +12,6 @@ declare module "#configuration" {
 
 /**
  * The World Management setup application
- * @remarks TODO: Stub
  */
 declare class WorldConfig<
   RenderContext extends WorldConfig.RenderContext = WorldConfig.RenderContext,
@@ -21,6 +20,16 @@ declare class WorldConfig<
 > extends HandlebarsApplicationMixin(ApplicationV2)<RenderContext, Configuration, RenderOptions> {
   // Fake override.
   static override DEFAULT_OPTIONS: WorldConfig.DefaultOptions;
+
+  static override PARTS: Record<string, HandlebarsApplicationMixin.HandlebarsTemplatePart>;
+
+  override get title(): string;
+
+  protected override _onChangeForm(formConfig: ApplicationV2.FormConfiguration, event: Event): void;
+
+  protected override _prepareContext(
+    options: DeepPartial<RenderOptions> & { isFirstRender: boolean },
+  ): Promise<RenderContext>;
 }
 
 declare namespace WorldConfig {

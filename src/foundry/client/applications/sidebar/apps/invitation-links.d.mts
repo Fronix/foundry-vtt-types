@@ -11,7 +11,7 @@ declare module "#configuration" {
 }
 
 /**
- * @remarks TODO: Stub
+ * A management app for configuring and copying the world's invitation links.
  */
 declare class InvitationLinks<
   RenderContext extends InvitationLinks.RenderContext = InvitationLinks.RenderContext,
@@ -20,6 +20,12 @@ declare class InvitationLinks<
 > extends HandlebarsApplicationMixin(ApplicationV2)<RenderContext, Configuration, RenderOptions> {
   // Fake override.
   static override DEFAULT_OPTIONS: InvitationLinks.DefaultOptions;
+
+  static override PARTS: Record<string, HandlebarsApplicationMixin.HandlebarsTemplatePart>;
+
+  protected override _prepareContext(
+    options: DeepPartial<RenderOptions> & { isFirstRender: boolean },
+  ): Promise<RenderContext>;
 }
 
 declare namespace InvitationLinks {

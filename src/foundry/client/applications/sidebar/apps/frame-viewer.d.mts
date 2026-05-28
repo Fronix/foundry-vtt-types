@@ -11,7 +11,7 @@ declare module "#configuration" {
 
 /**
  * A simple window application which shows the built documentation pages within an iframe
- * @remarks TODO: Stub
+ * @remarks Deprecated since v13 with no replacement.
  */
 declare class FrameViewer<
   RenderContext extends FrameViewer.RenderContext = FrameViewer.RenderContext,
@@ -20,6 +20,8 @@ declare class FrameViewer<
 > extends ApplicationV2<RenderContext, Configuration, RenderOptions> {
   // Fake override.
   static override DEFAULT_OPTIONS: FrameViewer.DefaultOptions;
+
+  protected override _configureRenderOptions(options: DeepPartial<RenderOptions>): void;
 }
 
 declare namespace FrameViewer {
