@@ -168,6 +168,19 @@ declare abstract class BaseScene extends Document<"Scene", BaseScene.Schema, any
 
   set darkness(value);
 
+  /**
+   * The initial Level of the Scene. By default the first Level.
+   * @remarks Returns {@linkcode firstLevel} when no `initialLevel` is set, so it is `undefined` when the Scene has no Levels.
+   */
+  get initialLevel(): Level.Implementation | undefined;
+
+  /**
+   * A convenience getter for the Scene's first created Level. This should not be relied on in multi-level scenes to
+   * mean the first level by sort order.
+   * @remarks `undefined` when the Scene has no Levels.
+   */
+  get firstLevel(): Level.Implementation | undefined;
+
   /*
    * After this point these are not really overridden methods.
    * They are here because Foundry's documents are complex and have lots of edge cases.

@@ -15,6 +15,8 @@ expectTypeOf(scene.dimensions).toEqualTypeOf<Scene.Dimensions>();
 expectTypeOf(scene.active).toEqualTypeOf<boolean>();
 expectTypeOf(scene.background.src).toEqualTypeOf<string | null>();
 expectTypeOf(scene.isView).toEqualTypeOf<boolean>();
+expectTypeOf(scene.initialLevel).toEqualTypeOf<Level.Implementation | undefined>();
+expectTypeOf(scene.firstLevel).toEqualTypeOf<Level.Implementation | undefined>();
 expectTypeOf(scene.journal).toEqualTypeOf<JournalEntry.Stored | null>();
 expectTypeOf(scene.playlist).toEqualTypeOf<Playlist.Stored | null>();
 expectTypeOf(scene.playlistSound).toEqualTypeOf<string | null>();
