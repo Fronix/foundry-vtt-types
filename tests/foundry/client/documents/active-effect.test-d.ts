@@ -700,6 +700,10 @@ expectTypeOf(effect.prepareBaseData()).toEqualTypeOf<void>();
 expectTypeOf(effect.prepareDerivedData()).toEqualTypeOf<void>();
 
 expectTypeOf(effect.updateDuration()).toEqualTypeOf<ActiveEffect.Duration>();
+expectTypeOf(effect.updateDuration({})).toEqualTypeOf<ActiveEffect.Duration>();
+expectTypeOf(effect.isExpiryTrackable).toEqualTypeOf<boolean>();
+expectTypeOf(effect.isExpiryEvent("turnEnd")).toEqualTypeOf<boolean>();
+expectTypeOf(ActiveEffect.registry).toEqualTypeOf<foundry.helpers.ActiveEffectRegistry>();
 expectTypeOf(effect["_requiresDurationUpdate"]()).toBeBoolean();
 expectTypeOf(effect["_prepareDuration"]()).toEqualTypeOf<ActiveEffect.PrepareDurationReturn>();
 

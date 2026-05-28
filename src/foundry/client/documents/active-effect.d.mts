@@ -1172,6 +1172,15 @@ declare namespace ActiveEffect {
 
   interface PrepareDurationReturn extends RequiredProps<IntentionalPartial<Duration>, "type"> {}
 
+  /**
+   * Contextual information passed to {@linkcode ActiveEffect.isExpiryEvent | ActiveEffect#isExpiryEvent} and
+   * {@linkcode ActiveEffect.updateDuration | ActiveEffect#updateDuration}.
+   */
+  interface IsExpiryEventContext {
+    /** The Combat associated with this event. */
+    combat?: Combat.Implementation | null | undefined;
+  }
+
   interface InitialDurationData {
     /** @defaultValue `game.time.worldTime` */
     startTime: number;
@@ -1284,6 +1293,11 @@ declare class ActiveEffect<out SubType extends ActiveEffect.SubType = ActiveEffe
   ): Promise<ActiveEffect.Implementation>;
 
   /**
+   * A helper that accepts registration of ActiveEffects and manages their prepared duration and expiry data.
+   */
+  static registry: foundry.helpers.ActiveEffectRegistry;
+
+  /**
    * Is there some system logic that makes this active effect ineligible for application?
    * @remarks Core's implementation defers to `system.isSuppressed` on a `TypeDataModel`, else `false`. As such all overrides should begin with `if (super.isSuppressed) return true;`
    */
@@ -1311,7 +1325,7 @@ declare class ActiveEffect<out SubType extends ActiveEffect.SubType = ActiveEffe
    * Configure the remaining and label properties to be getters which lazily recompute only when necessary.
    */
   // TODO: This adds two getter properties (`remaining` and `label`) to `this.duration` (a SchemaField property on the document)
-  updateDuration(): ActiveEffect.Duration;
+  updateDuration(context?: ActiveEffect.IsExpiryEventContext): ActiveEffect.Duration;
 
   /**
    * Determine whether the ActiveEffect requires a duration update.
@@ -1346,6 +1360,20 @@ declare class ActiveEffect<out SubType extends ActiveEffect.SubType = ActiveEffe
    * Describe whether the ActiveEffect has a temporary duration based on combat turns or rounds.
    */
   get isTemporary(): boolean;
+
+  /**
+   * Whether this Active Effect is eligible to be registered with the
+   * {@linkcode foundry.helpers.ActiveEffectRegistry | ActiveEffectRegistry}.
+   */
+  get isExpiryTrackable(): boolean;
+
+  /**
+   * A determination of whether the ActiveEffect's expiry event was reached. This check is independent of whether the
+   * duration was also reached.
+   * @param event   - The event that triggered this check
+   * @param context - Contextual information for use in the determination
+   */
+  isExpiryEvent(event: string, context?: ActiveEffect.IsExpiryEventContext): boolean;
 
   /**
    * The source name of the Active Effect. The source is retrieved synchronously.
