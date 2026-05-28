@@ -236,3 +236,7 @@ expectTypeOf(myCSP.addPoint({ x: 37, y: 42 })).toEqualTypeOf<typeof myCSP>();
 expectTypeOf(myCSP.level).toEqualTypeOf<Level.Implementation>();
 expectTypeOf(myCSP.scene).toEqualTypeOf<Scene.Implementation>();
 expectTypeOf(myCSP.config.level).toEqualTypeOf<Level.Implementation | undefined>();
+expectTypeOf(myCSP.surfaceExposure).toEqualTypeOf<foundry.data.regionShapes.RegionPolygonTree | null>();
+expectTypeOf(myCSP.config.surfaceExposure).toEqualTypeOf<
+  foundry.canvas.geometry.PointSourcePolygon.ElevatedSurfaceExposureOptions | undefined
+>();

@@ -49,6 +49,11 @@ declare abstract class PointSourcePolygon extends PIXI.Polygon {
   config: PointSourcePolygon.StoredConfig;
 
   /**
+   * The area of surfaces that is visible to this polygon, if any.
+   */
+  surfaceExposure: foundry.data.regionShapes.RegionPolygonTree | null;
+
+  /**
    * The Level the polygon is computed in.
    */
   get level(): Level.Implementation;
@@ -239,12 +244,29 @@ declare namespace PointSourcePolygon {
   /**
    * Properties not guaranteed to exist by {@linkcode PointSourcePolygon.initialize | PointSourcePolygon#initialize}, without restrictions on nullishness
    */
+
+  /**
+   * Additional options passed through to surface exposure computation.
+   */
+  interface ElevatedSurfaceExposureOptions {
+    /**
+     * Points with at most this distance (grid units) from the surface are exposed.
+     * @defaultValue `0`
+     */
+    threshold?: number | undefined;
+  }
+
   type _InexactConfig = InexactPartial<{
     /**
      * The Level the polygon is computed in.
      * @remarks Defaults to the viewed Level.
      */
     level: Level.Implementation;
+
+    /**
+     * Additional options passed through to surface exposure computation.
+     */
+    surfaceExposure: ElevatedSurfaceExposureOptions;
 
     /**
      * The object (if any) that spawned this polygon.
