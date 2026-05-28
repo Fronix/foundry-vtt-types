@@ -562,10 +562,19 @@ declare namespace Scene {
     // `backgroundColor` was removed from the Scene schema in v14 (moved to `Level#background.color`);
     // it survives as a `@deprecated` getter deriving from `firstLevel` (see the class body).
 
-    // TODO(v14, P7): add the `initialLevel: DocumentIdField<{ readonly: false }>` schema field. It is
-    // shadowed at runtime by the `initialLevel` getter (which returns the resolved Level), so adding it
-    // to the Schema as-is conflicts with the getter's `Level.Implementation | undefined` type. Resolving
-    // this needs the branded-field-override treatment (see bugs.md) and rides with the Scene schema rework.
+    /**
+     * The _id of the initial Level of this Scene. By default the first Level.
+     * @defaultValue `null`
+     * @remarks Persisted as a Level `_id` string, but the `initialLevel` getter shadows this property at
+     * runtime to return the resolved {@linkcode Level} (or `undefined`), so the field's initialized type is
+     * overridden to match the getter.
+     */
+    initialLevel: fields.DocumentIdField<
+      { readonly: false },
+      string | null | undefined,
+      Level.Implementation | undefined,
+      string | null
+    >;
 
     /**
      * Grid configuration for the scene
