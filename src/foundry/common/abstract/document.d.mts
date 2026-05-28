@@ -2054,7 +2054,7 @@ declare namespace Document {
 
   /**
    * @deprecated This type has been replaced with per-operation types under `namespace Database` in the client document namespaces. It will
-   * be removed in v14.
+   * be removed in a future version.
    */
   interface ModificationContext<Parent extends Document.Any | null> {
     /**
@@ -2174,7 +2174,7 @@ declare namespace Document {
 
   /**
    * @deprecated This type has been replaced with per-operation types under `namespace Database` in the client document namespaces. It will
-   * be removed in v14.
+   * be removed in a future version.
    */
   // eslint-disable-next-line @typescript-eslint/no-deprecated
   type ModificationOptions = Omit<Document.ModificationContext<Document.Any | null>, "parent" | "pack">;
@@ -2401,7 +2401,7 @@ declare namespace Document {
 
     /**
      * A helper type for defining the interface that gets passed to the deprecated {@linkcode Document._onCreateDocuments} method. This will
-     * be removed in v14 along with that method.
+     * be removed in a future version along with that method.
      *
      * @template BaseOperation - A specific document's {@linkcode DatabaseBackend.CreateOperation}, e.g
      * {@linkcode JournalEntry.Database.CreateOperation}.
@@ -2618,7 +2618,7 @@ declare namespace Document {
 
     /**
      * A helper type for defining the interface that gets passed to the deprecated {@linkcode Document._onUpdateDocuments} method. This
-     * interface will be removed in v14 along with that method.
+     * interface will be removed in a future version along with that method.
      *
      * @template BaseOperation - A specific document's {@linkcode DatabaseBackend.UpdateOperation}, e.g
      * {@linkcode JournalEntry.Database.UpdateOperation}.
@@ -2833,7 +2833,7 @@ declare namespace Document {
 
     /**
      * A helper type for defining the interface that gets passed to the deprecated {@linkcode Document._onDeleteDocuments} method. This
-     * interface will be removed in v14 along with that method.
+     * interface will be removed in a future version along with that method.
      *
      * @template BaseOperation - A specific document's {@linkcode DatabaseBackend.DeleteOperation}, e.g
      * {@linkcode JournalEntry.Database.CreateOperation}.
@@ -3028,12 +3028,12 @@ declare namespace Document {
      *             DocsV2 DEPRECATIONS               *
      *************************************************/
 
-    /** @deprecated Use {@linkcode OperationAction} instead. This type will be removed in v14. */
+    /** @deprecated Use {@linkcode OperationAction} instead. This type will be removed in a future version. */
     type Operation = OperationAction;
 
     /**
      * @deprecated This type has been replaced with document-specific interfaces, e.g {@linkcode Macro.Database.GetDocumentsOperation}.
-     * This type will be removed in v14.
+     * This type will be removed in a future version.
      *
      * @see {@linkcode GetDocumentsOperation}
      */
@@ -3041,68 +3041,68 @@ declare namespace Document {
 
     // CreateDocumentsOperation didn't change purpose or name
 
-    /** @deprecated Use {@linkcode UpdateOneDocumentOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode UpdateOneDocumentOperation} instead. This type will be removed in a future version */
     type UpdateOperation<Op extends DatabaseBackend.UpdateOperation> = UpdateOneDocumentOperation<Op>;
 
-    /** @deprecated Use {@linkcode DeleteOneDocumentOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode DeleteOneDocumentOperation} instead. This type will be removed in a future version */
     type DeleteOperation<Op extends DatabaseBackend.DeleteOperation> = DeleteOneDocumentOperation<Op>;
 
-    /** @deprecated Use {@linkcode PreCreateOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode PreCreateOperation} instead. This type will be removed in a future version */
     type PreCreateOperationStatic<Op extends DatabaseBackend.CreateOperation> = PreCreateOperation<Op>;
 
     // PreCreateOptions didn't change purpose or name
 
-    /** @deprecated Use {@linkcode OnCreateOptions} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnCreateOptions} instead. This type will be removed in a future version */
     type CreateOptions<Op extends DatabaseBackend.CreateOperation> = OnCreateOptions<Op>;
 
-    /** @deprecated Use {@linkcode UpdateManyDocumentsOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode UpdateManyDocumentsOperation} instead. This type will be removed in a future version */
     type UpdateDocumentsOperation<Op extends DatabaseBackend.UpdateOperation> = UpdateManyDocumentsOperation<Op>;
 
-    /** @deprecated Use {@linkcode UpdateOneDocumentOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode UpdateOneDocumentOperation} instead. This type will be removed in a future version */
     type UpdateOperationInstance<Op extends DatabaseBackend.UpdateOperation> = UpdateOneDocumentOperation<Op>;
 
-    /** @deprecated Use {@linkcode PreUpdateOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode PreUpdateOperation} instead. This type will be removed in a future version */
     type PreUpdateOperationStatic<Op extends DatabaseBackend.UpdateOperation> = PreUpdateOperation<Op>;
 
     // PreUpdateOptions didn't change purpose or name
 
-    /** @deprecated Use {@linkcode OnUpdateOptions} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnUpdateOptions} instead. This type will be removed in a future version */
     type UpdateOptions<Op extends DatabaseBackend.UpdateOperation> = OnUpdateOptions<Op>;
 
-    /** @deprecated Use {@linkcode DeleteManyDocumentOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode DeleteManyDocumentOperation} instead. This type will be removed in a future version */
     type DeleteDocumentsOperation<Op extends DatabaseBackend.DeleteOperation> = DeleteManyDocumentsOperation<Op>;
 
-    /** @deprecated Use {@linkcode DeleteOneDocumentOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode DeleteOneDocumentOperation} instead. This type will be removed in a future version */
     type DeleteOperationInstance<Op extends DatabaseBackend.DeleteOperation> = DeleteOneDocumentOperation<Op>;
 
-    /** @deprecated Use {@linkcode PreDeleteOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode PreDeleteOperation} instead. This type will be removed in a future version */
     type PreDeleteOperationStatic<Op extends DatabaseBackend.DeleteOperation> = PreDeleteOperation<Op>;
 
-    /** @deprecated Use {@linkcode PreDeleteOptions} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode PreDeleteOptions} instead. This type will be removed in a future version */
     type PreDeleteOperationInstance<Op extends DatabaseBackend.DeleteOperation> = PreDeleteOptions<Op>;
 
-    /** @deprecated Use {@linkcode OnDeleteOptions} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnDeleteOptions} instead. This type will be removed in a future version */
     type DeleteOptions<Op extends DatabaseBackend.DeleteOperation> = OnDeleteOptions<Op>;
 
-    /** @deprecated Use {@linkcode CreateOperationForName} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode CreateOperationForName} instead. This type will be removed in a future version */
     type CreateForName<DocumentName extends Document.Type> = CreateOperationForName<DocumentName>;
 
-    /** @deprecated Use {@linkcode OnCreateOptionsForName} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnCreateOptionsForName} instead. This type will be removed in a future version */
     type CreateOptionsFor<DocumentName extends Document.Type> = OnCreateOptionsForName<DocumentName>;
 
-    /** @deprecated Use {@linkcode OnUpdateOptionsForName} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnUpdateOptionsForName} instead. This type will be removed in a future version */
     type UpdateOptionsFor<DocumentName extends Document.Type> = OnUpdateOptionsForName<DocumentName>;
 
-    /** @deprecated Use {@linkcode OnDeleteOptionsForName} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnDeleteOptionsForName} instead. This type will be removed in a future version */
     type DeleteOptionsFor<DocumentName extends Document.Type> = OnDeleteOptionsForName<DocumentName>;
 
-    /** @deprecated Use {@linkcode PreCreateOptionsForName} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode PreCreateOptionsForName} instead. This type will be removed in a future version */
     type PreCreateOptionsFor<DocumentName extends Document.Type> = PreCreateOptionsForName<DocumentName>;
 
-    /** @deprecated Use {@linkcode PreUpdateOptionsForName} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode PreUpdateOptionsForName} instead. This type will be removed in a future version */
     type PreUpdateOptionsFor<DocumentName extends Document.Type> = PreUpdateOptionsForName<DocumentName>;
 
-    /** @deprecated Use {@linkcode PreDeleteOptionsForName} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode PreDeleteOptionsForName} instead. This type will be removed in a future version */
     type PreDeleteOptionsFor<DocumentName extends Document.Type> = PreDeleteOptionsForName<DocumentName>;
   }
 
@@ -3250,7 +3250,7 @@ declare namespace Document {
           types?: never;
         };
 
-  /** @deprecated in favor of {@linkcode CreateDialogOptions}. Will be removed in v14. */
+  /** @deprecated in favor of {@linkcode CreateDialogOptions}. Will be removed in a future version. */
   type CreateDialogContext<
     DocumentName extends Document.Type,
     Parent extends Document.Any | null,
@@ -3411,7 +3411,7 @@ declare namespace Document {
   /**
    * @deprecated Foundry, prior to v13, had a completely unused `options` parameter in the
    * {@linkcode ClientDocumentMixin.AnyMixed.fromDropData | ClientDocument.fromDropData}
-   * signature that has since been removed. This type will be removed in v14.
+   * signature that has since been removed. This type will be removed in a future version.
    */
   type DropDataOptions = AnyObject;
 

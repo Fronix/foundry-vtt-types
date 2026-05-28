@@ -23,18 +23,6 @@ declare class _PossibleMatchesTooltip {
 
   update(view: EditorView, lastState: EditorState): Promise<void>;
 
-  /** @remarks Made hard private in v13 (this warning will be removed in v14) */
-  _createTooltip(position: never, text: never, options: never): never;
-
-  /** @remarks Made hard private in v13 (this warning will be removed in v14) */
-  _updateTooltip(html: never): never;
-
-  /** @remarks Made hard private in v13 (this warning will be removed in v14) */
-  _deactivateTooltip(): never;
-
-  /** @remarks Made hard private in v13 (this warning will be removed in v14) */
-  _findMatches(text: never): never;
-
   #PossibleMatchesTooltip;
 }
 

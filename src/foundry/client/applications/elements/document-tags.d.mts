@@ -112,9 +112,6 @@ declare class HTMLDocumentTagsElement extends AbstractFormInputElement<
    */
   static create(config: HTMLDocumentTagsElement.Config): HTMLDocumentTagsElement;
 
-  /** @deprecated Removed without replacement (functionality folded into `##add`) in v13. This warning will be removed in v14. */
-  _validateDocument(document: never): never;
-
   #HTMLDocumentTagsElement: true;
 }
 

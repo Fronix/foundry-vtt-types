@@ -13,7 +13,7 @@ export type FixedInstanceType<T extends abstract new (...args: never) => any> = 
   ? R
   : never;
 
-/** @deprecated Replaced with {@linkcode foundry.packages.Module.ForName | Module.ForName}, will be removed in v14 */
+/** @deprecated Replaced with {@linkcode foundry.packages.Module.ForName | Module.ForName}, will be removed in a future version */
 export type ConfiguredModule<Name extends string> = Name extends keyof RequiredModules
   ? ConfiguredModuleData<Name>
   :

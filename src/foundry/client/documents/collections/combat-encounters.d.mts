@@ -39,9 +39,6 @@ declare class CombatEncounters extends WorldCollection<"Combat"> {
    */
   get viewed(): Combat.Stored | null;
 
-  /** @deprecated Removed without replacement in v13. This warning will be removed in v14. */
-  protected _onDeleteToken(...args: never): never;
-
   // Fake override for the purpose of typing `options`.
   static override registerSheet(
     scope: string,

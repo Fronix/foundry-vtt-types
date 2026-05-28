@@ -256,9 +256,6 @@ declare class AudioHelper {
    */
   stopLevelReports(id: string): void;
 
-  /** @deprecated Made hard private in v13. This warning will be removed in v14. */
-  protected _onFirstGesture(event: never, resolve: never): never;
-
   /**
    * Log a debugging message if the audio debugging flag is enabled.
    * @param message - The message to log

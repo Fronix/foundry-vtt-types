@@ -970,12 +970,6 @@ declare class ApplicationV2<
    * @param element - The element.
    */
   static waitForImages(element: HTMLElement): Promise<void>;
-
-  /**
-   * @deprecated since v12, will be removed in v14
-   * @remarks `"ApplicationV2#bringToTop is not a valid function and redirects to ApplicationV2#bringToFront. This shim will be removed in v14."`
-   */
-  bringToTop(): void;
 }
 
 declare abstract class AnyApplicationV2 extends ApplicationV2<

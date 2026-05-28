@@ -56,16 +56,6 @@ declare class Ray {
   slope: number;
 
   /**
-   * @deprecated Made hard private in v13 (this warning will be removed in v14)
-   */
-  protected _angle: never;
-
-  /**
-   * @deprecated Made hard private in v13 (this warning will be removed in v14)
-   */
-  protected _distance: never;
-
-  /**
    * The normalized angle of the ray in radians on the range (-PI, PI).
    * The angle is computed lazily (only if required) and cached.
    */

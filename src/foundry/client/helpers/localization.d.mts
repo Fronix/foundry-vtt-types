@@ -72,18 +72,6 @@ declare class Localization {
    */
   setLanguage(lang: string): Promise<void>;
 
-  /** @deprecated Made hard private in v13 (this warning will be removed in v14) */
-  protected _discoverSupportedLanguages(): never;
-
-  /** @deprecated Made hard private in v13 (this warning will be removed in v14) */
-  protected _getTranslations(lang: never): never;
-
-  /** @deprecated Made hard private in v13 (this warning will be removed in v14) */
-  protected _filterLanguagePaths(pkg: never, lang: never): never;
-
-  /** @deprecated Made hard private in v13 (this warning will be removed in v14) */
-  protected _loadTranslationFile(src: never): never;
-
   /**
    * Return whether a certain string has a known translation defined.
    * @param stringId - The string key being translated

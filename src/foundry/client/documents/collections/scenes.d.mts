@@ -52,9 +52,6 @@ declare class Scenes extends WorldCollection<"Scene"> {
     options?: Options,
   ): WorldCollection.FromCompendiumReturnType<"Scene", Options>;
 
-  /** @deprecated Foundry made this method truly private in v13. This warning will be removed in v14. */
-  protected static _pullToScene(sceneId: never): never;
-
   // Fake override for the purpose of typing `options`.
   static override registerSheet(
     scope: string,

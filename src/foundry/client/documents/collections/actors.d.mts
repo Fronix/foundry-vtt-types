@@ -75,10 +75,7 @@ declare namespace Actors {
   interface ImplementationClass extends Document.Internal.ConfiguredCollectionClass<"Actor"> {}
   interface Implementation extends Document.Internal.ConfiguredCollection<"Actor"> {}
 
-  interface FromCompendiumOptions extends WorldCollection.FromCompendiumOptions {
-    /** @deprecated Removed without replacement in v13. This warning will be removed in v14. */
-    clearPrototypeToken?: never;
-  }
+  interface FromCompendiumOptions extends WorldCollection.FromCompendiumOptions {}
 
   /** @deprecated Replaced by {@linkcode Actors.ImplementationClass}. Will be removed in v15. */
   type ConfiguredClass = ImplementationClass;

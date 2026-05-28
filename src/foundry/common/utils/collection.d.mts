@@ -334,7 +334,7 @@ declare namespace Collection {
     | (Action extends "update" ? Document.Database.OnUpdateOperationForName<DocumentName> : never)
     | (Action extends "delete" ? Document.Database.OnDeleteOperationForName<DocumentName> : never);
 
-  /** @deprecated Use {@linkcode GetReturn} instead. This type will be removed in v14. */
+  /** @deprecated Use {@linkcode GetReturn} instead. This type will be removed in a future version. */
   type GetReturnType<V, Options extends GetOptions | undefined> = GetReturn<V, Options>;
 }
 

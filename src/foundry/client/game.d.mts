@@ -86,12 +86,6 @@ declare class InternalGame<RunEvents extends InitializationHook> {
   get model(): Game.Model;
 
   /**
-   * @deprecated since v12, will be removed in v14
-   * @remarks "Game#template is deprecated and will be removed in Version 14. Use cases for Game#template should be refactored to instead use System#documentTypes or Game#model"
-   */
-  get template(): Game.Data["template"];
-
-  /**
    * A registry of document types supported by the active world.
    */
   get documentTypes(): {

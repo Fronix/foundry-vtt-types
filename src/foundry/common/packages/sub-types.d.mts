@@ -46,7 +46,7 @@ declare namespace AdditionalTypesField {
   /** @deprecated Internal type will be removed */
   type ServerTypeDeclarations = DocumentTypesConfiguration;
 
-  /** @deprecated Use {@linkcode ServerSanitizationFields} instead. This warning will be removed in v14. */
+  /** @deprecated Use {@linkcode ServerSanitizationFields} instead. This warning will be removed in a future version. */
   type ServerSanitationFields = ServerSanitizationFields;
 
   /**

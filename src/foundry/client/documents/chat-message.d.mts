@@ -540,7 +540,7 @@ declare namespace ChatMessage {
     interface PreCreateOperation extends Document.Database.PreCreateOperation<CreateOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode ChatMessage._onCreateDocuments}. It will be removed in v14 along with the
+     * @deprecated The interface passed to {@linkcode ChatMessage._onCreateDocuments}. It will be removed in a future version along with the
      * method it is for.
      * @see {@linkcode Document.Database.OnCreateDocumentsOperation}
      *
@@ -688,7 +688,7 @@ declare namespace ChatMessage {
     interface PreUpdateOperation extends Document.Database.PreUpdateOperation<UpdateOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode ChatMessage._onUpdateDocuments}. It will be removed in v14 along with the
+     * @deprecated The interface passed to {@linkcode ChatMessage._onUpdateDocuments}. It will be removed in a future version along with the
      * method it is for.
      * @see {@linkcode Document.Database.OnUpdateDocumentsOperation}
      *
@@ -836,7 +836,7 @@ declare namespace ChatMessage {
     interface PreDeleteOperation extends Document.Database.PreDeleteOperation<DeleteOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode ChatMessage._onDeleteDocuments}. It will be removed in v14 along with the
+     * @deprecated The interface passed to {@linkcode ChatMessage._onDeleteDocuments}. It will be removed in a future version along with the
      * method it is for.
      * @see {@linkcode Document.Database.OnDeleteDocumentsOperation}
      *
@@ -930,27 +930,27 @@ declare namespace ChatMessage {
      *             DocsV2 DEPRECATIONS               *
      *************************************************/
 
-    /** @deprecated Use {@linkcode GetOperation} instead. This type will be removed in v14.  */
+    /** @deprecated Use {@linkcode GetOperation} instead. This type will be removed in a future version.  */
     type Get = GetOperation;
 
-    /** @deprecated Use {@linkcode GetDocumentsOperation} instead. This type will be removed in v14.  */
+    /** @deprecated Use {@linkcode GetDocumentsOperation} instead. This type will be removed in a future version.  */
     type GetOptions = GetDocumentsOperation;
 
-    /** @deprecated Use {@linkcode CreateOperation} instead. This type will be removed in v14.  */
+    /** @deprecated Use {@linkcode CreateOperation} instead. This type will be removed in a future version.  */
     type Create = CreateOperation;
 
-    /** @deprecated Use {@linkcode UpdateOperation} instead. This type will be removed in v14.  */
+    /** @deprecated Use {@linkcode UpdateOperation} instead. This type will be removed in a future version.  */
     type Update = UpdateOperation;
 
-    /** @deprecated Use {@linkcode DeleteOperation} instead. This type will be removed in v14.  */
+    /** @deprecated Use {@linkcode DeleteOperation} instead. This type will be removed in a future version.  */
     type Delete = DeleteOperation;
 
     // CreateDocumentsOperation didn't change purpose or name
 
-    /** @deprecated Use {@linkcode UpdateManyDocumentsOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode UpdateManyDocumentsOperation} instead. This type will be removed in a future version */
     type UpdateDocumentsOperation = UpdateManyDocumentsOperation;
 
-    /** @deprecated Use {@linkcode DeleteManyDocumentsOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode DeleteManyDocumentsOperation} instead. This type will be removed in a future version */
     type DeleteDocumentsOperation = DeleteManyDocumentsOperation;
 
     // PreCreateOptions didn't change purpose or name
@@ -977,32 +977,32 @@ declare namespace ChatMessage {
 
     // OnDeleteOperation didn't change purpose or name
 
-    /** @deprecated Use {@linkcode OnCreateDocumentsOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnCreateDocumentsOperation} instead. This type will be removed in a future version */
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     type OnCreateDocumentsContext = OnCreateDocumentsOperation;
 
-    /** @deprecated Use {@linkcode OnUpdateDocumentsOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnUpdateDocumentsOperation} instead. This type will be removed in a future version */
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     type OnUpdateDocumentsContext = OnUpdateDocumentsOperation;
 
-    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in a future version */
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     type OnDeleteDocumentsContext = OnDeleteDocumentsOperation;
 
-    /** @deprecated Use {@linkcode OnDeleteOptions} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnDeleteOptions} instead. This type will be removed in a future version */
     type DeleteOptions = OnDeleteOptions;
 
-    /** @deprecated Use {@linkcode OnCreateOptions} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnCreateOptions} instead. This type will be removed in a future version */
     type CreateOptions = OnCreateOptions;
 
-    /** @deprecated Use {@linkcode OnUpdateOptions} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnUpdateOptions} instead. This type will be removed in a future version */
     type UpdateOptions = OnUpdateOptions;
 
-    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in a future version */
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     type DeleteDocumentsContext = OnDeleteDocumentsOperation;
 
-    /** @deprecated use {@linkcode CreateDocumentsOperation} instead. This type will be removed in v14. */
+    /** @deprecated use {@linkcode CreateDocumentsOperation} instead. This type will be removed in a future version. */
     type DialogCreateOptions = CreateDocumentsOperation;
   }
 
@@ -1046,7 +1046,7 @@ declare namespace ChatMessage {
 
   /**
    * @deprecated Foundry prior to v13 had a completely unused `options` parameter in the {@linkcode ChatMessage.fromDropData}
-   * signature that has since been removed. This type will be removed in v14.
+   * signature that has since been removed. This type will be removed in a future version.
    */
   type DropDataOptions = never;
 
@@ -1226,13 +1226,13 @@ declare namespace ChatMessage {
    * The arguments to construct the document.
    *
    * @deprecated Writing the signature directly has helped reduce circularities and therefore is
-   * now recommended. This type will be removed in v14.
+   * now recommended. This type will be removed in a future version.
    */
   // eslint-disable-next-line @typescript-eslint/no-deprecated
   type ConstructorArgs = Document.ConstructorParameters<CreateData, Parent>;
 
   /**
-   * @deprecated Replaced with {@linkcode ChatMessage.ConfiguredSubType} (will be removed in v14).
+   * @deprecated Replaced with {@linkcode ChatMessage.ConfiguredSubType} (will be removed in a future version).
    */
   type ConfiguredSubTypes = ConfiguredSubType;
 }
@@ -1337,21 +1337,6 @@ declare class ChatMessage<out SubType extends ChatMessage.SubType = ChatMessage.
    * @returns The identified speaker data
    */
   static getSpeaker(options?: ChatMessage.GetSpeakerOptions): ChatMessage.SpeakerData;
-
-  /** @deprecated Foundry made this method truly private in v13 (this warning will be removed in v14) */
-  protected static _getSpeakerFromToken(options: never): never;
-
-  /** @deprecated Foundry made this method truly private in v13 (this warning will be removed in v14) */
-  protected static _getSpeakerFromActor(options: never): never;
-
-  /** @deprecated Foundry made this method truly private in v13 (this warning will be removed in v14) */
-  protected static _getSpeakerFromUser(options: never): never;
-
-  /** @deprecated Foundry made this method truly private in v13 (this warning will be removed in v14) */
-  protected _renderRollContent(messageData: never): never;
-
-  /** @deprecated Foundry made this method truly private in v13 (this warning will be removed in v14) */
-  protected _renderRollHTML(isPrivate?: never): never;
 
   /**
    * Obtain an Actor instance which represents the speaker of this message (if any)

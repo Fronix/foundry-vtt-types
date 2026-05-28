@@ -168,9 +168,6 @@ declare class KeyboardManager {
    */
   isCoreActionKeyActive(action: string): boolean;
 
-  /** @deprecated Removed in v13 (this warning will be removed in v14) */
-  protected static _getContextDisplayString(context: never, includeModifiers: never): never;
-
   /**
    * Given a keyboard-event context, return every registered keybinding that matches it (may be empty).
    * @internal
@@ -178,12 +175,6 @@ declare class KeyboardManager {
   protected static _getMatchingActions(
     context: KeyboardManager.KeyboardEventContext,
   ): ClientKeybindings.KeybindingAction[];
-
-  /** @deprecated Made hard private in v13 (this warning will be removed in v14) */
-  protected static _testContext(action: never, context: never): never;
-
-  /** @deprecated Made hard private in v13 (this warning will be removed in v14) */
-  protected static _executeKeybind(keybind: never, context: never): never;
 
   /**
    * Processes a keyboard event context, checking it against registered keybinding actions
@@ -194,15 +185,6 @@ declare class KeyboardManager {
     context: KeyboardManager.KeyboardEventContext,
     options?: KeyboardManager.ProcessKeyboardContextOptions,
   ): void;
-
-  /** @deprecated Made hard private in v13 (this warning will be removed in v14) */
-  protected _reset(): never;
-
-  /** @deprecated Made hard private in v13 (this warning will be removed in v14) */
-  protected _handleKeyboardEvent(event: never, up: never): never;
-
-  /** @deprecated Made hard private in v13 (this warning will be removed in v14) */
-  protected _onCompositionEnd(event: never): never;
 
   /**
    * Emulate a key-up event for any currently down keys. When emulating, we go backwards such that combinations such as

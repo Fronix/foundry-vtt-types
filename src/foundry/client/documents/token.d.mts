@@ -1019,7 +1019,7 @@ declare namespace TokenDocument {
     interface PreCreateOperation extends Document.Database.PreCreateOperation<CreateOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode TokenDocument._onCreateDocuments}. It will be removed in v14 along with the
+     * @deprecated The interface passed to {@linkcode TokenDocument._onCreateDocuments}. It will be removed in a future version along with the
      * method it is for.
      * @see {@linkcode Document.Database.OnCreateDocumentsOperation}
      *
@@ -1244,9 +1244,6 @@ declare namespace TokenDocument {
        * {@linkcode TokenLayer.storeHistory | TokenLayer#storeHistory} and `TokenDocument##preUpdateMovement` and `##onUpdateMovement`.
        */
       _clearMovementHistory?: boolean;
-
-      /** @deprecated Removed in v13. This warning will be removed in v14. */
-      _priorPosition?: never;
     }
 
     /**
@@ -1348,7 +1345,7 @@ declare namespace TokenDocument {
       extends Document.Database.PreUpdateOperation<UpdateOperation>, TokenDocument.Database._PreServerUpdateOperation {}
 
     /**
-     * @deprecated The interface passed to {@linkcode TokenDocument._onUpdateDocuments}. It will be removed in v14 along with the
+     * @deprecated The interface passed to {@linkcode TokenDocument._onUpdateDocuments}. It will be removed in a future version along with the
      * method it is for.
      * @see {@linkcode Document.Database.OnUpdateDocumentsOperation}
      *
@@ -1506,7 +1503,7 @@ declare namespace TokenDocument {
     interface PreDeleteOperation extends Document.Database.PreDeleteOperation<DeleteOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode TokenDocument._onDeleteDocuments}. It will be removed in v14 along with the
+     * @deprecated The interface passed to {@linkcode TokenDocument._onDeleteDocuments}. It will be removed in a future version along with the
      * method it is for.
      * @see {@linkcode Document.Database.OnDeleteDocumentsOperation}
      *
@@ -1597,27 +1594,27 @@ declare namespace TokenDocument {
      *             DocsV2 DEPRECATIONS               *
      *************************************************/
 
-    /** @deprecated Use {@linkcode GetOperation} instead. This type will be removed in v14.  */
+    /** @deprecated Use {@linkcode GetOperation} instead. This type will be removed in a future version.  */
     type Get = GetOperation;
 
-    /** @deprecated Use {@linkcode GetDocumentsOperation} instead. This type will be removed in v14.  */
+    /** @deprecated Use {@linkcode GetDocumentsOperation} instead. This type will be removed in a future version.  */
     type GetOptions = GetDocumentsOperation;
 
-    /** @deprecated Use {@linkcode CreateOperation} instead. This type will be removed in v14.  */
+    /** @deprecated Use {@linkcode CreateOperation} instead. This type will be removed in a future version.  */
     type Create = CreateOperation;
 
-    /** @deprecated Use {@linkcode UpdateOperation} instead. This type will be removed in v14.  */
+    /** @deprecated Use {@linkcode UpdateOperation} instead. This type will be removed in a future version.  */
     type Update = UpdateOperation;
 
-    /** @deprecated Use {@linkcode DeleteOperation} instead. This type will be removed in v14.  */
+    /** @deprecated Use {@linkcode DeleteOperation} instead. This type will be removed in a future version.  */
     type Delete = DeleteOperation;
 
     // CreateDocumentsOperation didn't change purpose or name
 
-    /** @deprecated Use {@linkcode UpdateManyDocumentsOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode UpdateManyDocumentsOperation} instead. This type will be removed in a future version */
     type UpdateDocumentsOperation = UpdateManyDocumentsOperation;
 
-    /** @deprecated Use {@linkcode DeleteManyDocumentsOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode DeleteManyDocumentsOperation} instead. This type will be removed in a future version */
     type DeleteDocumentsOperation = DeleteManyDocumentsOperation;
 
     // PreCreateOptions didn't change purpose or name
@@ -1644,32 +1641,32 @@ declare namespace TokenDocument {
 
     // OnDeleteOperation didn't change purpose or name
 
-    /** @deprecated Use {@linkcode OnCreateDocumentsOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnCreateDocumentsOperation} instead. This type will be removed in a future version */
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     type OnCreateDocumentsContext = OnCreateDocumentsOperation;
 
-    /** @deprecated Use {@linkcode OnUpdateDocumentsOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnUpdateDocumentsOperation} instead. This type will be removed in a future version */
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     type OnUpdateDocumentsContext = OnUpdateDocumentsOperation;
 
-    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in a future version */
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     type OnDeleteDocumentsContext = OnDeleteDocumentsOperation;
 
-    /** @deprecated Use {@linkcode OnDeleteOptions} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnDeleteOptions} instead. This type will be removed in a future version */
     type DeleteOptions = OnDeleteOptions;
 
-    /** @deprecated Use {@linkcode OnCreateOptions} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnCreateOptions} instead. This type will be removed in a future version */
     type CreateOptions = OnCreateOptions;
 
-    /** @deprecated Use {@linkcode OnUpdateOptions} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnUpdateOptions} instead. This type will be removed in a future version */
     type UpdateOptions = OnUpdateOptions;
 
-    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in a future version */
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     type DeleteDocumentsContext = OnDeleteDocumentsOperation;
 
-    /** @deprecated use {@linkcode CreateDocumentsOperation} instead. This type will be removed in v14. */
+    /** @deprecated use {@linkcode CreateDocumentsOperation} instead. This type will be removed in a future version. */
     type DialogCreateOptions = CreateDocumentsOperation;
   }
 
@@ -1714,7 +1711,7 @@ declare namespace TokenDocument {
 
   /**
    * @deprecated Foundry prior to v13 had a completely unused `options` parameter in the {@linkcode TokenDocument.fromDropData}
-   * signature that has since been removed. This type will be removed in v14.
+   * signature that has since been removed. This type will be removed in a future version.
    */
   type DropDataOptions = never;
 
@@ -2329,7 +2326,7 @@ declare namespace TokenDocument {
    * The arguments to construct the document.
    *
    * @deprecated Writing the signature directly has helped reduce circularities and therefore is
-   * now recommended. This type will be removed in v14.
+   * now recommended. This type will be removed in a future version.
    */
   // eslint-disable-next-line @typescript-eslint/no-deprecated
   type ConstructorArgs = Document.ConstructorParameters<CreateData, Parent>;

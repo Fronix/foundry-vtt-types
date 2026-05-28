@@ -296,19 +296,9 @@ export function formGroup<Field extends foundry.data.fields.DataField.Any>(
 ): Handlebars.SafeString;
 
 /**
- * @deprecated since v12, will be removed in v14
+ * @deprecated since v12, will be removed in a future version
  */
 export function filePicker(options: FilePickerOptions): Handlebars.SafeString | string;
-
-/**
- * @deprecated since v12, will be removed in v14
- */
-export function colorPicker(options: ColorPickerOptions): Handlebars.SafeString;
-
-/**
- * @deprecated since v12, will be removed in v14
- */
-export function select(selected: string, options: SelectOptions): string;
 
 /**
  * @deprecated since v13, will be removed in v15

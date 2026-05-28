@@ -141,7 +141,6 @@ declare abstract class InteractionLayer extends CanvasLayer {
 
   /**
    * Handle mouse-wheel events which occur for this active layer.
-   * @see {@linkcode MouseManager._onWheel}
    * @param event - The WheelEvent initiated on the document
    */
   protected _onMouseWheel(event: Canvas.Event.Wheel): void;

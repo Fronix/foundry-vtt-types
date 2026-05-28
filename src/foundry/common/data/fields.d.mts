@@ -1861,9 +1861,6 @@ declare class StringField<
    */
   protected _isValidChoice(value: string): boolean;
 
-  /** @deprecated Replaced with {@linkcode StringField._prepareChoiceConfig} in v13 (this warning will be removed in v14) */
-  protected static _getChoices(options: never): never;
-
   /**
    * Prepare form input configuration to accept a limited choice set of options.
    * @internal
@@ -3313,9 +3310,6 @@ declare class EmbeddedCollectionDeltaField<
 > {
   static override get implementation(): typeof EmbeddedCollectionDelta;
 
-  /** @deprecated Removed and replaced with a {@linkcode _cleanElement} implementation in v13 (this warning will be removed in v14) */
-  protected _cleanType(value: never, options: never): never;
-
   protected override _cleanElement(
     value: AnyObject,
     options?: DataField.CleanOptions,
@@ -3916,16 +3910,7 @@ declare class ColorField<
     options?: DataField.InitializeOptions,
   ): InitializedType | (() => InitializedType | null);
 
-  /**
-   * @deprecated Removed in v13, instead inheriting {@linkcode StringField.getInitialValue | StringField#getInitialValue}
-   * (this warning will be removed in v14)
-   */
-  getInitialValue(data: never): never;
-
   protected override _cast(value: unknown): AssignmentType;
-
-  /** @deprecated Removed in v13 (this warning will be removed in v14) */
-  protected override _cleanType(value: never, options: never): never;
 
   /** @remarks `options` is only passed to super, where it is unused in `StringField` */
   protected override _validateType(

@@ -24,9 +24,6 @@ declare class MouseManager {
    */
   protected _activateListeners(): void;
 
-  /** @deprecated Made hard private in v13 (this warning will be removed in v14) */
-  protected _onWheel(event: never): never;
-
   #MouseManager: true;
 }
 

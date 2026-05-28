@@ -217,22 +217,22 @@ declare abstract class FormApplication<
   submit(options?: FormApplication.OnSubmitOptions): Promise<this>;
 
   /**
-   * @deprecated since v12, will be removed in v14
+   * @deprecated since v12, will be removed in a future version
    */
   get filepickers(): FilePicker[];
 
   /**
-   * @deprecated since v12, will be removed in v14
+   * @deprecated since v12, will be removed in a future version
    */
   protected _activateFilePicker(event: PointerEvent): void;
 
   /**
-   * @deprecated since v12, will be removed in v14
+   * @deprecated since v12, will be removed in a future version
    */
   protected _getFilePickerOptions(event: PointerEvent): FilePicker.Configuration;
 
   /**
-   * @deprecated since v12, will be removed in v14
+   * @deprecated since v12, will be removed in a future version
    */
   protected _onSelectFile(selection: string, filePicker: FilePicker): void;
 }

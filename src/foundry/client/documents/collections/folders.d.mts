@@ -34,9 +34,6 @@ declare class Folders extends WorldCollection<"Folder"> {
   /** @remarks This is a no-op in {@linkcode Folders}, Foundry logs "The Folders collection is not directly rendered" as a warning.  */
   override render(force?: boolean, context?: DocumentCollection.RenderOptions): void;
 
-  /** @deprecated Foundry made this method truly private in v13. This warning will be removed in v14. */
-  protected _refreshJournalEntrySheets(): never;
-
   // Fake override for the purpose of typing `options`.
   static override registerSheet(
     scope: string,

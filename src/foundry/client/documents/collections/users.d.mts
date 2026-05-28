@@ -63,9 +63,6 @@ declare class Users extends WorldCollection<"User"> {
 
   static _activateSocketListeners(socket: io.Socket): void;
 
-  /** @deprecated Foundry made this method truly private in v13. This warning will be removed in v14. */
-  static _handleUserActivity(userId: never, activityData?: never): never;
-
   // Fake override for the purpose of typing `options`.
   static override registerSheet(
     scope: string,

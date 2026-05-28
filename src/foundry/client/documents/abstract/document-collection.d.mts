@@ -287,7 +287,7 @@ declare namespace DocumentCollection {
     Options
   >;
 
-  /** @deprecated Use {@linkcode DocumentCollection.GetReturn} instead. This type will be removed in v14. */
+  /** @deprecated Use {@linkcode DocumentCollection.GetReturn} instead. This type will be removed in a future version. */
   type GetReturnType<DocumentType extends Document.Type, Options extends GetOptions | undefined> = GetReturn<
     DocumentType,
     Options

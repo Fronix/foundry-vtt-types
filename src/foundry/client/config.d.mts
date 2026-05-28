@@ -185,7 +185,7 @@ declare global {
 
       /**
        * Alias for ActiveEffectData#img
-       * @deprecated since v12, will be removed in v14
+       * @deprecated since v12, will be removed in a future version
        */
       icon?: string | undefined | null;
 

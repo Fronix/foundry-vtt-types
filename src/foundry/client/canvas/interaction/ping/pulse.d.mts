@@ -15,24 +15,9 @@ declare class PulsePing extends Ping {
 
   override options: PulsePing.ConstructorOptions;
 
-  /** @deprecated Made hard private in v13 (this warning will be removed in v14) */
-  _color2: never;
-
-  /** @deprecated Made hard private in v13 (this warning will be removed in v14) */
-  _r: never;
-
-  /** @deprecated Made hard private in v13 (this warning will be removed in v14) */
-  _r0: never;
-
-  /** @deprecated Made hard private in v13 (this warning will be removed in v14) */
-  protected _computeTimeSlices(): never;
-
   override animate(): Promise<boolean>;
 
   protected override _animateFrame(dt: number, animation: CanvasAnimation.AnimationData<this>): void;
-
-  /** @deprecated Made hard private in v13 (this warning will be removed in v14) */
-  protected _colorTransition(from: never, to: never, duration: never, t: never): never;
 
   /**
    * Draw the shape for this ping.

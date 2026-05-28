@@ -199,15 +199,6 @@ declare class Tour {
    */
   protected _renderStep(): Promise<void>;
 
-  /** @deprecated Made hard private in v13. This warning will be removed in v14. */
-  protected _onButtonClick(event: never, buttons: never): never;
-
-  /** @deprecated Made hard private in v13. This warning will be removed in v14. */
-  protected _saveProgress(): never;
-
-  /** @deprecated Made hard private in v13. This warning will be removed in v14. */
-  protected _loadProgress(): never;
-
   /**
    * Reloads the Tour's current step from the saved progress
    * @internal

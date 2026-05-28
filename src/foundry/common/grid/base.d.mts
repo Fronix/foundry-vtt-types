@@ -1,7 +1,6 @@
 import type { AnyObject, EmptyObject, InexactPartial, Identity } from "#utils";
 import type { Canvas } from "#client/canvas/_module.d.mts";
 import type { GridHighlight } from "#client/canvas/containers/_module.mjs";
-import type { Ray } from "#client/canvas/geometry/_module.d.mts";
 import type { Token } from "#client/canvas/placeables/_module.d.mts";
 
 /**
@@ -363,27 +362,6 @@ declare abstract class BaseGrid {
   /* -------------------------------------------- */
 
   /**
-   * Measure the distance traversed over an array of measured segments
-   * @param segments - An Array of measured movement segments
-   * @param options  - Additional options which modify the measurement
-   *                   (default: `{}`)
-   * @returns An Array of distance measurements for each segment
-   * @deprecated Since v12 until v14. Use {@link BaseGrid.measurePath | `BaseGrid#measurePath`} instead.
-   */
-  measureDistances(
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    segments: BaseGrid.Segment[],
-
-    /**
-     * @defaultValue `{}`
-     * @remarks Unused
-     */
-    options?: EmptyObject,
-  ): number[];
-
-  /* -------------------------------------------- */
-
-  /**
    * Given a pair of coordinates (x1,y1), return the grid coordinates (x2,y2) which represent the snapped position
    * Under a "gridless" system, every pixel position is a valid snapping position
    *
@@ -735,13 +713,6 @@ declare namespace BaseGrid {
     y: number;
     rows: number;
     columns: number;
-  }
-
-  /**
-   * @deprecated since v12, will be removed in v14
-   */
-  interface Segment {
-    ray: Ray;
   }
 }
 

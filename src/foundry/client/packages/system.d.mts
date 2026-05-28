@@ -6,7 +6,6 @@ import type { SystemNameConfig } from "#configuration";
 import type { GetKey } from "#utils";
 
 import fields = foundry.data.fields;
-import Game = foundry.Game;
 
 declare class System extends ClientPackageMixin(foundry.packages.BaseSystem) {
   constructor(data: ClientPackageMixin.SystemCreateData, options: unknown);
@@ -15,12 +14,6 @@ declare class System extends ClientPackageMixin(foundry.packages.BaseSystem) {
   protected override _configure(options?: DataModel.ConfigureOptions): void;
 
   id: GetKey<SystemNameConfig, "name", string>;
-
-  /**
-   * @deprecated since v12, will be removed in v14
-   * @remarks `"System#template is deprecated in favor of System#documentTypes"`
-   */
-  get template(): Game["model"];
 }
 
 declare namespace System {

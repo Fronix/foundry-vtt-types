@@ -6,7 +6,7 @@ import type { PlaceablesLayer } from "#client/canvas/layers/_module.d.mts";
 /**
  * @privateRemarks The type parameters are like this for backwards compatibility of the types project.
  *
- * That compatibility will be removed in v14.
+ * That compatibility will be removed in a future version.
  */
 // TODO: simplify type parameters
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -44,11 +44,6 @@ export interface DeprecatedHookConfig {
    * @deprecated This hook appears to have been deleted.
    */
   getSceneNavigationContext: (app: never, contextOptions: never) => never;
-
-  /**
-   * @deprecated Removed without replacement in v13. This warning will be removed in v14.
-   */
-  initializeDarknessSources: (group: never) => never;
 }
 
 /**

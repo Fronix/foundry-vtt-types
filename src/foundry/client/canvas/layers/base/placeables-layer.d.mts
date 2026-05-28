@@ -843,7 +843,7 @@ declare namespace PlaceablesLayer {
     placeable: Document.ObjectFor<DocumentName>,
   ) => boolean;
 
-  /** @deprecated Use {@linkcode Document.Database.UpdateManyDocumentsOperationForName} directly. This type will be removed in v14. */
+  /** @deprecated Use {@linkcode Document.Database.UpdateManyDocumentsOperationForName} directly. This type will be removed in a future version. */
   type UpdateAllOptions<DocumentName extends DocumentNames> =
     Document.Database.UpdateManyDocumentsOperationForName<DocumentName>;
 

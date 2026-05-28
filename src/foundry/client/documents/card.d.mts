@@ -516,7 +516,7 @@ declare namespace Card {
     interface PreCreateOperation extends Document.Database.PreCreateOperation<CreateOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode Card._onCreateDocuments}. It will be removed in v14 along with the
+     * @deprecated The interface passed to {@linkcode Card._onCreateDocuments}. It will be removed in a future version along with the
      * method it is for.
      * @see {@linkcode Document.Database.OnCreateDocumentsOperation}
      *
@@ -662,7 +662,7 @@ declare namespace Card {
     interface PreUpdateOperation extends Document.Database.PreUpdateOperation<UpdateOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode Card._onUpdateDocuments}. It will be removed in v14 along with the
+     * @deprecated The interface passed to {@linkcode Card._onUpdateDocuments}. It will be removed in a future version along with the
      * method it is for.
      * @see {@linkcode Document.Database.OnUpdateDocumentsOperation}
      *
@@ -808,7 +808,7 @@ declare namespace Card {
     interface PreDeleteOperation extends Document.Database.PreDeleteOperation<DeleteOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode Card._onDeleteDocuments}. It will be removed in v14 along with the
+     * @deprecated The interface passed to {@linkcode Card._onDeleteDocuments}. It will be removed in a future version along with the
      * method it is for.
      * @see {@linkcode Document.Database.OnDeleteDocumentsOperation}
      *
@@ -899,27 +899,27 @@ declare namespace Card {
      *             DocsV2 DEPRECATIONS               *
      *************************************************/
 
-    /** @deprecated Use {@linkcode GetOperation} instead. This type will be removed in v14.  */
+    /** @deprecated Use {@linkcode GetOperation} instead. This type will be removed in a future version.  */
     type Get = GetOperation;
 
-    /** @deprecated Use {@linkcode GetDocumentsOperation} instead. This type will be removed in v14.  */
+    /** @deprecated Use {@linkcode GetDocumentsOperation} instead. This type will be removed in a future version.  */
     type GetOptions = GetDocumentsOperation;
 
-    /** @deprecated Use {@linkcode CreateOperation} instead. This type will be removed in v14.  */
+    /** @deprecated Use {@linkcode CreateOperation} instead. This type will be removed in a future version.  */
     type Create = CreateOperation;
 
-    /** @deprecated Use {@linkcode UpdateOperation} instead. This type will be removed in v14.  */
+    /** @deprecated Use {@linkcode UpdateOperation} instead. This type will be removed in a future version.  */
     type Update = UpdateOperation;
 
-    /** @deprecated Use {@linkcode DeleteOperation} instead. This type will be removed in v14.  */
+    /** @deprecated Use {@linkcode DeleteOperation} instead. This type will be removed in a future version.  */
     type Delete = DeleteOperation;
 
     // CreateDocumentsOperation didn't change purpose or name
 
-    /** @deprecated Use {@linkcode UpdateManyDocumentsOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode UpdateManyDocumentsOperation} instead. This type will be removed in a future version */
     type UpdateDocumentsOperation = UpdateManyDocumentsOperation;
 
-    /** @deprecated Use {@linkcode DeleteManyDocumentsOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode DeleteManyDocumentsOperation} instead. This type will be removed in a future version */
     type DeleteDocumentsOperation = DeleteManyDocumentsOperation;
 
     // PreCreateOptions didn't change purpose or name
@@ -946,32 +946,32 @@ declare namespace Card {
 
     // OnDeleteOperation didn't change purpose or name
 
-    /** @deprecated Use {@linkcode OnCreateDocumentsOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnCreateDocumentsOperation} instead. This type will be removed in a future version */
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     type OnCreateDocumentsContext = OnCreateDocumentsOperation;
 
-    /** @deprecated Use {@linkcode OnUpdateDocumentsOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnUpdateDocumentsOperation} instead. This type will be removed in a future version */
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     type OnUpdateDocumentsContext = OnUpdateDocumentsOperation;
 
-    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in a future version */
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     type OnDeleteDocumentsContext = OnDeleteDocumentsOperation;
 
-    /** @deprecated Use {@linkcode OnDeleteOptions} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnDeleteOptions} instead. This type will be removed in a future version */
     type DeleteOptions = OnDeleteOptions;
 
-    /** @deprecated Use {@linkcode OnCreateOptions} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnCreateOptions} instead. This type will be removed in a future version */
     type CreateOptions = OnCreateOptions;
 
-    /** @deprecated Use {@linkcode OnUpdateOptions} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnUpdateOptions} instead. This type will be removed in a future version */
     type UpdateOptions = OnUpdateOptions;
 
-    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in v14 */
+    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in a future version */
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     type DeleteDocumentsContext = OnDeleteDocumentsOperation;
 
-    /** @deprecated use {@linkcode CreateDocumentsOperation} instead. This type will be removed in v14. */
+    /** @deprecated use {@linkcode CreateDocumentsOperation} instead. This type will be removed in a future version. */
     type DialogCreateOptions = CreateDocumentsOperation;
   }
 
@@ -1006,7 +1006,7 @@ declare namespace Card {
 
   /**
    * @deprecated Foundry prior to v13 had a completely unused `options` parameter in the {@linkcode Card.fromDropData}
-   * signature that has since been removed. This type will be removed in v14.
+   * signature that has since been removed. This type will be removed in a future version.
    */
   type DropDataOptions = never;
 
@@ -1095,13 +1095,13 @@ declare namespace Card {
    * The arguments to construct the document.
    *
    * @deprecated Writing the signature directly has helped reduce circularities and therefore is
-   * now recommended. This type will be removed in v14.
+   * now recommended. This type will be removed in a future version.
    */
   // eslint-disable-next-line @typescript-eslint/no-deprecated
   type ConstructorArgs = Document.ConstructorParameters<CreateData, Parent>;
 
   /**
-   * @deprecated Replaced with {@linkcode Card.ConfiguredSubType} (will be removed in v14).
+   * @deprecated Replaced with {@linkcode Card.ConfiguredSubType} (will be removed in a future version).
    */
   type ConfiguredSubTypes = ConfiguredSubType;
 }

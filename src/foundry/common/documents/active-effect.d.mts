@@ -68,14 +68,6 @@ declare abstract class BaseActiveEffect<
    */
   static override shimData(data: AnyMutableObject, options?: DataModel.ShimDataOptions): AnyMutableObject;
 
-  /**
-   * @deprecated since v12, will be removed in v14
-   * @remarks Replaced by `img`
-   */
-  get icon(): this["img"];
-
-  set icon(value);
-
   /*
    * After this point these are not really overridden methods.
    * They are here because Foundry's documents are complex and have lots of edge cases.

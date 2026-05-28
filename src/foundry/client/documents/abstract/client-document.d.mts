@@ -814,7 +814,7 @@ declare global {
 
     /**
      * @deprecated This has been replaced by {@linkcode CompendiumCollection.ForDocument}, which you should use instead, and add `| null` if
-     * needed for your use case. This will be removed in v14.
+     * needed for your use case. This will be removed in a future version.
      */
     type CompendiumForName<Name extends Document.Type> = CompendiumCollection.ForDocument<Name> | null;
   }
