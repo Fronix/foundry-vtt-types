@@ -93,6 +93,8 @@ type RegionMovementSegment = foundry.canvas.placeables.Region.MovementSegment;
 
 type RegionSegmentizeMovementPathWaypoint = RegionDocument.SegmentizeMovementPathWaypoint;
 
+type RegionSurface = RegionDocument.Surface;
+
 type RollTableDraw = RollTable.Draw;
 
 type SceneDimensions = Scene.Dimensions;

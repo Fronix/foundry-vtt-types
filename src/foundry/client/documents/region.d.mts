@@ -3,6 +3,7 @@ import type { fields, BaseShapeData } from "#common/data/_module.d.mts";
 import type { DatabaseBackend, Document, EmbeddedCollection } from "#common/abstract/_module.d.mts";
 import type { BaseRegion } from "#common/documents/_module.d.mts";
 import type { Region } from "#client/canvas/placeables/_module.d.mts";
+import type { PointSourcePolygon } from "#client/canvas/geometry/_module.d.mts";
 import type { DialogV2 } from "#client/applications/api/_module.d.mts";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Only used for links.
@@ -22,21 +23,16 @@ declare class RegionDocument extends BaseRegion.Internal.CanvasDocument {
   constructor(data: RegionDocument.CreateData, context?: RegionDocument.ConstructionContext);
 
   /**
-   * The shapes of this Region.
-   *
-   * The value of this property must not be mutated.
-   *
-   * This property is updated only by a document update.
-   * @remarks marked by foundry as readonly
+   * Does this Region have a single shape that is not a hole?
    */
-  get regionShapes(): foundry.data.regionShapes.RegionShape.Any[];
+  get isSingleShape(): boolean;
 
   /**
    * The polygons of this Region.
    *
    * The value of this property must not be mutated.
    *
-   * This property is updated only by a document update.
+   * Alias for `this.polygonTree.polygons`.
    */
   get polygons(): ReadonlyArray<PIXI.Polygon>;
 
@@ -59,6 +55,13 @@ declare class RegionDocument extends BaseRegion.Internal.CanvasDocument {
   get clipperPaths(): ReadonlyArray<ReadonlyArray<ClipperLib.IntPoint>>;
 
   /**
+   * The Clipper polygon tree of this Region.
+   *
+   * The value of this property must not be mutated.
+   */
+  get clipperPolyTree(): ClipperLib.PolyTree;
+
+  /**
    * The triangulation of this Region.
    *
    * The value of this property must not be mutated.
@@ -77,12 +80,30 @@ declare class RegionDocument extends BaseRegion.Internal.CanvasDocument {
   get bounds(): PIXI.Rectangle;
 
   /**
+   * The area of this Region.
+   *
+   * Alias for `this.polygonTree.area`.
+   */
+  get area(): number;
+
+  /**
    * The tokens inside this region.
    * @remarks marked by foundry as `@readonly`
    */
   tokens: ReadonlySet<TokenDocument.Implementation>;
 
-  prepareBaseData(): void;
+  override prepareBaseData(): void;
+
+  /**
+   * Clamp the given elevation (of a token with a depth) to the elevation range of this Region.
+   *
+   * The elevation is clamped such that the head of the token is in the range if possible, but
+   * the feet are never outside of the range.
+   * @param elevation - The elevation (of the token)
+   * @param depth     - The depth of the token (default: `0`)
+   * @returns The clamped elevation
+   */
+  clampElevation(elevation: number, depth?: number): number;
 
   /**
    * Test whether the given point (at the given elevation) is inside this Region.
@@ -90,6 +111,12 @@ declare class RegionDocument extends BaseRegion.Internal.CanvasDocument {
    * @returns Is this point inside this Region?
    */
   testPoint(point: foundry.canvas.Canvas.ElevatedPoint): boolean;
+
+  /**
+   * Create the Clipper polygon tree for this Region.
+   * @internal
+   */
+  protected _createClipperPolyTree(shapes: BaseShapeData[], shapeConstraints: number[][] | null): ClipperLib.PolyTree;
 
   /**
    * Split the movement path into its segments.
@@ -105,16 +132,105 @@ declare class RegionDocument extends BaseRegion.Internal.CanvasDocument {
   ): RegionDocument.MovementSegment[];
 
   /**
+   * Update the shape constraints of this Region. If `save` is true, the shape constraints are
+   * updated only if the current User is designated for it.
+   * @param options - Additional options
+   */
+  updateShapeConstraints(options?: RegionDocument.UpdateShapeConstraintsOptions): void;
+
+  /**
+   * Update the point sources of this Region document.
+   * @param changes - The changes that will be applied to this Region.
+   * @returns The computed shape constraint for each shape, if restricted/possible.
+   * @internal
+   */
+  protected _computeShapeConstraints(changes?: RegionDocument.UpdateData): number[][] | null;
+
+  /**
+   * Compute the shape constraint for the given origin and config.
+   * @param origin - The origin of the constraint.
+   * @param config - The config of the constraint.
+   * @returns The shape constraint.
+   */
+  protected _computeShapeConstraint(
+    origin: foundry.canvas.Canvas.ElevatedPoint,
+    config: PointSourcePolygon.Config,
+  ): PointSourcePolygon;
+
+  /**
+   * Called when the scene's grid is changed.
+   * @param changed - The changes to the grid.
+   * @internal
+   */
+  protected _onGridChange(changed: object): void;
+
+  /**
+   * Clear the polygon tree.
+   * @internal
+   */
+  protected _clearPolygonTree(): void;
+
+  /**
+   * Called when the polygon tree of the Region has changed.
+   */
+  protected _onPolygonTreeChange(): void;
+
+  /**
+   * Create an emanation Region for the Token and attach it to the Token.
+   * @param token      - The Token to attach the emanation Region to
+   * @param range      - The range of the emanation in grid units
+   * @param regionData - The Region data of the emanation
+   * @param options    - Additional options
+   * @returns The created Region document unless the creation was prevented
+   */
+  static createTokenEmanation(
+    token: TokenDocument.Implementation,
+    range: number,
+    regionData: Omit<RegionDocument.CreateData, "shapes" | "elevation">,
+    options?: RegionDocument.CreateTokenEmanationOptions,
+  ): Promise<RegionDocument.Implementation | void>;
+
+  /**
    * Teleport a Token into this Region.
    * The Token may be in the same Scene as this Region, or in a different Scene.
    * The current User must be an owner of the Token Document in order to teleport it
    * For teleportation to a different Scene the current User requires `TOKEN_CREATE` and
    * `TOKEN_DELETE` permissions. If the Token is teleported to different Scene, it is deleted
    * and a new Token Document in the other Scene is created.
-   * @param token - An existing Token Document to teleport
+   * @param token   - An existing Token Document to teleport
+   * @param options - Additional options
    * @returns The same Token Document if teleported within the same Scene, or a new Token Document if teleported to a different Scene
    */
-  teleportToken(token: TokenDocument.Implementation): Promise<TokenDocument.Implementation>;
+  teleportToken(
+    token: TokenDocument.Implementation,
+    options?: RegionDocument.TeleportTokenOptions,
+  ): Promise<TokenDocument.Implementation>;
+
+  /**
+   * Teleport Tokens into this Region.
+   * The Tokens may be in the same Scene as this Region, or in a different Scene.
+   * @param tokens  - Existing Token Documents to teleport.
+   * @param options - Additional options.
+   * @returns The mapping of deleted to created Token Documents.
+   */
+  teleportTokens(
+    tokens: Iterable<TokenDocument.Implementation>,
+    options?: RegionDocument.TeleportTokensOptions,
+  ): Promise<Map<TokenDocument.Implementation, TokenDocument.Implementation>>;
+
+  /**
+   * Spawn Tokens into this Region.
+   * The current User must be an owner of the Token Documents and have the `TOKEN_CREATE` permission
+   * in order to spawn them.
+   * @param tokenData - The data of tokens or Token documents to spawn.
+   * @param options   - Additional options.
+   * @returns The array of Token Documents that were created, which might be
+   *          less than requested if the creation was disallowed by a preCreate handler
+   */
+  spawnTokens(
+    tokenData: Iterable<TokenDocument.CreateData | TokenDocument.Implementation>,
+    options?: RegionDocument.SpawnTokensOptions,
+  ): Promise<TokenDocument.Implementation[]>;
 
   /**
    * Activate the Socket event listeners.
@@ -122,11 +238,6 @@ declare class RegionDocument extends BaseRegion.Internal.CanvasDocument {
    * @internal
    */
   protected static _activateSocketListeners(socket: WebSocket): void;
-
-  /** @deprecated Foundry made this method truly private in v13 (this warning will be removed in v14) */
-  protected static _updateTokens(regions: never, options?: never): never;
-
-  // _onUpdate, _onCreateOperation, _onUpdateOperation, and _onDeleteOperation are overridden from BaseRegion without signature changes.
 
   /**
    * Trigger the Region event.
@@ -148,6 +259,21 @@ declare class RegionDocument extends BaseRegion.Internal.CanvasDocument {
   protected override _onUpdateDescendantDocuments(...args: RegionDocument.OnUpdateDescendantDocumentsArgs): void;
 
   protected override _onDeleteDescendantDocuments(...args: RegionDocument.OnDeleteDescendantDocumentsArgs): void;
+
+  /**
+   * Present a Dialog form to confirm the removal of a shape.
+   * @param shapeOrIndex - The shape or shape index.
+   * @param options      - Additional options passed to `DialogV2.confirm`
+   */
+  removeShapeDialog(shapeOrIndex: BaseShapeData | number, options?: DialogV2.ConfirmConfig): Promise<boolean>;
+
+  /**
+   * @deprecated since v14. Use {@linkcode RegionDocument.shapes | RegionDocument#shapes} instead.
+   */
+  get regionShapes(): foundry.data.regionShapes.RegionShape.Any[];
+
+  /** @internal */
+  get _regionShapes(): foundry.data.regionShapes.RegionShape.Any[];
 
   /*
    * After this point these are not really overridden methods.
@@ -593,10 +719,19 @@ declare namespace RegionDocument {
       /**
        * The Token to which this Region is attached
        * @defaultValue `null`
+       * @remarks Although this is an `idOnly` field, `RegionDocument#prepareBaseData` resolves the
+       * stored id to the actual Token document (or `null`) at preparation time, so the initialized
+       * type is the resolved document rather than the id string.
        */
       token: fields.ForeignDocumentField<
         typeof foundry.documents.BaseToken,
-        { idOnly: true; nullable: true; initial: null }
+        { idOnly: true; nullable: true; initial: null },
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        fields.ForeignDocumentField.AssignmentType<
+          typeof foundry.documents.BaseToken,
+          { idOnly: true; nullable: true; initial: null }
+        >,
+        TokenDocument.Implementation | null
       >;
     }>;
 
@@ -1396,23 +1531,6 @@ declare namespace RegionDocument {
     eventDataUuids: string[];
   }
 
-  /** @internal */
-  type _UpdateTokensOptions = NullishProps<{
-    /**
-     * Are the Region documents deleted?
-     * @defaultValue `false`
-     */
-    deleted: boolean;
-
-    /**
-     * Reset the Token document if animated?
-     * @defaultValue `true`
-     */
-    reset: boolean;
-  }>;
-
-  interface UpdateTokensOptions extends _UpdateTokensOptions {}
-
   type EventData =
     | {
         token: TokenDocument.Implementation;
@@ -1470,6 +1588,167 @@ declare namespace RegionDocument {
 
     /** Teleport between the waypoints? */
     teleport: boolean;
+  }
+
+  /** @internal */
+  type _UpdateShapeConstraintsOptions = NullishProps<{
+    /**
+     * Persist the shape constraints changes?
+     * @defaultValue `false`
+     */
+    save: boolean;
+  }>;
+
+  /**
+   * Options for {@linkcode RegionDocument.updateShapeConstraints | RegionDocument#updateShapeConstraints}.
+   */
+  interface UpdateShapeConstraintsOptions extends _UpdateShapeConstraintsOptions {}
+
+  /**
+   * A surface of a Region, as produced by {@linkcode RegionDocument.getSurfaces | RegionDocument#getSurfaces}.
+   */
+  interface Surface {
+    /** A key that uniquely identifies the surface */
+    key: string;
+
+    /** The region of the surface */
+    region: RegionDocument.Implementation;
+
+    /** The elevation of the surface */
+    elevation: number;
+
+    /** Does the surface restrict light? */
+    light: boolean;
+
+    /** Does the surface restrict movement? */
+    move: boolean;
+
+    /** Does the surface restrict sight? */
+    sight: boolean;
+
+    /** Does the surface restrict sound? */
+    sound: boolean;
+
+    /** Does the surface cause occlusion? */
+    occlusion: boolean;
+
+    /** Does the surface cause exposure? */
+    exposure: boolean;
+
+    /** Does the surface cause culling? */
+    culling: boolean;
+  }
+
+  /** @internal */
+  type _TokenPlacementOptions = NullishProps<{
+    /**
+     * The placement.
+     * @defaultValue `"random"`
+     */
+    placement: "random" | "center" | "relative";
+
+    /**
+     * Attempt to place the tokens at a snapped position.
+     * @defaultValue `true`
+     */
+    snap: boolean;
+
+    /** The relative offset position. */
+    offset: foundry.canvas.Canvas.Point;
+
+    /**
+     * Avoid occupied grid spaces when placing randomly with snapping.
+     * @defaultValue `true`
+     */
+    avoidOccupied: boolean;
+
+    /**
+     * The destination Level ID, which must be a Level this Region is in.
+     * Default: the Level of the Region if it is in only one Level.
+     */
+    level: string;
+
+    /**
+     * Pan the canvas (with transition animation) to the destination if the token is controlled?
+     * @defaultValue `true`
+     */
+    pan: boolean | RegionDocument.TokenPanningOptions;
+  }>;
+
+  /**
+   * Options for {@linkcode RegionDocument.teleportToken | RegionDocument#teleportToken}.
+   */
+  interface TeleportTokenOptions extends Omit<TeleportTokensOptions, "updateData"> {
+    /** Additional Token update data. */
+    updateData?: TokenDocument.UpdateData | undefined;
+  }
+
+  /**
+   * Options for {@linkcode RegionDocument.teleportTokens | RegionDocument#teleportTokens}.
+   */
+  interface TeleportTokensOptions extends _TokenPlacementOptions {
+    /** Additional update data. */
+    updateData?: Map<TokenDocument.Implementation, TokenDocument.UpdateData> | undefined;
+  }
+
+  /**
+   * Options for {@linkcode RegionDocument.spawnTokens | RegionDocument#spawnTokens}.
+   */
+  interface SpawnTokensOptions extends Omit<_TokenPlacementOptions, "pan"> {
+    /**
+     * Persist the spawned tokens to the database (default true) or otherwise return an array of
+     * ephemeral TokenDocument instances.
+     * @defaultValue `true`
+     */
+    create?: boolean | undefined;
+
+    /** Additional create options. */
+    createOptions?: Omit<RegionDocument.Database.CreateOperation, "parent"> | undefined;
+  }
+
+  /**
+   * Options for {@linkcode RegionDocument.createTokenEmanation}.
+   */
+  interface CreateTokenEmanationOptions {
+    /**
+     * Exclude the Token's own shape from the area of the emanation?
+     * @defaultValue `false`
+     */
+    excludeToken?: boolean | undefined;
+
+    /**
+     * Should the emanation conform to the grid's metric?
+     * @defaultValue `false`
+     */
+    gridBased?: boolean | undefined;
+
+    /** Optional creation options. */
+    createOptions?: Omit<RegionDocument.Database.CreateOperation, "parent"> | undefined;
+  }
+
+  /**
+   * The panning options for token movement transitions.
+   * @privateRemarks Mirrors Foundry's `TokenPanningOptions` typedef. This is duplicated from the
+   * token-movement subsystem pending its full authoring in the Token document giant.
+   */
+  interface TokenPanningOptions {
+    /**
+     * The type of the transition animation.
+     * @defaultValue `null` (no transition animation).
+     */
+    transitionType?: string | undefined;
+
+    /**
+     * The duration of the pan or transition animation.
+     * @defaultValue `250` for panning or the default duration of the given transition type.
+     */
+    duration?: number | undefined;
+
+    /** The speed of the panning animation in pixels per second; overrides `duration` if set. */
+    speed?: number | undefined;
+
+    /** The easing function used for the panning animation. */
+    easing?: string | ((percent: number) => number) | undefined;
   }
 
   /**
