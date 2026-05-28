@@ -70,7 +70,7 @@ The package is **already substantially usable on v14** for backward-compatible u
 >
 > 1. **The 4 Tier-B document giants** (highest leverage, **one giant per session** — each 1.1k–4k lines, authored prerequisite-first then member-diff):
 >    - `active-effect` (1154) — independent; needs `ActiveEffectRegistry` (`client/helpers/active-effect-registry`), `CONFIG.ActiveEffect` additions (`phases`/`changeTypes`/`expiryEvents`), `ActiveEffectDuration` rework, and the change-application family moved instance→static (v13 instance methods become `@deprecated` shims).
->    - `scene` (1780) — **first batch DONE** (commit `4773af838`, `[~]`): Levels/edges/surfaces members added. **Remaining:** the `background`/`foreground`/`backgroundColor`/`foregroundElevation` schema→`@deprecated`-getter migration (v14 moved these fields to `Level` — a schema removal with consumer/test cascade) + a final member-order verification.
+>    - `scene` (1780) — **SUBSTANTIALLY DONE** (`4773af838`/`91ce464d3`/`4a8b7df8f`/`008ce71c3`): Levels/edges/surfaces members, `transition` field, the background/foreground/backgroundColor/foregroundElevation schema→deprecated-getter migration, and the `initialLevel` field-override all landed CI-green. Only a final member-order verification pass remains.
 >    - `region` (2718) — needs `Level` (done) + `RegionSurface` (`client/documents/_types`) for `occludedSurfaces`/`define-surface`; ~25 missing live members listed in the phase-7 Tier-B deferral row.
 >    - `token` (4009) — needs the token-movement subsystem (~15 `TokenMovement*` `_types` + `TokenConstrainMovementPathOptions`); also unblocks the deferred Token-placeable drag/movement surface and `ModifyMovementCost._getTerrainEffects`.
 > 2. **Remaining Level loose-ends:** `PointSourcePolygon.Config.level` + `ClockwiseSweepPolygon` level internals (source-polygon not yet touched).
@@ -80,7 +80,7 @@ The package is **already substantially usable on v14** for backward-compatible u
 > **Kickoff message** (paste verbatim):
 >
 > ```
-> Continue the v14 migration (Phase 7 — finish the scene Tier-B giant: the background/foreground/backgroundColor/foregroundElevation schema->@deprecated-getter migration (v14 moved these to the Level document) + the initialLevel field-override, fixing the consumer/test cascade; then the next giant)
+> Continue the v14 migration (Phase 7 — the scene giant is substantially done; next take the active-effect Tier-B giant: author its prerequisites (ActiveEffectRegistry in client/helpers, CONFIG.ActiveEffect phases/changeTypes/expiryEvents additions, ActiveEffectDuration rework, the change-application instance->static move) then member-diff client/documents/active-effect.d.mts)
 > ```
 >
 > _Maintainers: overwrite this block (not append) when a batch/phase closes._
