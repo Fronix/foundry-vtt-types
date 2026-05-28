@@ -1,5 +1,4 @@
 import type {
-  AnyFunction,
   AnyObject,
   Brand,
   ConcreteKeys,
@@ -2295,17 +2294,13 @@ declare global {
 
       /**
        * A function that applies the change to a document.
-       * @remarks FIXME(v14): the precise `ActiveEffectChangeHandler` callback signature rides with the
-       * active-effect document member-diff (Phase 7); typed loosely as a function until then.
        */
-      handler?: AnyFunction | null | undefined;
+      handler?: ActiveEffect.ChangeHandler | null | undefined;
 
       /**
        * A function that renders the change in the ActiveEffect config.
-       * @remarks FIXME(v14): the precise `ActiveEffectChangeRenderer` callback signature rides with the
-       * active-effect document member-diff (Phase 7); typed loosely as a function until then.
        */
-      render?: AnyFunction | null | undefined;
+      render?: ActiveEffect.ChangeRenderer | null | undefined;
     }
 
     interface UI {

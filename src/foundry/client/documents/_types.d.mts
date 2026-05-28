@@ -16,6 +16,12 @@ type AdventureImportOptions = Adventure.ImportOptions;
 
 type AdventureImportResult = Adventure.ImportResult;
 
+type ActiveEffectChangeData = ActiveEffect.ChangeData;
+
+type ActiveEffectChangeHandler = ActiveEffect.ChangeHandler;
+
+type ActiveEffectChangeRenderer = ActiveEffect.ChangeRenderer;
+
 type _ActiveEffectDuration = ActiveEffect.Duration;
 
 type ActiveEffectDuration = ActiveEffect.DurationData & _ActiveEffectDuration;

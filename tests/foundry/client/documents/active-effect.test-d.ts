@@ -558,6 +558,36 @@ expectTypeOf(ActiveEffect["_fromStatusEffect"]("flying", createData, aeContext))
 declare const sf: foundry.data.fields.StringField;
 declare const nf: foundry.data.fields.NumberField;
 declare const edf: foundry.data.fields.EmbeddedDataField<typeof foundry.data.LightData>;
+
+declare const targetDoc: Actor.Implementation;
+
+// v14: the change-application family is now static, taking the target Document first.
+expectTypeOf(ActiveEffect.applyChange(targetDoc, change)).toEqualTypeOf<AnyMutableObject>();
+expectTypeOf(ActiveEffect.applyChange(targetDoc, change, {})).toEqualTypeOf<AnyMutableObject>();
+expectTypeOf(
+  ActiveEffect.applyChange(targetDoc, change, { replacementData: {}, modifyTarget: false }),
+).toEqualTypeOf<AnyMutableObject>();
+
+expectTypeOf(ActiveEffect.applyChangeField(targetDoc, change)).toEqualTypeOf<unknown>();
+expectTypeOf(ActiveEffect.applyChangeField(targetDoc, change, { field: sf })).toEqualTypeOf<unknown>();
+expectTypeOf(ActiveEffect.applyChangeField(targetDoc, change, { field: undefined })).toEqualTypeOf<unknown>();
+
+expectTypeOf(ActiveEffect["_applyChangeUnguided"](targetDoc, change, {})).toBeVoid();
+expectTypeOf(ActiveEffect["_applyChangeUnguided"](model, change, {}, { modifyTarget: true })).toBeVoid();
+
+expectTypeOf(ActiveEffect["_replaceDataRefs"]("foo", {})).toEqualTypeOf<string | null>();
+
+expectTypeOf(ActiveEffect["_applyChangeAdd"](targetDoc, change, 5, 1, {})).toBeVoid();
+expectTypeOf(ActiveEffect["_applyChangeSubtract"](targetDoc, change, 5, 1, {})).toBeVoid();
+expectTypeOf(ActiveEffect["_applyChangeMultiply"](targetDoc, change, 2, 4, {})).toBeVoid();
+expectTypeOf(ActiveEffect["_applyChangeOverride"](targetDoc, change, "foo", "bar", {})).toBeVoid();
+expectTypeOf(ActiveEffect["_applyChangeUpgrade"](targetDoc, change, 5, 9, {})).toBeVoid();
+expectTypeOf(ActiveEffect["_applyChangeCustom"](targetDoc, change, { baz: 17 }, { fizz: false }, {})).toBeVoid();
+
+expectTypeOf(ActiveEffect.getEffectStart()).toEqualTypeOf<ActiveEffect.EffectStartData>();
+expectTypeOf(ActiveEffect.getEffectStart(null)).toEqualTypeOf<ActiveEffect.EffectStartData>();
+
+/* eslint-disable @typescript-eslint/no-deprecated -- exercising the v14 deprecation shims */
 expectTypeOf(ActiveEffect.applyField(model, change)).toEqualTypeOf<unknown>();
 expectTypeOf(ActiveEffect.applyField(model, change, null)).toEqualTypeOf<unknown>();
 expectTypeOf(ActiveEffect.applyField(model, change, sf)).toEqualTypeOf<string | undefined>();
@@ -565,6 +595,7 @@ expectTypeOf(ActiveEffect.applyField(model, change, nf)).toEqualTypeOf<number | 
 expectTypeOf(ActiveEffect.applyField(model, change, edf)).toEqualTypeOf<foundry.data.LightData>();
 
 expectTypeOf(ActiveEffect.getInitialDuration()).toEqualTypeOf<ActiveEffect.GetInitialDurationReturn>();
+/* eslint-enable @typescript-eslint/no-deprecated */
 
 // ClientDocument static overrides
 
@@ -680,6 +711,10 @@ expectTypeOf(
 const effect = new ActiveEffect.implementation({ name: "My effect" });
 expectTypeOf(effect).toEqualTypeOf<ActiveEffect.Implementation>();
 
+expectTypeOf(effect.actor).toEqualTypeOf<Actor.Implementation | null>();
+expectTypeOf(effect.item).toEqualTypeOf<Item.Implementation | null>();
+expectTypeOf(effect.thumbnail).toEqualTypeOf<string>();
+
 expectTypeOf(effect.isSuppressed).toEqualTypeOf<boolean>();
 // @ts-expect-error Only getter, no setter
 effect.isSuppressed = false;
@@ -704,13 +739,13 @@ expectTypeOf(effect.updateDuration({})).toEqualTypeOf<ActiveEffect.Duration>();
 expectTypeOf(effect.isExpiryTrackable).toEqualTypeOf<boolean>();
 expectTypeOf(effect.isExpiryEvent("turnEnd")).toEqualTypeOf<boolean>();
 expectTypeOf(ActiveEffect.registry).toEqualTypeOf<foundry.helpers.ActiveEffectRegistry>();
-expectTypeOf(effect["_requiresDurationUpdate"]()).toBeBoolean();
-expectTypeOf(effect["_prepareDuration"]()).toEqualTypeOf<ActiveEffect.PrepareDurationReturn>();
 
-expectTypeOf(effect["_getCombatTime"](0, 3)).toBeNumber();
-expectTypeOf(effect["_getCombatTime"](0, 7, 3)).toBeNumber();
-
-expectTypeOf(effect["_getDurationLabel"](2, 4)).toBeString();
+declare const someDuration: ActiveEffect.DurationData;
+expectTypeOf(effect["_prepareDuration"]()).toEqualTypeOf<ActiveEffect.Duration>();
+expectTypeOf(effect["_prepareDuration"](someDuration)).toEqualTypeOf<ActiveEffect.Duration>();
+expectTypeOf(effect["_prepareDuration"](someDuration, {})).toEqualTypeOf<ActiveEffect.Duration>();
+expectTypeOf(effect["_prepareTimeBasedDuration"](someDuration)).toEqualTypeOf<ActiveEffect.Duration>();
+expectTypeOf(effect["_prepareCombatBasedDuration"](someDuration, {})).toEqualTypeOf<ActiveEffect.Duration>();
 
 expectTypeOf(effect.isTemporary).toEqualTypeOf<boolean>();
 // @ts-expect-error Only getter, no setter
@@ -720,6 +755,7 @@ expectTypeOf(effect.sourceName).toEqualTypeOf<string>();
 // @ts-expect-error Only getter, no setter
 effect.sourceName = "foo";
 
+/* eslint-disable @typescript-eslint/no-deprecated -- exercising the v14 instance deprecation shims */
 expectTypeOf(effect.apply(someActor, change)).toEqualTypeOf<AnyMutableObject>();
 expectTypeOf(effect["_applyLegacy"](someActor, change, {})).toBeVoid();
 
@@ -728,6 +764,7 @@ expectTypeOf(effect["_applyMultiply"](someActor, change, 2, 4, {})).toBeVoid();
 expectTypeOf(effect["_applyOverride"](someActor, change, "foo", "bar", {})).toBeVoid();
 expectTypeOf(effect["_applyUpgrade"](someActor, change, 5, 9, {})).toBeVoid();
 expectTypeOf(effect["_applyCustom"](someActor, change, { baz: 17 }, { fizz: false }, {})).toBeVoid();
+/* eslint-enable @typescript-eslint/no-deprecated */
 
 // getFlag override has no type changes, handled in BaseActiveEffect tests
 
