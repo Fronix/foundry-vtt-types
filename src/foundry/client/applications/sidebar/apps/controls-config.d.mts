@@ -1,5 +1,6 @@
-import type { Identity } from "#utils";
+import type { DeepPartial, Identity } from "#utils";
 import type CategoryBrowser from "../../api/category-browser.d.mts";
+import type HandlebarsApplicationMixin from "../../api/handlebars-application.d.mts";
 
 declare module "#configuration" {
   namespace Hooks {
@@ -11,7 +12,6 @@ declare module "#configuration" {
 
 /**
  * View and edit keybinding and (readonly) mouse actions.
- * @remarks TODO: Stub
  */
 declare class ControlsConfig<
   Entry extends ControlsConfig.Entry = ControlsConfig.Entry,
@@ -19,7 +19,34 @@ declare class ControlsConfig<
   Configuration extends ControlsConfig.Configuration = ControlsConfig.Configuration,
   RenderOptions extends ControlsConfig.RenderOptions = ControlsConfig.RenderOptions,
 > extends CategoryBrowser<Entry, RenderContext, Configuration, RenderOptions> {
-  protected _prepareCategoryData(): Promise<Record<string, CategoryBrowser.CategoryData<Entry>>>;
+  static override DEFAULT_OPTIONS: CategoryBrowser.DefaultOptions;
+
+  static override PARTS: Record<string, HandlebarsApplicationMixin.HandlebarsTemplatePart>;
+
+  /**
+   * Faux "categories" of pointer controls to display as read-only.
+   */
+  static POINTER_CONTROLS: ReadonlyArray<object>;
+
+  /**
+   * Transform a binding into a human-readable string representation.
+   * @param binding - The keybinding.
+   */
+  static humanizeBinding(binding: object): string;
+
+  protected override _configureRenderOptions(options: DeepPartial<RenderOptions>): void;
+
+  protected override _prepareCategoryData(): Promise<Record<string, CategoryBrowser.CategoryData<Entry>>>;
+
+  protected override _sortCategories(
+    a: CategoryBrowser.CategoryData<Entry>,
+    b: CategoryBrowser.CategoryData<Entry>,
+  ): number;
+
+  protected override _onFirstRender(
+    context: DeepPartial<RenderContext>,
+    options: DeepPartial<RenderOptions>,
+  ): Promise<void>;
 }
 
 declare namespace ControlsConfig {
