@@ -11,3 +11,7 @@ expectTypeOf(doc.layer).toEqualTypeOf<TemplateLayer>();
 expectTypeOf(doc.rotation).toEqualTypeOf<MeasuredTemplateDocument.Implementation["direction"]>();
 
 expectTypeOf(doc.sheet).toEqualTypeOf<Application.Any | DocumentSheetV2.Any | null>();
+
+// v14: deprecated shim is produced from a Region document
+declare const region: RegionDocument.Implementation;
+expectTypeOf(MeasuredTemplateDocument._fromRegion(region)).toEqualTypeOf<MeasuredTemplateDocument.Implementation>();

@@ -976,6 +976,17 @@ declare namespace MeasuredTemplateDocument {
  *
  * @see {@linkcode Scene}                     The Scene document type which contains MeasuredTemplate documents
  * @see {@linkcode MeasuredTemplateConfig}    The MeasuredTemplate configuration application
+ *
+ * @remarks Deprecated since v14 — `MeasuredTemplateDocument` has been merged into the functionality of the
+ * {@link foundry.documents.RegionDocument | `RegionDocument`}. Its database operations delegate to `RegionDocument`,
+ * and instances are produced from Regions via {@linkcode MeasuredTemplateDocument._fromRegion}. It will be removed in v16.
+ *
+ * @privateRemarks v14 marks the whole class `@deprecated since v14`. Per the repo anti-pattern (a `@deprecated` tag
+ * on a whole `declare class` makes `no-deprecated` flag every in-file self-reference), this is expressed as `@remarks`
+ * prose instead. The full reconciliation — un-embedding from Scene and removing `MeasuredTemplate` from
+ * `EMBEDDED_DOCUMENT_TYPES`/`ALL_DOCUMENT_TYPES` — is deferred: it requires the type system to represent a deprecated,
+ * non-registered `Document` subclass, which cascades through `document.d.mts`, `documentConfiguration.d.mts`,
+ * `src/configuration/`, and the canvas+Levels `AnyCanvasDocument` constraints — a human-reviewed architectural change.
  */
 declare class MeasuredTemplateDocument extends BaseMeasuredTemplate.Internal.CanvasDocument {
   /**
@@ -983,6 +994,12 @@ declare class MeasuredTemplateDocument extends BaseMeasuredTemplate.Internal.Can
    * @param context - Construction context options
    */
   constructor(data?: MeasuredTemplateDocument.CreateData, context?: MeasuredTemplateDocument.ConstructionContext);
+
+  /**
+   * Construct a `MeasuredTemplateDocument` from a {@link foundry.documents.RegionDocument | `RegionDocument`}.
+   * @internal
+   */
+  static _fromRegion(region: RegionDocument.Implementation): MeasuredTemplateDocument.Implementation;
 
   /**
    * Rotation is an alias for direction

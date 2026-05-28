@@ -16,11 +16,13 @@ declare module "#configuration" {
  * This Canvas Layer provides a container for MeasuredTemplate objects.
  * @see {@linkcode MeasuredTemplate}
  *
- * @privateRemarks v14 marks the whole class `@deprecated since v14` (Measured Templates are superseded by
- * Regions). The class-level `@deprecated` annotation — and its cascade into `CONFIG.Canvas.layers.templates`,
- * the `globals`/`client` re-exports, the interface group `templates` accessor, and the consumers' tests —
- * travels with the Phase 7 MeasuredTemplate reconciliation, which owns the MeasuredTemplate document/placeable
- * deprecation coherently. Only the v14 member surface is verified here (Batch 5.5b).
+ * @remarks Deprecated since v14 — Measured Templates are superseded by {@link foundry.canvas.layers.RegionLayer | Regions}.
+ *
+ * @privateRemarks v14 marks the whole class `@deprecated since v14`. Per the repo anti-pattern, this is expressed as
+ * `@remarks` prose rather than a `@deprecated` tag. The full structural cascade — un-embedding from Scene and removing
+ * `MeasuredTemplate` from `EMBEDDED_DOCUMENT_TYPES`/`ALL_DOCUMENT_TYPES` — is deferred to a human-reviewed architectural
+ * change (it breaks the `AnyCanvasDocument`/`documentConfiguration` constraints). Only the v14 member surface is verified
+ * here (Batch 5.5b).
  */
 declare class TemplateLayer extends PlaceablesLayer<"MeasuredTemplate"> {
   /**

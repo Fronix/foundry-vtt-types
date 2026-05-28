@@ -18,10 +18,14 @@ declare module "#configuration" {
  * @see {@linkcode MeasuredTemplateDocument}
  * @see {@linkcode TemplateLayer}
  *
- * @privateRemarks The whole class is `@deprecated since v14` in v14 source (the MeasuredTemplate document
- * has been merged into the Region document). The class-level `@deprecated` annotation is deferred to Phase 7
- * with the MeasuredTemplate reconciliation, as it cascades into the `src/configuration/` boundary, the
- * `TemplateLayer`, and globals; it must land coherently with that work. Member-level v14 accuracy is done here.
+ * @remarks Deprecated since v14 — the MeasuredTemplate document has been merged into the
+ * {@link foundry.documents.RegionDocument | `RegionDocument`}.
+ *
+ * @privateRemarks v14 marks the whole class `@deprecated since v14`. Per the repo anti-pattern, this is expressed as
+ * `@remarks` prose rather than a `@deprecated` tag. The full structural reconciliation (un-embedding from Scene +
+ * removing `MeasuredTemplate` from the document-type system) is deferred to a human-reviewed architectural change, as it
+ * cascades into the `src/configuration/` boundary, `documentConfiguration.d.mts`, and the `AnyCanvasDocument`
+ * constraints. Member-level v14 accuracy is done here.
  */
 declare class MeasuredTemplate extends PlaceableObject<MeasuredTemplateDocument.Implementation> {
   /**
