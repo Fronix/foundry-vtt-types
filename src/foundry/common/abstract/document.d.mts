@@ -3432,6 +3432,7 @@ declare namespace Document {
     JournalEntryCategory: JournalEntryCategory.DropData;
     JournalEntryPage: JournalEntryPage.DropData;
     JournalEntry: JournalEntry.DropData;
+    Level: Level.DropData;
     Macro: Macro.DropData;
     PlaylistSound: PlaylistSound.DropData;
     Playlist: Playlist.DropData;

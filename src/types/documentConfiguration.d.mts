@@ -25,6 +25,7 @@ interface DefaultDocumentClasses {
   JournalEntryCategory: typeof JournalEntryCategory;
   JournalEntryPage: typeof JournalEntryPage;
   JournalEntry: typeof JournalEntry;
+  Level: typeof Level;
   Macro: typeof Macro;
   PlaylistSound: typeof PlaylistSound;
   Playlist: typeof Playlist;
@@ -62,6 +63,7 @@ interface DefaultDocumentInstance {
   JournalEntryCategory: JournalEntryCategory;
   JournalEntryPage: JournalEntryPage;
   JournalEntry: JournalEntry;
+  Level: Level;
   Macro: Macro;
   PlaylistSound: PlaylistSound;
   Playlist: Playlist;
@@ -122,6 +124,7 @@ export interface ConfiguredDocumentClass {
   JournalEntryCategory: GetDocumentClass<"JournalEntryCategory">;
   JournalEntryPage: GetDocumentClass<"JournalEntryPage">;
   JournalEntry: GetDocumentClass<"JournalEntry">;
+  Level: GetDocumentClass<"Level">;
   Macro: GetDocumentClass<"Macro">;
   PlaylistSound: GetDocumentClass<"PlaylistSound">;
   Playlist: GetDocumentClass<"Playlist">;
@@ -160,6 +163,7 @@ export interface ConfiguredDocumentInstance {
   JournalEntryCategory: GetDocumentInstance<"JournalEntryCategory">;
   JournalEntryPage: GetDocumentInstance<"JournalEntryPage">;
   JournalEntry: GetDocumentInstance<"JournalEntry">;
+  Level: GetDocumentInstance<"Level">;
   Macro: GetDocumentInstance<"Macro">;
   PlaylistSound: GetDocumentInstance<"PlaylistSound">;
   Playlist: GetDocumentInstance<"Playlist">;
@@ -211,6 +215,7 @@ export interface ConfiguredMetadata {
   JournalEntryCategory: JournalEntryCategory.Metadata;
   JournalEntryPage: JournalEntryPage.Metadata;
   JournalEntry: JournalEntry.Metadata;
+  Level: Level.Metadata;
   Macro: Macro.Metadata;
   MeasuredTemplate: MeasuredTemplateDocument.Metadata;
   Note: NoteDocument.Metadata;
@@ -251,6 +256,7 @@ export interface CreateData {
   JournalEntryCategory: documents.BaseJournalEntryCategory.CreateData;
   JournalEntryPage: documents.BaseJournalEntryPage.CreateData;
   JournalEntry: documents.BaseJournalEntry.CreateData;
+  Level: documents.BaseLevel.CreateData;
   Macro: documents.BaseMacro.CreateData;
   PlaylistSound: documents.BasePlaylistSound.CreateData;
   Playlist: documents.BasePlaylist.CreateData;
@@ -295,6 +301,7 @@ interface MisconfiguredItem extends ConformToDocumentConstructor<typeof Item> {}
 interface MisconfiguredJournalEntryCategory extends ConformToDocumentConstructor<typeof JournalEntryCategory> {}
 interface MisconfiguredJournalEntryPage extends ConformToDocumentConstructor<typeof JournalEntryPage> {}
 interface MisconfiguredJournalEntry extends ConformToDocumentConstructor<typeof JournalEntry> {}
+interface MisconfiguredLevel extends ConformToDocumentConstructor<typeof Level> {}
 interface MisconfiguredMacro extends ConformToDocumentConstructor<typeof Macro> {}
 interface MisconfiguredPlaylistSound extends ConformToDocumentConstructor<typeof PlaylistSound> {}
 interface MisconfiguredPlaylist extends ConformToDocumentConstructor<typeof Playlist> {}
@@ -333,6 +340,7 @@ export interface ConfigurationFailure {
   JournalEntryCategory: MisconfiguredJournalEntryCategory;
   JournalEntryPage: MisconfiguredJournalEntryPage;
   JournalEntry: MisconfiguredJournalEntry;
+  Level: MisconfiguredLevel;
   Macro: MisconfiguredMacro;
   PlaylistSound: MisconfiguredPlaylistSound;
   Playlist: MisconfiguredPlaylist;

@@ -36,6 +36,7 @@ declare abstract class BaseScene extends Document<"Scene", BaseScene.Schema, any
    *     AmbientLight: "lights",
    *     AmbientSound: "sounds",
    *     Drawing: "drawings",
+   *     Level: "levels",
    *     MeasuredTemplate: "templates",
    *     Note: "notes",
    *     Region: "regions",

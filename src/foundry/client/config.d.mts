@@ -1869,6 +1869,14 @@ declare global {
     };
 
     /**
+     * Configuration for the Level embedded document type and its representation on the game Canvas
+     */
+    Level: {
+      /** @defaultValue `Level` */
+      documentClass: Document.ImplementationClassFor<"Level">;
+    };
+
+    /**
      * Configuration for the MeasuredTemplate embedded document type and its representation on the game Canvas
      */
     MeasuredTemplate: {

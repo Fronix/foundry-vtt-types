@@ -349,6 +349,7 @@ export const EMBEDDED_DOCUMENT_TYPES: readonly [
   "Item",
   "JournalEntryCategory",
   "JournalEntryPage",
+  "Level",
   "MeasuredTemplate",
   "Note",
   "PlaylistSound",
@@ -1958,6 +1959,19 @@ export declare const GRAPHICS_FILE_EXTENSIONS: Readonly<{
 export type GRAPHICS_FILE_EXTENSIONS = keyof typeof GRAPHICS_FILE_EXTENSIONS;
 
 /**
+ * Supported file extensions for texture files (images, videos, and compressed textures), and their
+ * corresponding mime types.
+ */
+interface _TEXTURE_FILE_EXTENSIONS
+  extends Identity<typeof IMAGE_FILE_EXTENSIONS>, Identity<typeof VIDEO_FILE_EXTENSIONS> {
+  basis: "application/octet-stream";
+  ktx2: "image/ktx2";
+}
+
+export declare const TEXTURE_FILE_EXTENSIONS: Readonly<_TEXTURE_FILE_EXTENSIONS>;
+export type TEXTURE_FILE_EXTENSIONS = keyof typeof TEXTURE_FILE_EXTENSIONS;
+
+/**
  * @privateRemarks Video is spread in after audio, so its `ogg` and `webm` keys override
  */
 interface _UPLOADABLE_FILE_EXTENSIONS
@@ -1982,6 +1996,7 @@ export declare const FILE_CATEGORIES: Readonly<{
   AUDIO: typeof AUDIO_FILE_EXTENSIONS;
   TEXT: typeof TEXT_FILE_EXTENSIONS;
   FONT: typeof FONT_FILE_EXTENSIONS;
+  TEXTURE: typeof TEXTURE_FILE_EXTENSIONS;
   GRAPHICS: typeof GRAPHICS_FILE_EXTENSIONS;
 
   /**

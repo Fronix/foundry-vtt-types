@@ -265,6 +265,7 @@ export import Items = globalThis.Items;
 export import Journal = globalThis.Journal;
 export import JournalEntry = globalThis.JournalEntry;
 export import JournalEntryPage = globalThis.JournalEntryPage;
+export import Level = globalThis.Level;
 // eslint-disable-next-line @typescript-eslint/no-deprecated
 export import LightDomeColorationShader = globalThis.LightDomeColorationShader;
 // eslint-disable-next-line @typescript-eslint/no-deprecated

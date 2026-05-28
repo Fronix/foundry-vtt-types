@@ -85,6 +85,10 @@ const documents = {
     name: "JournalEntryCategory",
     hasSubtype: false,
   },
+  Level: {
+    name: "Level",
+    hasSubtype: false,
+  },
   Macro: {
     name: "Macro",
     hasSubtype: true,

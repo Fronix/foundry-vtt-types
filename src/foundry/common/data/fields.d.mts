@@ -5715,6 +5715,68 @@ declare namespace JavaScriptField {
 }
 
 /**
+ * A nullable set field used to reference a set of specific Scene Level documents.
+ * @template Options                - the options of the SceneLevelsSetField instance
+ * @template AssignmentElementType  - the assignment type for the elements in the set
+ * @template InitializedElementType - the initialized type for the elements in the set
+ * @template AssignmentType         - the type of the allowed assignment values of the SceneLevelsSetField
+ * @template InitializedType        - the type of the initialized values of the SceneLevelsSetField
+ * @template PersistedElementType   - the persisted type for the elements in the set
+ * @template PersistedType          - the type of the persisted values of the SceneLevelsSetField
+ * @remarks The element is a {@linkcode DocumentIdField} constructed internally; this field takes no element argument.
+ */
+declare class SceneLevelsSetField<
+  const Options extends SceneLevelsSetField.Options = SceneLevelsSetField.DefaultOptions,
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  const AssignmentElementType = ArrayField.AssignmentElementType<SceneLevelsSetField.ElementFieldType>,
+  const InitializedElementType = ArrayField.InitializedElementType<SceneLevelsSetField.ElementFieldType>,
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  const AssignmentType = SetField.AssignmentType<AssignmentElementType, Options>,
+  const InitializedType = SetField.InitializedType<InitializedElementType, Options>,
+  const PersistedElementType = ArrayField.PersistedElementType<SceneLevelsSetField.ElementFieldType>,
+  const PersistedType extends PersistedElementType[] | null | undefined = SetField.PersistedType<
+    PersistedElementType,
+    Options
+  >,
+> extends SetField<
+  SceneLevelsSetField.ElementFieldType,
+  Options,
+  AssignmentElementType,
+  InitializedElementType,
+  AssignmentType,
+  InitializedType,
+  PersistedElementType,
+  PersistedType
+> {
+  /**
+   * @param options - Options which configure the behavior of the field
+   * @param context - Additional context which describes the field
+   * @remarks The element field is constructed internally as a {@linkcode DocumentIdField}; this field takes no element argument.
+   */
+  constructor(options?: Options, context?: DataField.ConstructionContext);
+
+  static override get _defaults(): SetField.AnyOptions;
+}
+
+declare namespace SceneLevelsSetField {
+  /** The element field type for the {@linkcode SceneLevelsSetField} class. */
+  type ElementFieldType = DocumentIdField<{ nullable: false; readonly: false }>;
+
+  /** A shorthand for the options of a {@linkcode SceneLevelsSetField} class. */
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  interface Options extends SetField.Options<ArrayField.AssignmentElementType<ElementFieldType>> {}
+
+  /** The type of the default options for the {@linkcode SceneLevelsSetField} class. */
+  type DefaultOptions = SimpleMerge<
+    SetField.DefaultOptions,
+    {
+      required: true;
+      initial: [];
+    }
+  >;
+}
+
+/**
  * A subclass of {@linkcode ArrayField} for shapes.
  * @template Options                - the options of the ShapesField instance
  * @template AssignmentElementType  - the assignment type for the elements in the array
@@ -5975,6 +6037,7 @@ export {
   JSONField,
   NumberField,
   ObjectField,
+  SceneLevelsSetField,
   ShapesField,
   TypedObjectField,
   TypedSchemaField,

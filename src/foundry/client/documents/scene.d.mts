@@ -8,6 +8,7 @@ import type {
   BaseFolder,
   BaseJournalEntry,
   BaseJournalEntryPage,
+  BaseLevel,
   BaseMeasuredTemplate,
   BaseNote,
   BasePlaylist,
@@ -84,6 +85,7 @@ declare namespace Scene {
       AmbientLight: "lights";
       AmbientSound: "sounds";
       Drawing: "drawings";
+      Level: "levels";
       MeasuredTemplate: "templates";
       Note: "notes";
       Region: "regions";
@@ -107,6 +109,7 @@ declare namespace Scene {
     | "AmbientLight"
     | "AmbientSound"
     | "Drawing"
+    | "Level"
     | "MeasuredTemplate"
     | "Note"
     | "Region"
@@ -122,6 +125,7 @@ declare namespace Scene {
     | AmbientLightDocument.Stored
     | AmbientSoundDocument.Stored
     | DrawingDocument.Stored
+    | Level.Stored
     | MeasuredTemplateDocument.Stored
     | NoteDocument.Stored
     | RegionDocument.Stored
@@ -137,6 +141,7 @@ declare namespace Scene {
     | AmbientLightDocument.ImplementationClass
     | AmbientSoundDocument.ImplementationClass
     | DrawingDocument.ImplementationClass
+    | Level.ImplementationClass
     | MeasuredTemplateDocument.ImplementationClass
     | NoteDocument.ImplementationClass
     | RegionDocument.ImplementationClass
@@ -618,6 +623,12 @@ declare namespace Scene {
      * @defaultValue `[]`
      */
     tokens: fields.EmbeddedCollectionField<typeof BaseToken, Scene.Implementation>;
+
+    /**
+     * A collection of embedded Level documents.
+     * @defaultValue `[]`
+     */
+    levels: fields.EmbeddedCollectionField<typeof BaseLevel, Scene.Implementation>;
 
     /**
      * A collection of embedded Token objects.
