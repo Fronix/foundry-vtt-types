@@ -16,21 +16,27 @@ declare module "#configuration" {
 
 /**
  * An Application that manages switching between Combats and tracking the Combatants in those Combats.
- * @remarks TODO: Stub
  */
 declare class CombatTracker<
   RenderContext extends CombatTracker.RenderContext = CombatTracker.RenderContext,
   Configuration extends CombatTracker.Configuration = CombatTracker.Configuration,
   RenderOptions extends CombatTracker.RenderOptions = CombatTracker.RenderOptions,
 > extends HandlebarsApplicationMixin(AbstractSidebarTab)<RenderContext, Configuration, RenderOptions> {
+  static override DEFAULT_OPTIONS: AbstractSidebarTab.DefaultOptions;
+
   static override tabName: "combat";
 
-  // leaving out DEFAULT_OPTIONS and PARTS
+  static override PARTS: Record<string, HandlebarsApplicationMixin.HandlebarsTemplatePart>;
 
   /**
    * The list combats applicable to the active Scene.
    */
   get combats(): Combat.Stored[];
+
+  /**
+   * The Scene to which the currently-tracked Combat belongs.
+   */
+  get scene(): Scene.Stored | null;
 
   /**
    * Record the currently tracked combat encounter.
@@ -58,6 +64,8 @@ declare class CombatTracker<
     context: DeepPartial<RenderContext>,
     options: DeepPartial<RenderOptions>,
   ): Promise<void>;
+
+  protected override _onRender(context: DeepPartial<RenderContext>, options: DeepPartial<RenderOptions>): Promise<void>;
 
   protected override _preparePartContext(
     partId: string,
@@ -174,6 +182,12 @@ declare class CombatTracker<
    * @param combatant - The combatant.
    */
   protected _onToggleHidden(combatant: Combatant.Stored): void;
+
+  /**
+   * Handle changes to an input within the tracker.
+   * @param event - The triggering change event.
+   */
+  protected _onChangeInput(event: Event): void;
 
   /**
    * Handle updating a combatant's initiative in-sheet.
