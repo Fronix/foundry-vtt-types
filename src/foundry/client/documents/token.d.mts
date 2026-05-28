@@ -1937,9 +1937,19 @@ declare namespace TokenDocument {
     height: number;
 
     /**
+     * The depth in grid spaces (nonnegative).
+     */
+    depth: number;
+
+    /**
      * The shape type (see {@link CONST.TOKEN_SHAPES}).
      */
     shape: CONST.TOKEN_SHAPES;
+
+    /**
+     * The level ID.
+     */
+    level: string;
   }
 
   interface Dimensions extends Pick<Position, "width" | "height" | "shape"> {}
