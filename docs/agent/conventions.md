@@ -99,6 +99,7 @@ From CONTRIBUTING.md:
 
 These have been tried and rejected — do not reintroduce them:
 
+- **`@deprecated` JSDoc tag on a whole `declare class`** — We tried tagging a deprecated class (e.g. `MeasuredTemplateConfig`, `FrameViewer`) with `@deprecated` — `@typescript-eslint/no-deprecated` then flags _every internal self-reference_ in the file (the `declare namespace`, the `Any`/`AnyConstructor` classes, the generic defaults), producing a dozen spurious errors — do not do it. Use `@remarks Deprecated since vNN — …` prose instead. (A `@deprecated` tag on a single **method/getter/property** is fine — it only flags call sites, of which there are usually none in-file.)
 - **`Partial<T>` for option bags** — We tried plain `Partial` — it conflated "may be omitted" with "may be `undefined`" with "may be `null`" — do not reintroduce it. Use `NullishProps`, `InexactPartial`, or `IntentionalPartial` (all in `#utils`). The `IntentionalPartial` alias exists specifically to make audit easier.
 - **`type-fest` imports** — We tried importing from `type-fest` directly — it caused duplicate definitions and surface-area drift versus the in-repo helpers — do not reintroduce it. The ESLint `no-restricted-imports` rule blocks it. Import from `fvtt-types/utils` (`#utils` inside the repo) instead.
 - **Bare `typeof Document` / `typeof Placeable`** — We tried direct `typeof` references — it caused silent mis-typing when consumers configured `CONFIG.Actor.documentClass` to a subclass — do not reintroduce it. Use `.ImplementationClass`.
