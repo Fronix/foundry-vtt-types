@@ -1,4 +1,4 @@
-import type { InexactPartial, MaybeArray, Merge } from "#utils";
+import type { AnyObject, InexactPartial, MaybeArray, Merge } from "#utils";
 import type { LightData, TextureData, fields } from "#common/data/_module.d.mts";
 import type { DatabaseBackend, Document, EmbeddedCollection } from "#common/abstract/_module.d.mts";
 import type {
@@ -1792,6 +1792,54 @@ declare namespace Scene {
 
   interface ThumbnailCreationData extends InexactPartial<_ThumbnailCreationData> {}
 
+  /** Options for {@linkcode Scene._getAvailableLevels | Scene#_getAvailableLevels}. */
+  interface GetAvailableLevelsOptions {
+    /**
+     * A SceneManager whose {@linkcode foundry.canvas.SceneManager._getAvailableLevels | _getAvailableLevels}
+     * override should be applied to the base set.
+     */
+    manager?: foundry.canvas.SceneManager | null | undefined;
+  }
+
+  /** Options for {@linkcode Scene.getSurfaces | Scene#getSurfaces}. */
+  interface GetSurfacesOptions {
+    /** Only return surfaces that restrict this type. */
+    type?: CONST.EDGE_RESTRICTION_TYPES | undefined;
+
+    /** Only return surfaces that are included in this Level (or Level id). */
+    level?: Level.Implementation | string | undefined;
+
+    /** Only return surfaces that have this `occlusion` value. */
+    occlusion?: boolean | undefined;
+
+    /** Only return surfaces that have this `exposure` value. */
+    exposure?: boolean | undefined;
+
+    /** Only return surfaces that have this `culling` value. */
+    culling?: boolean | undefined;
+  }
+
+  /** Configuration for {@linkcode Scene.testSurfaceCollision | Scene#testSurfaceCollision}. */
+  interface TestSurfaceCollisionConfig {
+    /** The restriction type (default `"move"`). */
+    type?: CONST.EDGE_RESTRICTION_TYPES | undefined;
+
+    /** The collision mode (default `"any"`). */
+    mode?: "any" | "all" | "closest" | undefined;
+
+    /** The side of the surface that counts as colliding when the ray originates on the surface (default `"below"`). */
+    side?: "below" | "above" | undefined;
+
+    /** Intersections with t-value less than `tMin` are not collisions (default `0`). */
+    tMin?: number | undefined;
+
+    /** Intersections with t-value greater than `tMax` are not collisions (default `1`). */
+    tMax?: number | undefined;
+
+    /** The Level or Level id to test collision in. */
+    level: Level.Implementation | string;
+  }
+
   /**
    * The arguments to construct the document.
    *
@@ -1825,11 +1873,30 @@ declare class Scene extends BaseScene.Internal.ClientDocument {
   _viewPosition: Canvas.ViewPosition;
 
   /**
-   * Track whether the scene is the active view
-   * @defaultValue `this.active`
+   * The id of the currently-viewed Level of this Scene, or `null` if the Scene is not currently viewed.
+   * @defaultValue `null`
    * @internal
    */
-  protected _view: boolean;
+  protected _view: string | null;
+
+  /**
+   * Cached set of the Levels available to the current User.
+   * @defaultValue `null`
+   */
+  protected _availableLevels: Set<Level.Implementation> | null;
+
+  /**
+   * Have the edges of this Scene been initialized already? Becomes `true` the moment
+   * {@linkcode Scene.initializeEdges | Scene#initializeEdges} is called.
+   */
+  get initializedEdges(): boolean;
+
+  /**
+   * The Levels that are available to this User. By default GMs and scenes without token vision can access all
+   * Levels; players can only access Levels where they have OBSERVER of a Token. A SceneManager may override this
+   * via {@linkcode foundry.canvas.SceneManager._getAvailableLevels | SceneManager#_getAvailableLevels}.
+   */
+  get availableLevels(): Set<Level.Implementation>;
 
   /**
    * The grid instance.
@@ -1904,6 +1971,14 @@ declare class Scene extends BaseScene.Internal.ClientDocument {
   override prepareBaseData(): void;
 
   /**
+   * @remarks Resets the cached {@linkcode _availableLevels} and assigns each Level a sorted `index`.
+   */
+  override prepareEmbeddedDocuments(): void;
+
+  /** @remarks Defines a `fog.overlay` getter sourced from {@linkcode firstLevel}'s fog texture. */
+  override prepareDerivedData(): void;
+
+  /**
    * Get the Canvas dimensions which would be used to display this Scene.
    * Apply padding to enlarge the playable space and round to the nearest 2x grid size to ensure symmetry.
    * The rounding accomplishes that the padding buffer around the map always contains whole grid spaces.
@@ -1933,6 +2008,81 @@ declare class Scene extends BaseScene.Internal.ClientDocument {
    * @returns The array of Tokens whose regions changed
    */
   updateTokenRegions(tokens?: Iterable<TokenDocument.Implementation>): Promise<Array<TokenDocument.Stored>>;
+
+  /**
+   * Update the shape constraints of all Regions the current User is designated for (for the given restriction types).
+   * @param types - The types to update. Default: all.
+   */
+  updateRegionShapeConstraints(types?: Iterable<CONST.EDGE_RESTRICTION_TYPES>): void;
+
+  /**
+   * Update the shape constraints of the given Region if the current User is designated for it.
+   * @internal
+   */
+  _updateRegionShapeConstraints(region: RegionDocument.Implementation): void;
+
+  /**
+   * Move Tokens within this Scene according to a batch of movement instructions, keyed by Token id.
+   * @returns A record, keyed by Token id, of whether each Token's movement completed successfully.
+   * @remarks FIXME(v14): `instructions`/`options` belong to the token-movement subsystem (deferred to
+   * Phase 7); typed loosely as `AnyObject` until those `_types` are authored.
+   */
+  moveTokens(instructions: Record<string, AnyObject>, options?: AnyObject): Promise<Record<string, boolean>>;
+
+  /**
+   * Invalidate cached surface data.
+   * @internal
+   */
+  _invalidateSurfaces(): void;
+
+  /**
+   * Get all surfaces (or surfaces matching the filter), ordered by elevation in ascending order.
+   * @remarks FIXME(v14): the return is `DeepReadonly<RegionSurface[]>`; `RegionSurface`
+   * (`client/documents/_types`) is deferred to Phase 7, so this is typed loosely as a readonly array
+   * of objects until then.
+   */
+  getSurfaces(options?: Scene.GetSurfacesOptions): ReadonlyArray<AnyObject>;
+
+  /**
+   * Test for surface collision for a movement between two points.
+   * @returns The collision result depends on the `mode`: `"any"` → boolean; `"all"` → a sorted array
+   * of points; `"closest"` → a point or `null`.
+   */
+  testSurfaceCollision(
+    origin: foundry.canvas.Canvas.ElevatedPoint,
+    destination: foundry.canvas.Canvas.ElevatedPoint,
+    config: Scene.TestSurfaceCollisionConfig,
+  ): boolean | foundry.canvas.Canvas.ElevatedPoint | foundry.canvas.Canvas.ElevatedPoint[] | null;
+
+  /**
+   * Cycle the currently viewed Level for this Scene.
+   */
+  cycleLevel(direction: -1 | 1): Promise<void>;
+
+  /**
+   * Get textures that should be used for the currently active Level.
+   * @internal
+   * @remarks FIXME(v14): elements are `LevelTexture & { level: Level; … }`; `LevelTexture` is part of the
+   * Scene Levels typedefs (deferred to Phase 7), so elements are typed loosely as objects until then.
+   */
+  _configureLevelTextures(): ReadonlyArray<AnyObject>;
+
+  /**
+   * Reset the edges of this Scene.
+   * @internal
+   */
+  _resetEdges(): void;
+
+  /**
+   * Initialize the edges of this Scene unless they already have been initialized.
+   */
+  initializeEdges(): void;
+
+  /**
+   * The Levels available to the current User, optionally overridden by a SceneManager.
+   * @internal
+   */
+  protected _getAvailableLevels(options?: Scene.GetAvailableLevelsOptions): Set<Level.Implementation>;
 
   /** @deprecated Foundry made this method truly private in v13 (this warning will be removed in v14) */
   protected _repositionObject(sceneUpdateData: never): never;
