@@ -2,7 +2,7 @@
 
 > Per-phase detail for the v14 migration. Slim tracker: [migration-v14.md](migration-v14.md). Closed phases: [migration-v14-archive.md](migration-v14-archive.md).
 
-**Status:** In progress (interleaved with Phase 5 per the [scope-priority decision](migration-v14.md#scope-priority)). **Risk:** Medium (volume).
+**Status: COMPLETE — CI green (2026-05-28).** All 65 stubs migrated; `src/foundry/client/` is stub-free. New v14 foundations authored: `PlaceableConfig`, the `TokenApplication` mixin members, the `DocumentDirectory` sidebar base, + the two missing journal page sheets. Scene-Levels precision deferred → P7 (see below).
 
 ## Scope
 
@@ -73,6 +73,17 @@ Two consequences for Tier A:
   - **Small directory tabs (quick):** macro (19), cards (36), journal (37), roll-table (38), item (48), actor (97), scene (107) — mostly just `DEFAULT_OPTIONS`/metadata over `DocumentDirectory`.
   - **Giants (session-sized each):** `chat` (1590), `compendium-directory` (1126), `playlist-directory` (963), `combat-tracker` (797), `tabs/settings` (118).
   - **Sidebar apps:** module-management (523), controls-config (505, CategoryBrowser), support-details (412), compendium (279), world-config (236), chat-popout (124), invitation-links (119), frame-viewer (64).
+- **`sidebar/` — ✅ DONE.** Foundation `DocumentDirectory` (1400) authored; the 7 directory tabs + 5 giants (chat/compendium-directory/playlist-directory/combat-tracker/tabs-settings) + 8 sidebar apps all filled.
+- **`client/data/` — ✅ DONE** (terrain-data, combat-config).
+
+### → Phase 7 deferral: Scene Levels precision
+
+`scene-config` and `PlaceableConfig` are migrated but their **Scene-Levels-coupled members are typed as `object` with `// FIXME … → P7`**, because the `Level` document isn't authored yet:
+
+- `scene-config`: `get defaultLevel()`, `_getLevelContextOptions()`, `_onSortLevel(event, level)`.
+- `PlaceableConfig`: body-level coupling only (`selectableLevels`); its type surface is already concrete.
+
+Authoring the `Level` document in Phase 7 should tighten these (and is tracked alongside Phase 5's `Level` FIXMEs in [phase-7](migration-v14-phase-7.md)).
 
 ## Deprioritized (do only if explicitly requested)
 
