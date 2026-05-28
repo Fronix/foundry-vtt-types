@@ -13,7 +13,6 @@ declare module "#configuration" {
 
 /**
  * An application for a single popped-out camera.
- * @remarks TODO: Stub
  */
 declare class CameraPopout<
   RenderContext extends CameraPopout.RenderContext = CameraPopout.RenderContext,
