@@ -11,6 +11,8 @@ TypeScript type definitions for [Foundry Virtual Tabletop](https://foundryvtt.co
 
 </div>
 
+> **Upgrading from v13 to v14?** See **[MIGRATING.md](MIGRATING.md)** for the breaking changes and before/after fixes.
+
 ## Supported Foundry VTT versions
 
 We aim to support the latest release of each Foundry VTT version (0.7, 0.8, 9, etc.), starting with 0.7.
