@@ -70,7 +70,7 @@ The package is **already substantially usable on v14** for backward-compatible u
 >
 > 1. **The 4 Tier-B document giants** (highest leverage, **one giant per session** — each 1.1k–4k lines, authored prerequisite-first then member-diff):
 >    - `active-effect` (1154) — independent; needs `ActiveEffectRegistry` (`client/helpers/active-effect-registry`), `CONFIG.ActiveEffect` additions (`phases`/`changeTypes`/`expiryEvents`), `ActiveEffectDuration` rework, and the change-application family moved instance→static (v13 instance methods become `@deprecated` shims).
->    - `scene` (1780) — **prereqs now met** (`Level` + `operators` done); it IS the Levels container (~110 refs) — pure-ish member-diff now.
+>    - `scene` (1780) — **first batch DONE** (commit `4773af838`, `[~]`): Levels/edges/surfaces members added. **Remaining:** the `background`/`foreground`/`backgroundColor`/`foregroundElevation` schema→`@deprecated`-getter migration (v14 moved these fields to `Level` — a schema removal with consumer/test cascade) + a final member-order verification.
 >    - `region` (2718) — needs `Level` (done) + `RegionSurface` (`client/documents/_types`) for `occludedSurfaces`/`define-surface`; ~25 missing live members listed in the phase-7 Tier-B deferral row.
 >    - `token` (4009) — needs the token-movement subsystem (~15 `TokenMovement*` `_types` + `TokenConstrainMovementPathOptions`); also unblocks the deferred Token-placeable drag/movement surface and `ModifyMovementCost._getTerrainEffects`.
 > 2. **Remaining Level loose-ends:** `PointSourcePolygon.Config.level` + `ClockwiseSweepPolygon` level internals (source-polygon not yet touched).
