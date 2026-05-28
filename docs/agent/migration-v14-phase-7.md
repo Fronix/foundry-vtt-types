@@ -2,7 +2,13 @@
 
 > Per-phase detail for the v14 migration. Slim tracker: [migration-v14.md](migration-v14.md). Closed phases: [migration-v14-archive.md](migration-v14-archive.md).
 
-**Status:** Not started. **Risk:** Medium–High (authoring from scratch + the most entangled subsystems).
+**Status:** In progress. **Risk:** Medium–High (authoring from scratch + the most entangled subsystems).
+
+## Progress
+
+- **2026-05-28 — `Level` document authored (commit `6632620a0`), CI green.** `BaseLevel` (`common/documents/level.d.mts`) + `Level` (`client/documents/level.d.mts`, via `ClientDocumentMixin`), full v14 schema (`elevation`/`background`/`foreground`/`fog`/`textures`/`visibility.levels`/`sort`/`flags`), client members (`index`, `isView`, `isVisible`, `edges`, `prepareBaseData`, `clampElevation`). Added `SceneLevelsSetField` to `common/data/fields.d.mts` and the v14 `TEXTURE` file category (`TEXTURE_FILE_EXTENSIONS` + `FILE_CATEGORIES.TEXTURE`). Registered across every surface: `EMBEDDED_DOCUMENT_TYPES`, `documentConfiguration.d.mts` (8 sites + `MisconfiguredLevel`), `CONFIG.Level`, common/client `_module` barrels, `globals.d.mts`, `client.d.mts`, eslint `documents` map, `Document.DropDataFor`. Embedded into the Scene schema as `levels` (+ `Scene.Metadata.Embedded`/`DirectDescendantName`/`DirectDescendant`/`DirectDescendantClass`). `tests/foundry/client/documents/level.test-d.ts` added.
+  - **Note:** `Level`'s runtime-derived `elevation.base` (set in `prepareBaseData`) is not modeled in the schema's `InitializedData` — minor, refine later.
+  - **Did NOT** remove `MeasuredTemplate` from `EMBEDDED_DOCUMENT_TYPES`/Scene `templates` (v14 source removed both) — that is the deferred MeasuredTemplate reconciliation; left intact to avoid the cascade.
 
 ## Scope
 
