@@ -2,7 +2,11 @@
 
 > Per-phase detail for the v14 migration. Slim tracker: [migration-v14.md](migration-v14.md). Closed phases: [migration-v14-archive.md](migration-v14-archive.md).
 
-**Status:** Not started. **Risk:** Low (mostly mechanical) — except the operation-alias bulk prune touches the `document.d.mts` boundary.
+**Status:** Not started (one item pulled forward — see below). **Risk:** Low (mostly mechanical) — except the operation-alias bulk prune touches the `document.d.mts` boundary.
+
+## Progress (pulled forward from P7)
+
+- **2026-05-28 — `package.json` version bumped `13.346.0` → `14.363.0`** (matches the v14.363.0 ground-truth build). The cheap P8 "bump to 14.x" usability win (item 2 below), pulled forward. CI green. The publish workflow appends `-beta.<timestamp>` for prereleases. The ~892-occurrence `removed in v14` prune (item 1) remains — a breaking change, left for a deliberate coordinated P8 pass.
 
 ## Scope
 
