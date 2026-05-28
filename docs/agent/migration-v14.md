@@ -80,7 +80,7 @@ The package is **already substantially usable on v14** for backward-compatible u
 > **Kickoff message** (paste verbatim):
 >
 > ```
-> Continue the v14 migration (Phase 7 — the scene Tier-B giant: its prereqs Level+operators are now met, so member-diff client/documents/scene.d.mts against v14 common+client scene.mjs)
+> Continue the v14 migration (Phase 7 — finish the scene Tier-B giant: the background/foreground/backgroundColor/foregroundElevation schema->@deprecated-getter migration (v14 moved these to the Level document) + the initialLevel field-override, fixing the consumer/test cascade; then the next giant)
 > ```
 >
 > _Maintainers: overwrite this block (not append) when a batch/phase closes._
