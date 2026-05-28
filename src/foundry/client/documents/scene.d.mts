@@ -582,6 +582,11 @@ declare namespace Scene {
      */
     backgroundColor: fields.ColorField<{ nullable: false; initial: "#999999" }>;
 
+    // TODO(v14, P7): add the `initialLevel: DocumentIdField<{ readonly: false }>` schema field. It is
+    // shadowed at runtime by the `initialLevel` getter (which returns the resolved Level), so adding it
+    // to the Schema as-is conflicts with the getter's `Level.Implementation | undefined` type. Resolving
+    // this needs the branded-field-override treatment (see bugs.md) and rides with the Scene schema rework.
+
     /**
      * Grid configuration for the scene
      * @defaultValue see properties
@@ -611,6 +616,29 @@ declare namespace Scene {
      * The environment data applied to the Scene.
      */
     environment: fields.SchemaField<EnvironmentSchema>;
+
+    /**
+     * Configuration for the transition animation played when this Scene is viewed.
+     * @defaultValue see properties
+     */
+    transition: fields.SchemaField<{
+      /** @defaultValue `null` */
+      type: fields.StringField<{ required: true; nullable: true; blank: false; initial: null }>;
+
+      /** @defaultValue `1500` */
+      duration: fields.NumberField<{
+        required: true;
+        nullable: false;
+        integer: true;
+        initial: 1500;
+        min: 500;
+        max: 10000;
+        step: 100;
+      }>;
+
+      /** @defaultValue `false` */
+      activeOnly: fields.BooleanField;
+    }>;
 
     /**
      * A collection of embedded Drawing objects.
