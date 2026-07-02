@@ -457,21 +457,6 @@ declare namespace JournalEntry {
     interface PreCreateOperation extends Document.Database.PreCreateOperation<CreateOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode JournalEntry._onCreateDocuments}. It will be removed in a future version along with the
-     * method it is for.
-     * @see {@linkcode Document.Database.OnCreateDocumentsOperation}
-     *
-     * ---
-     *
-     * **Declaration Merging Warning**
-     *
-     * It is very likely incorrect to merge into this interface instead of the base {@linkcode CreateOperation} for this Document or the
-     * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
-     * use case for doing so, please let us know.
-     */
-    interface OnCreateDocumentsOperation extends Document.Database.OnCreateDocumentsOperation<CreateOperation> {}
-
-    /**
      * The interface passed to {@linkcode JournalEntry._onCreate | JournalEntry#_onCreate} and
      * {@link Hooks.CreateDocument | the `createJournalEntry` hook}.
      * @see {@linkcode Document.Database.OnCreateOptions}
@@ -603,21 +588,6 @@ declare namespace JournalEntry {
      * use case for doing so, please let us know.
      */
     interface PreUpdateOperation extends Document.Database.PreUpdateOperation<UpdateOperation> {}
-
-    /**
-     * @deprecated The interface passed to {@linkcode JournalEntry._onUpdateDocuments}. It will be removed in a future version along with the
-     * method it is for.
-     * @see {@linkcode Document.Database.OnUpdateDocumentsOperation}
-     *
-     * ---
-     *
-     * **Declaration Merging Warning**
-     *
-     * It is very likely incorrect to merge into this interface instead of the base {@linkcode UpdateOperation} for this Document or the
-     * root {@linkcode DatabaseBackend.UpdateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
-     * use case for doing so, please let us know.
-     */
-    interface OnUpdateDocumentsOperation extends Document.Database.OnUpdateDocumentsOperation<UpdateOperation> {}
 
     /**
      * The interface passed to {@linkcode JournalEntry._onUpdate | JournalEntry#_onUpdate} and
@@ -753,21 +723,6 @@ declare namespace JournalEntry {
     interface PreDeleteOperation extends Document.Database.PreDeleteOperation<DeleteOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode JournalEntry._onDeleteDocuments}. It will be removed in a future version along with the
-     * method it is for.
-     * @see {@linkcode Document.Database.OnDeleteDocumentsOperation}
-     *
-     * ---
-     *
-     * **Declaration Merging Warning**
-     *
-     * It is very likely incorrect to merge into this interface instead of the base {@linkcode DeleteOperation} for this Document or the
-     * root {@linkcode DatabaseBackend.DeleteOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
-     * use case for doing so, please let us know.
-     */
-    interface OnDeleteDocumentsOperation extends Document.Database.OnDeleteDocumentsOperation<DeleteOperation> {}
-
-    /**
      * The interface passed to {@linkcode JournalEntry._onDelete | JournalEntry#_onDelete} and
      * {@link Hooks.DeleteDocument | the `deleteJournalEntry` hook}.
      * @see {@linkcode Document.Database.OnDeleteOptions}
@@ -810,8 +765,6 @@ declare namespace JournalEntry {
         CreateOperation: JournalEntry.Database.CreateOperation;
         PreCreateOptions: JournalEntry.Database.PreCreateOptions;
         PreCreateOperation: JournalEntry.Database.PreCreateOperation;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnCreateDocumentsOperation: JournalEntry.Database.OnCreateDocumentsOperation;
         OnCreateOptions: JournalEntry.Database.OnCreateOptions;
         OnCreateOperation: JournalEntry.Database.OnCreateOperation;
 
@@ -823,8 +776,6 @@ declare namespace JournalEntry {
         UpdateOperation: JournalEntry.Database.UpdateOperation;
         PreUpdateOptions: JournalEntry.Database.PreUpdateOptions;
         PreUpdateOperation: JournalEntry.Database.PreUpdateOperation;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnUpdateDocumentsOperation: JournalEntry.Database.OnUpdateDocumentsOperation;
         OnUpdateOptions: JournalEntry.Database.OnUpdateOptions;
         OnUpdateOperation: JournalEntry.Database.OnUpdateOperation;
 
@@ -836,8 +787,6 @@ declare namespace JournalEntry {
         DeleteOperation: JournalEntry.Database.DeleteOperation;
         PreDeleteOptions: JournalEntry.Database.PreDeleteOptions;
         PreDeleteOperation: JournalEntry.Database.PreDeleteOperation;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnDeleteDocumentsOperation: JournalEntry.Database.OnDeleteDocumentsOperation;
         OnDeleteOptions: JournalEntry.Database.OnDeleteOptions;
         OnDeleteOperation: JournalEntry.Database.OnDeleteOperation;
       }
@@ -894,18 +843,6 @@ declare namespace JournalEntry {
 
     // OnDeleteOperation didn't change purpose or name
 
-    /** @deprecated Use {@linkcode OnCreateDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type OnCreateDocumentsContext = OnCreateDocumentsOperation;
-
-    /** @deprecated Use {@linkcode OnUpdateDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type OnUpdateDocumentsContext = OnUpdateDocumentsOperation;
-
-    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type OnDeleteDocumentsContext = OnDeleteDocumentsOperation;
-
     /** @deprecated Use {@linkcode OnDeleteOptions} instead. This type will be removed in a future version */
     type DeleteOptions = OnDeleteOptions;
 
@@ -914,10 +851,6 @@ declare namespace JournalEntry {
 
     /** @deprecated Use {@linkcode OnUpdateOptions} instead. This type will be removed in a future version */
     type UpdateOptions = OnUpdateOptions;
-
-    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type DeleteDocumentsContext = OnDeleteDocumentsOperation;
 
     /** @deprecated use {@linkcode CreateDocumentsOperation} instead. This type will be removed in a future version. */
     type DialogCreateOptions = CreateDocumentsOperation;

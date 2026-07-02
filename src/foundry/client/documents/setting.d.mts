@@ -356,21 +356,6 @@ declare namespace Setting {
     interface PreCreateOperation extends Document.Database.PreCreateOperation<CreateOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode Setting._onCreateDocuments}. It will be removed in a future version along with the
-     * method it is for.
-     * @see {@linkcode Document.Database.OnCreateDocumentsOperation}
-     *
-     * ---
-     *
-     * **Declaration Merging Warning**
-     *
-     * It is very likely incorrect to merge into this interface instead of the base {@linkcode CreateOperation} for this Document or the
-     * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
-     * use case for doing so, please let us know.
-     */
-    interface OnCreateDocumentsOperation extends Document.Database.OnCreateDocumentsOperation<CreateOperation> {}
-
-    /**
      * The interface passed to {@linkcode Setting._onCreate | Setting#_onCreate} and
      * {@link Hooks.CreateDocument | the `createSetting` hook}.
      * @see {@linkcode Document.Database.OnCreateOptions}
@@ -504,21 +489,6 @@ declare namespace Setting {
      * use case for doing so, please let us know.
      */
     interface PreUpdateOperation extends Document.Database.PreUpdateOperation<UpdateOperation> {}
-
-    /**
-     * @deprecated The interface passed to {@linkcode Setting._onUpdateDocuments}. It will be removed in a future version along with the
-     * method it is for.
-     * @see {@linkcode Document.Database.OnUpdateDocumentsOperation}
-     *
-     * ---
-     *
-     * **Declaration Merging Warning**
-     *
-     * It is very likely incorrect to merge into this interface instead of the base {@linkcode UpdateOperation} for this Document or the
-     * root {@linkcode DatabaseBackend.UpdateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
-     * use case for doing so, please let us know.
-     */
-    interface OnUpdateDocumentsOperation extends Document.Database.OnUpdateDocumentsOperation<UpdateOperation> {}
 
     /**
      * This is the "real" {@linkcode OnUpdateOptionsW} for `Setting`, see that linked interface's privateRemarks.
@@ -683,21 +653,6 @@ declare namespace Setting {
     interface PreDeleteOperation extends Document.Database.PreDeleteOperation<DeleteOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode Setting._onDeleteDocuments}. It will be removed in a future version along with the
-     * method it is for.
-     * @see {@linkcode Document.Database.OnDeleteDocumentsOperation}
-     *
-     * ---
-     *
-     * **Declaration Merging Warning**
-     *
-     * It is very likely incorrect to merge into this interface instead of the base {@linkcode DeleteOperation} for this Document or the
-     * root {@linkcode DatabaseBackend.DeleteOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
-     * use case for doing so, please let us know.
-     */
-    interface OnDeleteDocumentsOperation extends Document.Database.OnDeleteDocumentsOperation<DeleteOperation> {}
-
-    /**
      * The interface passed to {@linkcode Setting._onDelete | Setting#_onDelete} and
      * {@link Hooks.DeleteDocument | the `deleteSetting` hook}.
      * @see {@linkcode Document.Database.OnDeleteOptions}
@@ -740,8 +695,6 @@ declare namespace Setting {
         CreateOperation: Setting.Database.CreateOperation;
         PreCreateOptions: Setting.Database.PreCreateOptions;
         PreCreateOperation: Setting.Database.PreCreateOperation;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnCreateDocumentsOperation: Setting.Database.OnCreateDocumentsOperation;
         OnCreateOptions: Setting.Database.OnCreateOptions;
         OnCreateOperation: Setting.Database.OnCreateOperation;
 
@@ -753,8 +706,6 @@ declare namespace Setting {
         UpdateOperation: Setting.Database.UpdateOperation;
         PreUpdateOptions: Setting.Database.PreUpdateOptions;
         PreUpdateOperation: Setting.Database.PreUpdateOperation;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnUpdateDocumentsOperation: Setting.Database.OnUpdateDocumentsOperation;
         OnUpdateOptions: Setting.Database.OnUpdateOptions;
         OnUpdateOperation: Setting.Database.OnUpdateOperation;
 
@@ -766,8 +717,6 @@ declare namespace Setting {
         DeleteOperation: Setting.Database.DeleteOperation;
         PreDeleteOptions: Setting.Database.PreDeleteOptions;
         PreDeleteOperation: Setting.Database.PreDeleteOperation;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnDeleteDocumentsOperation: Setting.Database.OnDeleteDocumentsOperation;
         OnDeleteOptions: Setting.Database.OnDeleteOptions;
         OnDeleteOperation: Setting.Database.OnDeleteOperation;
       }
@@ -824,18 +773,6 @@ declare namespace Setting {
 
     // OnDeleteOperation didn't change purpose or name
 
-    /** @deprecated Use {@linkcode OnCreateDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type OnCreateDocumentsContext = OnCreateDocumentsOperation;
-
-    /** @deprecated Use {@linkcode OnUpdateDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type OnUpdateDocumentsContext = OnUpdateDocumentsOperation;
-
-    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type OnDeleteDocumentsContext = OnDeleteDocumentsOperation;
-
     /** @deprecated Use {@linkcode OnDeleteOptions} instead. This type will be removed in a future version */
     type DeleteOptions = OnDeleteOptions;
 
@@ -844,10 +781,6 @@ declare namespace Setting {
 
     /** @deprecated Use {@linkcode OnUpdateOptions} instead. This type will be removed in a future version */
     type UpdateOptions = OnUpdateOptions;
-
-    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type DeleteDocumentsContext = OnDeleteDocumentsOperation;
 
     /** @deprecated use {@linkcode CreateDocumentsOperation} instead. This type will be removed in a future version. */
     type DialogCreateOptions = CreateDocumentsOperation;

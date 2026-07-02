@@ -516,21 +516,6 @@ declare namespace Card {
     interface PreCreateOperation extends Document.Database.PreCreateOperation<CreateOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode Card._onCreateDocuments}. It will be removed in a future version along with the
-     * method it is for.
-     * @see {@linkcode Document.Database.OnCreateDocumentsOperation}
-     *
-     * ---
-     *
-     * **Declaration Merging Warning**
-     *
-     * It is very likely incorrect to merge into this interface instead of the base {@linkcode CreateOperation} for this Document or the
-     * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
-     * use case for doing so, please let us know.
-     */
-    interface OnCreateDocumentsOperation extends Document.Database.OnCreateDocumentsOperation<CreateOperation> {}
-
-    /**
      * The interface passed to {@linkcode Card._onCreate | Card#_onCreate} and
      * {@link Hooks.CreateDocument | the `createCard` hook}.
      * @see {@linkcode Document.Database.OnCreateOptions}
@@ -660,21 +645,6 @@ declare namespace Card {
      * use case for doing so, please let us know.
      */
     interface PreUpdateOperation extends Document.Database.PreUpdateOperation<UpdateOperation> {}
-
-    /**
-     * @deprecated The interface passed to {@linkcode Card._onUpdateDocuments}. It will be removed in a future version along with the
-     * method it is for.
-     * @see {@linkcode Document.Database.OnUpdateDocumentsOperation}
-     *
-     * ---
-     *
-     * **Declaration Merging Warning**
-     *
-     * It is very likely incorrect to merge into this interface instead of the base {@linkcode UpdateOperation} for this Document or the
-     * root {@linkcode DatabaseBackend.UpdateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
-     * use case for doing so, please let us know.
-     */
-    interface OnUpdateDocumentsOperation extends Document.Database.OnUpdateDocumentsOperation<UpdateOperation> {}
 
     /**
      * The interface passed to {@linkcode Card._onUpdate | Card#_onUpdate} and
@@ -808,21 +778,6 @@ declare namespace Card {
     interface PreDeleteOperation extends Document.Database.PreDeleteOperation<DeleteOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode Card._onDeleteDocuments}. It will be removed in a future version along with the
-     * method it is for.
-     * @see {@linkcode Document.Database.OnDeleteDocumentsOperation}
-     *
-     * ---
-     *
-     * **Declaration Merging Warning**
-     *
-     * It is very likely incorrect to merge into this interface instead of the base {@linkcode DeleteOperation} for this Document or the
-     * root {@linkcode DatabaseBackend.DeleteOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
-     * use case for doing so, please let us know.
-     */
-    interface OnDeleteDocumentsOperation extends Document.Database.OnDeleteDocumentsOperation<DeleteOperation> {}
-
-    /**
      * The interface passed to {@linkcode Card._onDelete | Card#_onDelete} and
      * {@link Hooks.DeleteDocument | the `deleteCard` hook}.
      * @see {@linkcode Document.Database.OnDeleteOptions}
@@ -864,8 +819,6 @@ declare namespace Card {
         CreateOperation: Card.Database.CreateOperation;
         PreCreateOptions: Card.Database.PreCreateOptions;
         PreCreateOperation: Card.Database.PreCreateOperation;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnCreateDocumentsOperation: Card.Database.OnCreateDocumentsOperation;
         OnCreateOptions: Card.Database.OnCreateOptions;
         OnCreateOperation: Card.Database.OnCreateOperation;
 
@@ -876,8 +829,6 @@ declare namespace Card {
         UpdateOperation: Card.Database.UpdateOperation;
         PreUpdateOptions: Card.Database.PreUpdateOptions;
         PreUpdateOperation: Card.Database.PreUpdateOperation;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnUpdateDocumentsOperation: Card.Database.OnUpdateDocumentsOperation;
         OnUpdateOptions: Card.Database.OnUpdateOptions;
         OnUpdateOperation: Card.Database.OnUpdateOperation;
 
@@ -888,8 +839,6 @@ declare namespace Card {
         DeleteOperation: Card.Database.DeleteOperation;
         PreDeleteOptions: Card.Database.PreDeleteOptions;
         PreDeleteOperation: Card.Database.PreDeleteOperation;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnDeleteDocumentsOperation: Card.Database.OnDeleteDocumentsOperation;
         OnDeleteOptions: Card.Database.OnDeleteOptions;
         OnDeleteOperation: Card.Database.OnDeleteOperation;
       }
@@ -946,18 +895,6 @@ declare namespace Card {
 
     // OnDeleteOperation didn't change purpose or name
 
-    /** @deprecated Use {@linkcode OnCreateDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type OnCreateDocumentsContext = OnCreateDocumentsOperation;
-
-    /** @deprecated Use {@linkcode OnUpdateDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type OnUpdateDocumentsContext = OnUpdateDocumentsOperation;
-
-    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type OnDeleteDocumentsContext = OnDeleteDocumentsOperation;
-
     /** @deprecated Use {@linkcode OnDeleteOptions} instead. This type will be removed in a future version */
     type DeleteOptions = OnDeleteOptions;
 
@@ -966,10 +903,6 @@ declare namespace Card {
 
     /** @deprecated Use {@linkcode OnUpdateOptions} instead. This type will be removed in a future version */
     type UpdateOptions = OnUpdateOptions;
-
-    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type DeleteDocumentsContext = OnDeleteDocumentsOperation;
 
     /** @deprecated use {@linkcode CreateDocumentsOperation} instead. This type will be removed in a future version. */
     type DialogCreateOptions = CreateDocumentsOperation;

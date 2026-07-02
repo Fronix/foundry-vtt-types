@@ -209,16 +209,6 @@ export const operations = {
       parent,
     }) satisfies ActiveEffect.Database.PreCreateOperation,
 
-  // TODO: remove in v14
-  onCreateDocumentsOperation: ({ data, parent = null }: { data: Implementation[]; parent?: Parent }) =>
-    ({
-      ...database.onCreateDocumentsOperationBase,
-      ...docCreateOpProps,
-      data,
-      parent,
-      // eslint-disable-next-line @typescript-eslint/no-deprecated
-    }) satisfies ActiveEffect.Database.OnCreateDocumentsOperation,
-
   minimalOnCreateOptions: ({ parent = null }: { parent?: Parent } = {}) =>
     ({
       ...database.minimalOnCreateOptionsBase,
@@ -302,16 +292,6 @@ export const operations = {
       parent,
       updates,
     }) satisfies ActiveEffect.Database.PreUpdateOperation,
-
-  // TODO: remove in v14
-  onUpdateDocumentsOperation: ({ parent = null, updates }: { parent?: Parent; updates: UpdateData[] }) =>
-    ({
-      ...database.onUpdateDocumentsOperationBase,
-      ...docCreateOpProps,
-      parent,
-      updates,
-      // eslint-disable-next-line @typescript-eslint/no-deprecated
-    }) satisfies ActiveEffect.Database.OnUpdateDocumentsOperation,
 
   minimalOnUpdateOptions: ({ parent = null }: { parent?: Parent } = {}) =>
     ({
@@ -402,16 +382,6 @@ export const operations = {
       parent,
     }) satisfies ActiveEffect.Database.PreDeleteOperation,
 
-  // TODO: remove in v14
-  onDeleteDocumentsOperation: ({ ids, parent = null }: { ids: string[]; parent?: Parent }) =>
-    ({
-      ...database.preDeleteOperationBase,
-      ...docDeleteOpProps,
-      ids,
-      parent,
-      // eslint-disable-next-line @typescript-eslint/no-deprecated
-    }) satisfies ActiveEffect.Database.OnDeleteDocumentsOperation,
-
   minimalOnDeleteOptions: ({ parent = null }: { parent?: Parent }) =>
     ({
       ...database.minimalOnDeleteOptionsBase,
@@ -434,7 +404,7 @@ export const operations = {
 
   onDeleteOperation: ({ ids, parent = null }: { ids: string[]; parent?: Parent }) =>
     ({
-      ...database.onDeleteDocumentsOperationBase,
+      ...database.onDeleteOperationBase,
       ...docDeleteOpProps,
       ids,
       parent,

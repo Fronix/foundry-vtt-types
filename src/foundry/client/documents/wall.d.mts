@@ -541,21 +541,6 @@ declare namespace WallDocument {
     interface PreCreateOperation extends Document.Database.PreCreateOperation<CreateOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode WallDocument._onCreateDocuments}. It will be removed in a future version along with the
-     * method it is for.
-     * @see {@linkcode Document.Database.OnCreateDocumentsOperation}
-     *
-     * ---
-     *
-     * **Declaration Merging Warning**
-     *
-     * It is very likely incorrect to merge into this interface instead of the base {@linkcode CreateOperation} for this Document or the
-     * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
-     * use case for doing so, please let us know.
-     */
-    interface OnCreateDocumentsOperation extends Document.Database.OnCreateDocumentsOperation<CreateOperation> {}
-
-    /**
      * The interface passed to {@linkcode WallDocument._onCreate | WallDocument#_onCreate} and
      * {@link Hooks.CreateDocument | the `createWallDocument` hook}.
      * @see {@linkcode Document.Database.OnCreateOptions}
@@ -696,21 +681,6 @@ declare namespace WallDocument {
     interface PreUpdateOperation extends Document.Database.PreUpdateOperation<UpdateOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode WallDocument._onUpdateDocuments}. It will be removed in a future version along with the
-     * method it is for.
-     * @see {@linkcode Document.Database.OnUpdateDocumentsOperation}
-     *
-     * ---
-     *
-     * **Declaration Merging Warning**
-     *
-     * It is very likely incorrect to merge into this interface instead of the base {@linkcode UpdateOperation} for this Document or the
-     * root {@linkcode DatabaseBackend.UpdateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
-     * use case for doing so, please let us know.
-     */
-    interface OnUpdateDocumentsOperation extends Document.Database.OnUpdateDocumentsOperation<UpdateOperation> {}
-
-    /**
      * The interface passed to {@linkcode WallDocument._onUpdate | WallDocument#_onUpdate} and
      * {@link Hooks.UpdateDocument | the `updateWallDocument` hook}.
      * @see {@linkcode Document.Database.OnUpdateOptions}
@@ -842,21 +812,6 @@ declare namespace WallDocument {
     interface PreDeleteOperation extends Document.Database.PreDeleteOperation<DeleteOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode WallDocument._onDeleteDocuments}. It will be removed in a future version along with the
-     * method it is for.
-     * @see {@linkcode Document.Database.OnDeleteDocumentsOperation}
-     *
-     * ---
-     *
-     * **Declaration Merging Warning**
-     *
-     * It is very likely incorrect to merge into this interface instead of the base {@linkcode DeleteOperation} for this Document or the
-     * root {@linkcode DatabaseBackend.DeleteOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
-     * use case for doing so, please let us know.
-     */
-    interface OnDeleteDocumentsOperation extends Document.Database.OnDeleteDocumentsOperation<DeleteOperation> {}
-
-    /**
      * The interface passed to {@linkcode WallDocument._onDelete | WallDocument#_onDelete} and
      * {@link Hooks.DeleteDocument | the `deleteWallDocument` hook}.
      * @see {@linkcode Document.Database.OnDeleteOptions}
@@ -898,8 +853,6 @@ declare namespace WallDocument {
         CreateOperation: WallDocument.Database.CreateOperation;
         PreCreateOptions: WallDocument.Database.PreCreateOptions;
         PreCreateOperation: WallDocument.Database.PreCreateOperation;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnCreateDocumentsOperation: WallDocument.Database.OnCreateDocumentsOperation;
         OnCreateOptions: WallDocument.Database.OnCreateOptions;
         OnCreateOperation: WallDocument.Database.OnCreateOperation;
 
@@ -910,8 +863,6 @@ declare namespace WallDocument {
         UpdateOperation: WallDocument.Database.UpdateOperation;
         PreUpdateOptions: WallDocument.Database.PreUpdateOptions;
         PreUpdateOperation: WallDocument.Database.PreUpdateOperation;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnUpdateDocumentsOperation: WallDocument.Database.OnUpdateDocumentsOperation;
         OnUpdateOptions: WallDocument.Database.OnUpdateOptions;
         OnUpdateOperation: WallDocument.Database.OnUpdateOperation;
 
@@ -922,8 +873,6 @@ declare namespace WallDocument {
         DeleteOperation: WallDocument.Database.DeleteOperation;
         PreDeleteOptions: WallDocument.Database.PreDeleteOptions;
         PreDeleteOperation: WallDocument.Database.PreDeleteOperation;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnDeleteDocumentsOperation: WallDocument.Database.OnDeleteDocumentsOperation;
         OnDeleteOptions: WallDocument.Database.OnDeleteOptions;
         OnDeleteOperation: WallDocument.Database.OnDeleteOperation;
       }
@@ -980,18 +929,6 @@ declare namespace WallDocument {
 
     // OnDeleteOperation didn't change purpose or name
 
-    /** @deprecated Use {@linkcode OnCreateDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type OnCreateDocumentsContext = OnCreateDocumentsOperation;
-
-    /** @deprecated Use {@linkcode OnUpdateDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type OnUpdateDocumentsContext = OnUpdateDocumentsOperation;
-
-    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type OnDeleteDocumentsContext = OnDeleteDocumentsOperation;
-
     /** @deprecated Use {@linkcode OnDeleteOptions} instead. This type will be removed in a future version */
     type DeleteOptions = OnDeleteOptions;
 
@@ -1000,10 +937,6 @@ declare namespace WallDocument {
 
     /** @deprecated Use {@linkcode OnUpdateOptions} instead. This type will be removed in a future version */
     type UpdateOptions = OnUpdateOptions;
-
-    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type DeleteDocumentsContext = OnDeleteDocumentsOperation;
 
     /** @deprecated use {@linkcode CreateDocumentsOperation} instead. This type will be removed in a future version. */
     type DialogCreateOptions = CreateDocumentsOperation;

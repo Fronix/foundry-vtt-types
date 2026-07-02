@@ -1019,21 +1019,6 @@ declare namespace TokenDocument {
     interface PreCreateOperation extends Document.Database.PreCreateOperation<CreateOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode TokenDocument._onCreateDocuments}. It will be removed in a future version along with the
-     * method it is for.
-     * @see {@linkcode Document.Database.OnCreateDocumentsOperation}
-     *
-     * ---
-     *
-     * **Declaration Merging Warning**
-     *
-     * It is very likely incorrect to merge into this interface instead of the base {@linkcode CreateOperation} for this Document or the
-     * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
-     * use case for doing so, please let us know.
-     */
-    interface OnCreateDocumentsOperation extends Document.Database.OnCreateDocumentsOperation<CreateOperation> {}
-
-    /**
      * The interface passed to {@linkcode TokenDocument._onCreate | TokenDocument#_onCreate} and
      * {@link Hooks.CreateDocument | the `createTokenDocument` hook}.
      * @see {@linkcode Document.Database.OnCreateOptions}
@@ -1345,24 +1330,6 @@ declare namespace TokenDocument {
       extends Document.Database.PreUpdateOperation<UpdateOperation>, TokenDocument.Database._PreServerUpdateOperation {}
 
     /**
-     * @deprecated The interface passed to {@linkcode TokenDocument._onUpdateDocuments}. It will be removed in a future version along with the
-     * method it is for.
-     * @see {@linkcode Document.Database.OnUpdateDocumentsOperation}
-     *
-     * ---
-     *
-     * **Declaration Merging Warning**
-     *
-     * It is very likely incorrect to merge into this interface instead of the base {@linkcode UpdateOperation} for this Document or the
-     * root {@linkcode DatabaseBackend.UpdateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
-     * use case for doing so, please let us know.
-     */
-    interface OnUpdateDocumentsOperation
-      extends
-        Omit<Document.Database.OnUpdateDocumentsOperation<UpdateOperation>, "_movementArguments">,
-        TokenDocument.Database._PostServerUpdateOperation {}
-
-    /**
      * The interface passed to {@linkcode TokenDocument._onUpdate | TokenDocument#_onUpdate} and
      * {@link Hooks.UpdateDocument | the `updateTokenDocument` hook}.
      * @see {@linkcode Document.Database.OnUpdateOptions}
@@ -1503,21 +1470,6 @@ declare namespace TokenDocument {
     interface PreDeleteOperation extends Document.Database.PreDeleteOperation<DeleteOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode TokenDocument._onDeleteDocuments}. It will be removed in a future version along with the
-     * method it is for.
-     * @see {@linkcode Document.Database.OnDeleteDocumentsOperation}
-     *
-     * ---
-     *
-     * **Declaration Merging Warning**
-     *
-     * It is very likely incorrect to merge into this interface instead of the base {@linkcode DeleteOperation} for this Document or the
-     * root {@linkcode DatabaseBackend.DeleteOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
-     * use case for doing so, please let us know.
-     */
-    interface OnDeleteDocumentsOperation extends Document.Database.OnDeleteDocumentsOperation<DeleteOperation> {}
-
-    /**
      * The interface passed to {@linkcode TokenDocument._onDelete | TokenDocument#_onDelete} and
      * {@link Hooks.DeleteDocument | the `deleteTokenDocument` hook}.
      * @see {@linkcode Document.Database.OnDeleteOptions}
@@ -1559,8 +1511,6 @@ declare namespace TokenDocument {
         CreateOperation: TokenDocument.Database.CreateOperation;
         PreCreateOptions: TokenDocument.Database.PreCreateOptions;
         PreCreateOperation: TokenDocument.Database.PreCreateOperation;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnCreateDocumentsOperation: TokenDocument.Database.OnCreateDocumentsOperation;
         OnCreateOptions: TokenDocument.Database.OnCreateOptions;
         OnCreateOperation: TokenDocument.Database.OnCreateOperation;
 
@@ -1571,8 +1521,6 @@ declare namespace TokenDocument {
         UpdateOperation: TokenDocument.Database.UpdateOperation;
         PreUpdateOptions: TokenDocument.Database.PreUpdateOptions;
         PreUpdateOperation: TokenDocument.Database.PreUpdateOperation;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnUpdateDocumentsOperation: TokenDocument.Database.OnUpdateDocumentsOperation;
         OnUpdateOptions: TokenDocument.Database.OnUpdateOptions;
         OnUpdateOperation: TokenDocument.Database.OnUpdateOperation;
 
@@ -1583,8 +1531,6 @@ declare namespace TokenDocument {
         DeleteOperation: TokenDocument.Database.DeleteOperation;
         PreDeleteOptions: TokenDocument.Database.PreDeleteOptions;
         PreDeleteOperation: TokenDocument.Database.PreDeleteOperation;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnDeleteDocumentsOperation: TokenDocument.Database.OnDeleteDocumentsOperation;
         OnDeleteOptions: TokenDocument.Database.OnDeleteOptions;
         OnDeleteOperation: TokenDocument.Database.OnDeleteOperation;
       }
@@ -1641,18 +1587,6 @@ declare namespace TokenDocument {
 
     // OnDeleteOperation didn't change purpose or name
 
-    /** @deprecated Use {@linkcode OnCreateDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type OnCreateDocumentsContext = OnCreateDocumentsOperation;
-
-    /** @deprecated Use {@linkcode OnUpdateDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type OnUpdateDocumentsContext = OnUpdateDocumentsOperation;
-
-    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type OnDeleteDocumentsContext = OnDeleteDocumentsOperation;
-
     /** @deprecated Use {@linkcode OnDeleteOptions} instead. This type will be removed in a future version */
     type DeleteOptions = OnDeleteOptions;
 
@@ -1661,10 +1595,6 @@ declare namespace TokenDocument {
 
     /** @deprecated Use {@linkcode OnUpdateOptions} instead. This type will be removed in a future version */
     type UpdateOptions = OnUpdateOptions;
-
-    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type DeleteDocumentsContext = OnDeleteDocumentsOperation;
 
     /** @deprecated use {@linkcode CreateDocumentsOperation} instead. This type will be removed in a future version. */
     type DialogCreateOptions = CreateDocumentsOperation;

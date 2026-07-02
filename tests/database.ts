@@ -6,7 +6,6 @@ export const createOperationName = [
   "BackendCreateOperation",
   "PreCreateOptions",
   "PreCreateOperation",
-  "OnCreateDocumentsOperation",
   "OnCreateOptions",
   "OnCreateOperation",
 ] as const;
@@ -18,7 +17,6 @@ export const updateOperationName = [
   "BackendUpdateOperation",
   "PreUpdateOptions",
   "PreUpdateOperation",
-  "OnUpdateDocumentsOperation",
   "OnUpdateOptions",
   "OnUpdateOperation",
 ] as const;
@@ -30,7 +28,6 @@ export const deleteOperationName = [
   "BackendDeleteOperation",
   "PreDeleteOptions",
   "PreDeleteOperation",
-  "OnDeleteDocumentsOperation",
   "OnDeleteOptions",
   "OnDeleteOperation",
 ] as const;
@@ -106,12 +103,6 @@ export const preCreateOperationBase = {
   noHook: false,
   pack: null,
   parentUuid: null,
-  // `parent` and `data` are always document-specific
-};
-
-export const onCreateDocumentsOperationBase = {
-  ...createOpPropsNeverOmitted,
-  ...postBackendCreateOpProperties,
   // `parent` and `data` are always document-specific
 };
 
@@ -200,12 +191,6 @@ export const preUpdateOperationBase = {
   // `parent` and `updates` are always document-specific
 };
 
-export const onUpdateDocumentsOperationBase = {
-  ...updateOpPropsNeverOmitted,
-  ...postBackendUpdateOpProperties,
-  // `parent` and `updates` are always document-specific
-};
-
 export const minimalOnUpdateOptionsBase = {
   ...postBackendUpdateOpProperties,
   // `parent` is always document-specific
@@ -285,10 +270,6 @@ export const preDeleteOperationBase = {
   noHook: false,
   pack: null,
   parentUuid: null,
-};
-
-export const onDeleteDocumentsOperationBase = {
-  ...preDeleteOperationBase,
 };
 
 export const minimalOnDeleteOptionsBase = {

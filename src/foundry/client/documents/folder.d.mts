@@ -409,21 +409,6 @@ declare namespace Folder {
     interface PreCreateOperation extends Document.Database.PreCreateOperation<CreateOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode Folder._onCreateDocuments}. It will be removed in a future version along with the
-     * method it is for.
-     * @see {@linkcode Document.Database.OnCreateDocumentsOperation}
-     *
-     * ---
-     *
-     * **Declaration Merging Warning**
-     *
-     * It is very likely incorrect to merge into this interface instead of the base {@linkcode CreateOperation} for this Document or the
-     * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
-     * use case for doing so, please let us know.
-     */
-    interface OnCreateDocumentsOperation extends Document.Database.OnCreateDocumentsOperation<CreateOperation> {}
-
-    /**
      * The interface passed to {@linkcode Folder._onCreate | Folder#_onCreate} and
      * {@link Hooks.CreateDocument | the `createFolder` hook}.
      * @see {@linkcode Document.Database.OnCreateOptions}
@@ -555,21 +540,6 @@ declare namespace Folder {
      * use case for doing so, please let us know.
      */
     interface PreUpdateOperation extends Document.Database.PreUpdateOperation<UpdateOperation> {}
-
-    /**
-     * @deprecated The interface passed to {@linkcode Folder._onUpdateDocuments}. It will be removed in a future version along with the
-     * method it is for.
-     * @see {@linkcode Document.Database.OnUpdateDocumentsOperation}
-     *
-     * ---
-     *
-     * **Declaration Merging Warning**
-     *
-     * It is very likely incorrect to merge into this interface instead of the base {@linkcode UpdateOperation} for this Document or the
-     * root {@linkcode DatabaseBackend.UpdateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
-     * use case for doing so, please let us know.
-     */
-    interface OnUpdateDocumentsOperation extends Document.Database.OnUpdateDocumentsOperation<UpdateOperation> {}
 
     /**
      * The interface passed to {@linkcode Folder._onUpdate | Folder#_onUpdate} and
@@ -723,21 +693,6 @@ declare namespace Folder {
     interface PreDeleteOperation extends Document.Database.PreDeleteOperation<DeleteOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode Folder._onDeleteDocuments}. It will be removed in a future version along with the
-     * method it is for.
-     * @see {@linkcode Document.Database.OnDeleteDocumentsOperation}
-     *
-     * ---
-     *
-     * **Declaration Merging Warning**
-     *
-     * It is very likely incorrect to merge into this interface instead of the base {@linkcode DeleteOperation} for this Document or the
-     * root {@linkcode DatabaseBackend.DeleteOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
-     * use case for doing so, please let us know.
-     */
-    interface OnDeleteDocumentsOperation extends Document.Database.OnDeleteDocumentsOperation<DeleteOperation> {}
-
-    /**
      * The interface passed to {@linkcode Folder._onDelete | Folder#_onDelete} and
      * {@link Hooks.DeleteDocument | the `deleteFolder` hook}.
      * @see {@linkcode Document.Database.OnDeleteOptions}
@@ -780,8 +735,6 @@ declare namespace Folder {
         CreateOperation: Folder.Database.CreateOperation;
         PreCreateOptions: Folder.Database.PreCreateOptions;
         PreCreateOperation: Folder.Database.PreCreateOperation;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnCreateDocumentsOperation: Folder.Database.OnCreateDocumentsOperation;
         OnCreateOptions: Folder.Database.OnCreateOptions;
         OnCreateOperation: Folder.Database.OnCreateOperation;
 
@@ -793,8 +746,6 @@ declare namespace Folder {
         UpdateOperation: Folder.Database.UpdateOperation;
         PreUpdateOptions: Folder.Database.PreUpdateOptions;
         PreUpdateOperation: Folder.Database.PreUpdateOperation;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnUpdateDocumentsOperation: Folder.Database.OnUpdateDocumentsOperation;
         OnUpdateOptions: Folder.Database.OnUpdateOptions;
         OnUpdateOperation: Folder.Database.OnUpdateOperation;
 
@@ -806,8 +757,6 @@ declare namespace Folder {
         DeleteOperation: Folder.Database.DeleteOperation;
         PreDeleteOptions: Folder.Database.PreDeleteOptions;
         PreDeleteOperation: Folder.Database.PreDeleteOperation;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnDeleteDocumentsOperation: Folder.Database.OnDeleteDocumentsOperation;
         OnDeleteOptions: Folder.Database.OnDeleteOptions;
         OnDeleteOperation: Folder.Database.OnDeleteOperation;
       }
@@ -864,18 +813,6 @@ declare namespace Folder {
 
     // OnDeleteOperation didn't change purpose or name
 
-    /** @deprecated Use {@linkcode OnCreateDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type OnCreateDocumentsContext = OnCreateDocumentsOperation;
-
-    /** @deprecated Use {@linkcode OnUpdateDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type OnUpdateDocumentsContext = OnUpdateDocumentsOperation;
-
-    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type OnDeleteDocumentsContext = OnDeleteDocumentsOperation;
-
     /** @deprecated Use {@linkcode OnDeleteOptions} instead. This type will be removed in a future version */
     type DeleteOptions = OnDeleteOptions;
 
@@ -884,10 +821,6 @@ declare namespace Folder {
 
     /** @deprecated Use {@linkcode OnUpdateOptions} instead. This type will be removed in a future version */
     type UpdateOptions = OnUpdateOptions;
-
-    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type DeleteDocumentsContext = OnDeleteDocumentsOperation;
 
     /** @deprecated use {@linkcode CreateDocumentsOperation} instead. This type will be removed in a future version. */
     type DialogCreateOptions = CreateDocumentsOperation;

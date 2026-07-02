@@ -517,21 +517,6 @@ declare namespace ActorDelta {
     interface PreCreateOperation extends Document.Database.PreCreateOperation<CreateOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode ActorDelta._onCreateDocuments}. It will be removed in a future version along with the
-     * method it is for.
-     * @see {@linkcode Document.Database.OnCreateDocumentsOperation}
-     *
-     * ---
-     *
-     * **Declaration Merging Warning**
-     *
-     * It is very likely incorrect to merge into this interface instead of the base {@linkcode CreateOperation} for this Document or the
-     * root {@linkcode DatabaseBackend.CreateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
-     * use case for doing so, please let us know.
-     */
-    interface OnCreateDocumentsOperation extends Document.Database.OnCreateDocumentsOperation<CreateOperation> {}
-
-    /**
      * The interface passed to {@linkcode ActorDelta._onCreate | ActorDelta#_onCreate} and
      * {@link Hooks.CreateDocument | the `createActorDelta` hook}.
      * @see {@linkcode Document.Database.OnCreateOptions}
@@ -670,21 +655,6 @@ declare namespace ActorDelta {
      * use case for doing so, please let us know.
      */
     interface PreUpdateOperation extends Document.Database.PreUpdateOperation<UpdateOperation> {}
-
-    /**
-     * @deprecated The interface passed to {@linkcode ActorDelta._onUpdateDocuments}. It will be removed in a future version along with the
-     * method it is for.
-     * @see {@linkcode Document.Database.OnUpdateDocumentsOperation}
-     *
-     * ---
-     *
-     * **Declaration Merging Warning**
-     *
-     * It is very likely incorrect to merge into this interface instead of the base {@linkcode UpdateOperation} for this Document or the
-     * root {@linkcode DatabaseBackend.UpdateOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
-     * use case for doing so, please let us know.
-     */
-    interface OnUpdateDocumentsOperation extends Document.Database.OnUpdateDocumentsOperation<UpdateOperation> {}
 
     /**
      * The interface passed to {@linkcode ActorDelta._onUpdate | ActorDelta#_onUpdate} and
@@ -837,21 +807,6 @@ declare namespace ActorDelta {
     interface PreDeleteOperation extends Document.Database.PreDeleteOperation<DeleteOperation> {}
 
     /**
-     * @deprecated The interface passed to {@linkcode ActorDelta._onDeleteDocuments}. It will be removed in a future version along with the
-     * method it is for.
-     * @see {@linkcode Document.Database.OnDeleteDocumentsOperation}
-     *
-     * ---
-     *
-     * **Declaration Merging Warning**
-     *
-     * It is very likely incorrect to merge into this interface instead of the base {@linkcode DeleteOperation} for this Document or the
-     * root {@linkcode DatabaseBackend.DeleteOperation} for all documents, for reasons outlined in the latter's remarks. If you have a valid
-     * use case for doing so, please let us know.
-     */
-    interface OnDeleteDocumentsOperation extends Document.Database.OnDeleteDocumentsOperation<DeleteOperation> {}
-
-    /**
      * The interface passed to {@linkcode ActorDelta._onDelete | ActorDelta#_onDelete} and
      * {@link Hooks.DeleteDocument | the `deleteActorDelta` hook}.
      * @see {@linkcode Document.Database.OnDeleteOptions}
@@ -893,8 +848,6 @@ declare namespace ActorDelta {
         CreateOperation: ActorDelta.Database.CreateOperation;
         PreCreateOptions: ActorDelta.Database.PreCreateOptions;
         PreCreateOperation: ActorDelta.Database.PreCreateOperation;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnCreateDocumentsOperation: ActorDelta.Database.OnCreateDocumentsOperation;
         OnCreateOptions: ActorDelta.Database.OnCreateOptions;
         OnCreateOperation: ActorDelta.Database.OnCreateOperation;
 
@@ -905,8 +858,6 @@ declare namespace ActorDelta {
         UpdateOperation: ActorDelta.Database.UpdateOperation;
         PreUpdateOptions: ActorDelta.Database.PreUpdateOptions;
         PreUpdateOperation: ActorDelta.Database.PreUpdateOperation;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnUpdateDocumentsOperation: ActorDelta.Database.OnUpdateDocumentsOperation;
         OnUpdateOptions: ActorDelta.Database.OnUpdateOptions;
         OnUpdateOperation: ActorDelta.Database.OnUpdateOperation;
 
@@ -917,8 +868,6 @@ declare namespace ActorDelta {
         DeleteOperation: ActorDelta.Database.DeleteOperation;
         PreDeleteOptions: ActorDelta.Database.PreDeleteOptions;
         PreDeleteOperation: ActorDelta.Database.PreDeleteOperation;
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        OnDeleteDocumentsOperation: ActorDelta.Database.OnDeleteDocumentsOperation;
         OnDeleteOptions: ActorDelta.Database.OnDeleteOptions;
         OnDeleteOperation: ActorDelta.Database.OnDeleteOperation;
       }
@@ -975,18 +924,6 @@ declare namespace ActorDelta {
 
     // OnDeleteOperation didn't change purpose or name
 
-    /** @deprecated Use {@linkcode OnCreateDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type OnCreateDocumentsContext = OnCreateDocumentsOperation;
-
-    /** @deprecated Use {@linkcode OnUpdateDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type OnUpdateDocumentsContext = OnUpdateDocumentsOperation;
-
-    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type OnDeleteDocumentsContext = OnDeleteDocumentsOperation;
-
     /** @deprecated Use {@linkcode OnDeleteOptions} instead. This type will be removed in a future version */
     type DeleteOptions = OnDeleteOptions;
 
@@ -995,10 +932,6 @@ declare namespace ActorDelta {
 
     /** @deprecated Use {@linkcode OnUpdateOptions} instead. This type will be removed in a future version */
     type UpdateOptions = OnUpdateOptions;
-
-    /** @deprecated Use {@linkcode OnDeleteDocumentsOperation} instead. This type will be removed in a future version */
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    type DeleteDocumentsContext = OnDeleteDocumentsOperation;
 
     /** @deprecated use {@linkcode CreateDocumentsOperation} instead. This type will be removed in a future version. */
     type DialogCreateOptions = CreateDocumentsOperation;
