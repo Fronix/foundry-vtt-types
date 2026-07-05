@@ -75,6 +75,16 @@ expectTypeOf(roll.toMessage({}, { create: testBool })).toEqualTypeOf<
   Promise<ChatMessage.Implementation | undefined | ChatMessage.CreateData>
 >();
 
+// v14 messageMode option
+expectTypeOf(roll.toMessage({}, { messageMode: "blind" })).toEqualTypeOf<
+  Promise<ChatMessage.Implementation | undefined>
+>();
+expectTypeOf(roll.toMessage({}, { messageMode: "gm", create: false })).toEqualTypeOf<Promise<ChatMessage.CreateData>>();
+// rollMode remains accepted (deprecated since v14)
+expectTypeOf(roll.toMessage({}, { rollMode: "blindroll" })).toEqualTypeOf<
+  Promise<ChatMessage.Implementation | undefined>
+>();
+
 expectTypeOf(Roll.MATH_PROXY).toEqualTypeOf<Math>();
 expectTypeOf(Roll.CHAT_TEMPLATE).toEqualTypeOf<string>();
 expectTypeOf(Roll.TOOLTIP_TEMPLATE).toEqualTypeOf<string>();

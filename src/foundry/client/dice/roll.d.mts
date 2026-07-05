@@ -446,7 +446,9 @@ declare class Roll<D extends AnyObject = EmptyObject> {
    *                      (default: `{}`)
    * @param options     - Additional options which modify the created message.
    *                      (default: `{}`)
+   * @param messageMode - A message visibility mode to apply to the resulting message
    * @param rollMode    - The template roll mode to use for the message from CONFIG.Dice.rollModes
+   *                      (deprecated since v14, until v16 — use `messageMode`)
    * @param create      - Whether to automatically create the chat message, or only return the
    *                      prepared chatData object.
    *                      (default: `true`)
@@ -650,8 +652,17 @@ declare namespace Roll {
 
   interface ToMessageOptions<Create extends boolean | null | undefined> {
     /**
+     * A message visibility mode to apply to the resulting message: a key of
+     * {@linkcode CONFIG.ChatMessage.modes}, applied via {@linkcode ChatMessage.applyMode}.
+     * @remarks Falsy values fall back to the `"core"` `"messageMode"` setting.
+     */
+    messageMode?: ChatMessage.MessageMode | null | undefined;
+
+    /**
      * The template roll mode to use for the message from CONFIG.Dice.rollModes
      * @remarks "roll" equivalent to explicit undefined
+     * @deprecated since v14, until v16. Provide {@linkcode messageMode} instead; the legacy roll mode is
+     * mapped to a {@linkcode ChatMessage.MessageMode | message mode} via {@linkcode foundry.dice.Roll._mapLegacyRollMode}.
      */
     rollMode?: ChatMessage.PassableRollMode | null | undefined;
 
